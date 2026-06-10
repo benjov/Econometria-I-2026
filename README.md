@@ -14,7 +14,7 @@ Agosto 2026
 
 Otros recursos del curso: 
 
-* Videos de la clase: https://www.youtube.com/playlist?list=PLlCKfRj1U6SyNRETe5vsZ34WCFJLKI7ok
+* Videos de la clase: https://www.youtube.com/playlist?list=PLlCKfRj1U6SxFNrR7vLe_xMefqbdM1XTB
 * Material de la clase (bibliografía, papers, notas, etc.): https://drive.google.com/drive/folders/1dhWf9xWX3Q_XpEDNyhI2rnwQ5ljbyQC5?usp=sharing
 * Pizarras: https://cideo365-my.sharepoint.com/:o:/g/personal/benjamin_oliva_cide_edu/IgCe7ZqyIFkST4MDqrtd5qBKAa_Tc63EIS2S1ahGn1ggXio?e=OhTbPj
 
