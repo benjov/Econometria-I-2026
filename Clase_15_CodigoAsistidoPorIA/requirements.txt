@@ -1,0 +1,21 @@
+# Ambiente de las actividades de código asistido por IA
+# Econometría I — Facultad de Ciencias, UNAM
+#
+# Instalar con:  pip install -r requirements.txt
+# Verificar con: python3 00_Flujo_de_trabajo/verificar_ambiente.py
+#
+# Las versiones están fijadas con >= porque las actividades no dependen de
+# comportamientos específicos de una versión. En un TRABAJO PROPIO conviene
+# fijarlas con == : es la diferencia entre "corre" y "da el mismo número".
+# Ver 05_Reproducibilidad/lista_de_verificacion.md, punto 2.
+
+numpy>=1.24
+pandas>=2.0
+statsmodels>=0.14
+scipy>=1.10
+matplotlib>=3.7
+seaborn>=0.12
+
+# Opcionales, según la clase que se acompañe:
+# linearmodels>=6.0      datos panel (Clase_04) y sistemas (Clase_03)
+# scikit-learn>=1.3      material adicional (Clase_14)

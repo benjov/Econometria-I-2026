@@ -67,8 +67,3 @@ credentials*.json
 */bert-base-uncased/
 */facebook/
 .cache/
-
-# --- Salidas regenerables de los cuadernos ----------------------
-# El cuaderno de la unidad 4.b escribe aquí sus cuadros y figuras;
-# se rehacen al ejecutarlo, de modo que no se versionan.
-Clase_15_CodigoAsistidoPorIA/07_Datos_y_visualizacion/resultados/
