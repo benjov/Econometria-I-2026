@@ -46,7 +46,6 @@ cuaderno con la aplicación real. El código vive en [`docs/`](docs/).
 |---|---|
 | **Notas de Clase** (teoría, demostraciones y ejercicios; Econometría I y II) | [`Notas/Notas-Econometria-UNAM.pdf`](Notas/Notas-Econometria-UNAM.pdf) |
 | **Temario oficial de Econometría I** (objetivos, unidades, evaluación) | [`Notas/Programa_Econometria_I.pdf`](Notas/Programa_Econometria_I.pdf) |
-| *Edición anterior de las notas* (Econometría II, febrero 2025; superada) | [`Notas/Notas-Econometría-II-FE-UNAM.pdf`](Notas/Notas-Econometría-II-FE-UNAM.pdf) |
 
 Si alguno de los dos no estuviera disponible en el repositorio, la versión vigente está siempre en
 la [carpeta compartida del curso](https://drive.google.com/drive/folders/1dhWf9xWX3Q_XpEDNyhI2rnwQ5ljbyQC5?usp=sharing).
