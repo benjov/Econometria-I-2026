@@ -1,7 +1,8 @@
-# `docs/` — Laboratorio interactivo
+# `docs/` — Sitio del curso
 
-Sitio estático con seis simuladores para proyectar en clase. Se publica con **GitHub Pages**
-directamente desde esta carpeta; no hay paso de compilación ni dependencias que instalar.
+Sitio estático del curso: presentación pública —temario, evaluación, material y recursos— más
+seis simuladores para proyectar en clase. Se publica con **GitHub Pages** directamente desde esta
+carpeta; no hay paso de compilación ni dependencias que instalar.
 
 **URL una vez activado:** <https://benjov.github.io/Econometria-I-2026/>
 
@@ -23,7 +24,7 @@ sitio con Jekyll, que no se usa aquí.
 
 ```
 docs/
-├── index.html              portada y lanzador de los simuladores
+├── index.html              presentación del curso: temario, evaluación, recursos
 ├── .nojekyll               desactiva el procesamiento con Jekyll
 ├── assets/
 │   ├── estilo.css          hoja de estilo única, con los dos temas
@@ -163,3 +164,29 @@ cd docs && python3 -m http.server 8000
 versión —el rótulo del eje vertical rozando los números de la escala, «ATT verdadero» encima del
 último intervalo del estudio de eventos y «probabilidad > 1» cruzando la recta del modelo
 lineal— sólo se veían una vez compuesta la página, no en el código.
+
+### Cuidado con las ligas: `docs/` es la raíz del sitio
+
+GitHub Pages publica **el contenido de `docs/`, no el del repositorio**. Una liga como
+`../Notas/documento.pdf` resuelve perfectamente en el sistema de archivos, y por eso un
+verificador ingenuo la da por buena, pero en el sitio publicado sale del árbol servido y
+devuelve 404. Es justo el error que enseña la unidad 4: corre, no protesta y da la respuesta
+equivocada.
+
+La regla, entonces:
+
+- Dentro de `docs/` las rutas relativas son válidas — `../assets/estilo.css` desde `sim/` está
+  bien, porque no sale de la raíz publicada.
+- Todo lo que viva **fuera** de `docs/` (cuadernos, PDF de las notas, datos) se enlaza con la
+  URL absoluta del repositorio: `https://github.com/benjov/Econometria-I-2026/tree/main/...`
+  para carpetas y `.../blob/main/...` para archivos. Además así el cuaderno se abre renderizado.
+
+El verificador debe comprobar que la ruta destino quede **dentro** de `docs/`, no sólo que el
+archivo exista:
+
+```python
+try:
+    destino.relative_to(docs.resolve())
+except ValueError:
+    print('sale de docs/ — dará 404 en Pages')
+```

@@ -16,11 +16,12 @@ Clase**, y cada cuaderno corresponde a una sección concreta de esas notas.
 > El cuadro de la sección siguiente marca con **`[I]`** las carpetas que corresponden al temario
 > de Econometría I y con **`[+]`** las que son material adicional, fuera de ese temario.
 
-### Laboratorio interactivo
+### Sitio del curso
 
 **<https://benjov.github.io/Econometria-I-2026/>**
 
-Seis simuladores que corren en el navegador, pensados para proyectar en clase: se mueve un
+Presentación pública del curso —temario por unidades, evaluación con fechas, material y
+recursos— y **seis simuladores** que corren en el navegador: se mueve un
 parámetro y se ve en el acto qué le pasa al estimador. Cubren mínimos cuadrados, los DAG,
 instrumentos débiles, datos panel, diferencia en diferencias y modelos de respuesta binaria.
 Cada uno indica a qué inciso del temario y a qué capítulo de las notas corresponde, y enlaza al

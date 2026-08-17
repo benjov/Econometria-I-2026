@@ -1,6 +1,6 @@
 /* ============================================================================
    Econometría I — Facultad de Ciencias, UNAM
-   Biblioteca compartida del laboratorio interactivo.
+   Biblioteca compartida de los simuladores del curso.
 
    Contiene: aleatoriedad reproducible con semilla, álgebra lineal, los
    estimadores (MCO, MCO robusto, 2SLS), utilidades de distribución y una capa
@@ -1094,7 +1094,7 @@ const Lab = (() => {
 
     barra.innerHTML = `
       <div class="barra-int">
-        <a class="marca" href="${raiz}index.html">Econometría I <span>· Laboratorio</span></a>
+        <a class="marca" href="${raiz}index.html">Econometría I <span>· UNAM</span></a>
         <nav>
           ${nav}
           <button class="boton-icono" id="btn-tema" title="Alternar tema claro/oscuro (T)" aria-label="Alternar tema">◐</button>

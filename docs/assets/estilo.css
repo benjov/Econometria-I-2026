@@ -1,6 +1,6 @@
 /* ============================================================================
    Econometría I — Facultad de Ciencias, UNAM
-   Hoja de estilo del laboratorio interactivo.
+   Hoja de estilo del sitio del curso.
 
    Diseñada para PROYECCIÓN EN CLASE: tipografía grande, alto contraste,
    una idea por vista. La paleta es la misma que la de `figuras_notas.py`
@@ -224,7 +224,7 @@ code, kbd, samp { font-family: var(--mono); font-size: .9em; }
   line-height: 1.55;
 }
 
-/* --- Laboratorio: rejilla principal --------------------------------------- */
+/* --- Simulador: rejilla principal --------------------------------------- */
 
 .lab {
   display: grid;
@@ -500,7 +500,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 .senal.bien  { color: var(--azul);    background: color-mix(in srgb, var(--azul) 14%, transparent); }
 .senal.mal   { color: var(--naranja); background: color-mix(in srgb, var(--naranja) 16%, transparent); }
 
-/* --- Nota al pie del laboratorio ------------------------------------------ */
+/* --- Nota al pie del simulador ------------------------------------------ */
 
 .glosa {
   border-left: 3px solid var(--acento);
@@ -556,6 +556,122 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   :root:not([data-tema="claro"]) .guion li::before { color: #0d1117; }
 }
 .guion li strong { color: var(--tinta); }
+
+/* --- Portada del curso ---------------------------------------------------- */
+
+.portada { padding: clamp(2.5rem, 6vw, 5rem) 0 clamp(1.4rem, 3vw, 2.4rem); }
+
+.portada h1 {
+  font-size: clamp(2.6rem, 6.5vw, 5rem);
+  letter-spacing: -.025em;
+  margin-bottom: .25rem;
+}
+
+.portada .subtitulo {
+  font-family: var(--serif);
+  font-size: clamp(1.05rem, 2vw, 1.5rem);
+  color: var(--tinta-media);
+  margin-bottom: 1.5rem;
+}
+
+.equipo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.4rem;
+  margin-top: 1.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--borde);
+}
+.equipo .rol {
+  display: block;
+  font-size: .72em;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  margin-bottom: .2rem;
+}
+.equipo .nom { font-size: .98em; color: var(--tinta); }
+.equipo a { color: var(--tinta-media); }
+
+/* Ficha de datos rápidos */
+
+.ficha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 1px;
+  background: var(--borde);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+  margin-top: 2.2rem;
+}
+.ficha > div { background: var(--fondo-caja); padding: 1rem 1.15rem; }
+.ficha .k {
+  display: block;
+  font-size: .71em;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  margin-bottom: .35rem;
+}
+.ficha .v { font-size: 1em; color: var(--tinta); line-height: 1.4; }
+.ficha .v em { color: var(--tinta-media); font-size: .88em; font-style: normal; display: block; }
+
+/* --- Unidades del temario ------------------------------------------------- */
+
+.unidades { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.1rem; }
+
+.unidad {
+  background: var(--fondo-caja);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 1.35rem 1.45rem;
+  box-shadow: var(--sombra);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.unidad::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--acento); }
+.unidad.u2 { --acento: var(--naranja); }
+.unidad.u3 { --acento: var(--violeta); }
+.unidad.u4 { --acento: var(--gris); }
+
+.unidad .cabeza-u {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: .45rem;
+}
+.unidad .num {
+  font-size: .73em;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--acento);
+}
+.unidad .semanas {
+  font-size: .78em;
+  color: var(--tinta-suave);
+  background: var(--fondo-alt);
+  border: 1px solid var(--borde);
+  padding: .12rem .55rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.unidad h3 { font-size: 1.24em; margin-bottom: .55rem; }
+.unidad ul { margin: 0; padding-left: 1.15rem; font-size: .92em; color: var(--tinta-media); line-height: 1.5; }
+.unidad li { margin-bottom: .22rem; }
+.unidad .pie-u {
+  margin-top: auto;
+  padding-top: .95rem;
+  font-size: .84em;
+  color: var(--tinta-suave);
+}
+.unidad .pie-u code { font-size: .95em; color: var(--tinta-media); }
 
 /* --- Índice: tarjetas de simulador ---------------------------------------- */
 
