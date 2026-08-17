@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confusor, mediador y colisionador · Econometría I · UNAM</title>
+<meta name="description" content="Simulador para clase: por qué controlar por una variable a veces quita el sesgo, a veces cambia la pregunta y a veces crea el sesgo desde cero.">
+<link rel="stylesheet" href="../assets/estilo.css">
+</head>
+<body>
+
+<div class="envoltura">
+
+  <header class="encabezado">
+    <div class="marbete">Unidad 1 · inciso a — Notas, cap. 1 §1.9</div>
+    <h1>Controlar por Z: ¿ayuda o hace daño?</h1>
+    <p class="entrada">
+      La misma acción — meter Z en la regresión — quita el sesgo si Z es un <strong>confusor</strong>,
+      cambia la pregunta si es un <strong>mediador</strong> y <strong>crea</strong> el sesgo si es un
+      <strong>colisionador</strong>. Cambie la estructura causal sin tocar nada más y compare las
+      dos columnas de resultados.
+    </p>
+  </header>
+
+  <div class="lab">
+    <div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo"><span>Estructura causal</span><span id="veredicto"></span></div>
+        <canvas id="cvDag"></canvas>
+      </div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo">
+          <span>Datos simulados, con el color según el tercil de Z</span>
+        </div>
+        <canvas id="cvXy"></canvas>
+      </div>
+
+      <div class="glosa">
+        <h4>Lo que se ve</h4>
+        <p>
+          La recta gruesa es la regresión de Y sobre X <em>sin</em> controlar. Las tres rectas
+          delgadas son el ajuste dentro de cada tercil de Z: son la versión visual de
+          «controlar por Z». Cuando las tres rectas delgadas apuntan en una dirección distinta
+          de la gruesa, controlar cambia la respuesta.
+        </p>
+        <p class="control-nota" style="font-size:.95em">
+          Con el colisionador y el efecto causal en cero: X y Y son independientes por
+          construcción, la nube completa no tiene pendiente, y sin embargo dentro de cada tercil
+          de Z aparece una relación clarísima. <strong>Nadie omitió una variable</strong> — el
+          sesgo lo produjo el control.
+        </p>
+      </div>
+
+      <div class="glosa guion-caja">
+        <h4>Guion sugerido para la sesión</h4>
+        <ol class="guion">
+          <li>Arranque en <strong>confusor</strong>. Sin controlar, la estimación se aleja del
+            valor verdadero; al controlar, lo recupera. Es el argumento clásico para incluir
+            controles.</li>
+          <li>Pase a <strong>colisionador</strong> con el efecto causal en 0.00. Pregunte qué
+            debería pasar al controlar, <em>antes</em> de mirar la cifra. La intuición de «más
+            controles, menos sesgo» falla aquí de forma espectacular.</li>
+          <li>Termine en <strong>mediador</strong> y haga la distinción fina: ninguna de las dos
+            estimaciones está mal — una es el efecto <em>total</em> y la otra el
+            <em>directo</em>. La pregunta de investigación decide cuál se quiere.</li>
+          <li>Ligue con el capítulo 8: el sesgo del colisionador es el mismo fenómeno que el
+            sesgo de selección de muestra, con la selección haciendo el papel de Z.</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <aside class="panel">
+
+      <section class="panel-seccion">
+        <h3>¿Qué es Z?</h3>
+        <div class="opciones" role="radiogroup">
+          <label><input type="radio" name="tipo" value="confusor" checked>Confusor</label>
+          <label><input type="radio" name="tipo" value="mediador">Mediador</label>
+          <label><input type="radio" name="tipo" value="colisionador">Colisionador</label>
+        </div>
+        <p class="control-nota" id="descripcion" style="margin-top:.7rem"></p>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Parámetros del modelo</h3>
+
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Efecto causal de X sobre Y</span><span class="val"></span></div>
+          <input type="range" id="beta" min="-1" max="2" step="0.05" value="0.5" data-dec="2">
+          <div class="control-nota" id="nota-beta"></div>
+        </div>
+
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom" id="lbl-a">Flecha X · Z</span><span class="val"></span></div>
+          <input type="range" id="a" min="-1.5" max="1.5" step="0.05" value="0.9" data-dec="2">
+        </div>
+
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom" id="lbl-c">Flecha Y · Z</span><span class="val"></span></div>
+          <input type="range" id="c" min="-1.5" max="1.5" step="0.05" value="1.0" data-dec="2">
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Muestra</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Observaciones &nbsp;<em>N</em></span><span class="val"></span></div>
+          <input type="range" id="N" min="100" max="4000" step="50" value="900" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Semilla</span><span class="val"></span></div>
+          <input type="range" id="semilla" min="1" max="60" step="1" value="12" data-dec="0">
+        </div>
+        <label class="casilla"><input type="checkbox" id="verEstratos" checked><span>Rectas dentro de cada tercil de Z</span></label>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Resultados</h3>
+        <div class="lecturas">
+          <div class="lectura destaca">
+            <span class="k">Efecto causal verdadero</span>
+            <span class="v" id="r-verdadero">—</span>
+          </div>
+          <div class="lectura destaca">
+            <span class="k"><strong>Sin</strong> controlar por Z</span>
+            <span class="v naranja" id="r-sin">—</span>
+          </div>
+          <div class="lectura destaca">
+            <span class="k"><strong>Controlando</strong> por Z</span>
+            <span class="v azul" id="r-con">—</span>
+          </div>
+          <div class="lectura"><span class="k">Sesgo sin controlar</span><span class="v" id="r-sesgoSin">—</span></div>
+          <div class="lectura"><span class="k">Sesgo controlando</span><span class="v" id="r-sesgoCon">—</span></div>
+          <div class="lectura"><span class="k">Correlación X, Y en la muestra</span><span class="v gris" id="r-corr">—</span></div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <footer class="pie-sitio">
+    <p>
+      Notas de Clase, cap. 1 §1.9 (gráficos acíclicos dirigidos) y cap. 8 (sesgo de selección).
+      El inciso 1.a del temario es el único que se cubre sólo con teoría: este simulador es su
+      contraparte práctica.
+    </p>
+  </footer>
+
+</div>
+
+<script src="../assets/lab.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const gDag = new Lab.Grafica(document.getElementById('cvDag'), { razon: 0.30, minAlto: 190, maxAlto: 280 });
+  const gXy  = new Lab.Grafica(document.getElementById('cvXy'),  { razon: 0.50, minAlto: 260, maxAlto: 460 });
+
+  const TEXTOS = {
+    confusor: {
+      desc: 'Z causa tanto a X como a Y. Es la variable omitida de toda la vida: si no se incluye, su efecto se confunde con el de X.',
+      a: 'Flecha Z → X',
+      c: 'Flecha Z → Y',
+      veredicto: 'Controlar por Z: <strong>sí</strong>',
+      notaBeta: 'Se recupera controlando por Z.'
+    },
+    mediador: {
+      desc: 'X causa a Z y Z causa a Y. Parte del efecto de X viaja por Z: controlar por Z lo bloquea.',
+      a: 'Flecha X → Z',
+      c: 'Flecha Z → Y',
+      veredicto: 'Controlar por Z: <strong>depende de la pregunta</strong>',
+      notaBeta: 'Aquí es el efecto directo; el total incluye además la ruta por Z.'
+    },
+    colisionador: {
+      desc: 'X y Y causan ambas a Z. La ruta por Z está cerrada… hasta que se condiciona en Z, que es lo que la abre.',
+      a: 'Flecha X → Z',
+      c: 'Flecha Y → Z',
+      veredicto: 'Controlar por Z: <strong>no</strong>',
+      notaBeta: 'Se recupera SIN controlar. Pruebe con 0.00.'
+    }
+  };
+
+  /* ---- Simulación --------------------------------------------------------- */
+
+  function simular() {
+    const tipo = Lab.grupo('tipo');
+    const N = Lab.val('N'), b = Lab.val('beta'), a = Lab.val('a'), c = Lab.val('c');
+    const g = Lab.rng(Lab.val('semilla') * 7919 + 3);
+
+    const X = [], Y = [], Z = [];
+    for (let i = 0; i < N; i++) {
+      let x, y, z;
+      if (tipo === 'confusor') {
+        z = g.n();
+        x = a * z + g.n();
+        y = b * x + c * z + g.n();
+      } else if (tipo === 'mediador') {
+        x = g.n();
+        z = a * x + g.n();
+        y = b * x + c * z + g.n();
+      } else {                      // colisionador
+        x = g.n();
+        y = b * x + g.n();
+        z = a * x + c * y + g.n();
+      }
+      X.push(x); Y.push(y); Z.push(z);
+    }
+
+    // Efecto verdadero: para el mediador se distingue directo de total
+    const verdadero = (tipo === 'mediador') ? { directo: b, total: b + a * c } : { directo: b, total: b };
+
+    const sin = Lab.mco(X.map((x) => [1, x]), Y);
+    const con = Lab.mco(X.map((x, i) => [1, x, Z[i]]), Y);
+
+    return { tipo, X, Y, Z, verdadero, sin: sin.b[1], con: con.b[1], N };
+  }
+
+  /* ---- El DAG ------------------------------------------------------------- */
+
+  function dibujarDag(s) {
+    gDag.marco({ xlim: [0, 1], ylim: [0, 1], desnudo: true, margen: 10 });
+    const c = gDag.ctx;
+    const { x0, y0, x1, y1 } = gDag.caja;
+    const W = x1 - x0, H = y1 - y0;
+    const P = (fx, fy) => [x0 + fx * W, y0 + fy * H];
+    const R = Math.max(20, Math.min(34, Math.min(W, H) * 0.13));
+    const fs = Math.max(13, Math.min(21, W / 42));
+
+    // Posiciones según la estructura
+    let pos, flechas;
+    if (s.tipo === 'confusor') {
+      pos = { Z: P(0.5, 0.18), X: P(0.22, 0.78), Y: P(0.78, 0.78) };
+      flechas = [['Z', 'X', 'a'], ['Z', 'Y', 'c'], ['X', 'Y', 'b']];
+    } else if (s.tipo === 'mediador') {
+      pos = { X: P(0.14, 0.72), Z: P(0.5, 0.2), Y: P(0.86, 0.72) };
+      flechas = [['X', 'Z', 'a'], ['Z', 'Y', 'c'], ['X', 'Y', 'b']];
+    } else {
+      pos = { X: P(0.22, 0.22), Y: P(0.78, 0.22), Z: P(0.5, 0.8) };
+      flechas = [['X', 'Z', 'a'], ['Y', 'Z', 'c'], ['X', 'Y', 'b']];
+    }
+
+    const colorFlecha = { a: Lab.color('violeta'), c: Lab.color('violeta'), b: Lab.color('azul') };
+    const valor = { a: Lab.val('a'), c: Lab.val('c'), b: Lab.val('beta') };
+
+    // Flechas primero, para que los nodos queden encima
+    flechas.forEach(([de, aN, clave]) => {
+      const [ax, ay] = pos[de], [bx, by] = pos[aN];
+      const ang = Math.atan2(by - ay, bx - ax);
+      const sx = ax + Math.cos(ang) * (R + 3), sy = ay + Math.sin(ang) * (R + 3);
+      const ex = bx - Math.cos(ang) * (R + 11), ey = by - Math.sin(ang) * (R + 11);
+      const grosor = 1.2 + Math.min(Math.abs(valor[clave]), 1.5) * 2.4;
+
+      c.save();
+      c.strokeStyle = colorFlecha[clave];
+      c.fillStyle = colorFlecha[clave];
+      c.lineWidth = grosor;
+      c.globalAlpha = Math.abs(valor[clave]) < 0.03 ? 0.22 : 1;
+      c.lineCap = 'round';
+      c.beginPath(); c.moveTo(sx, sy); c.lineTo(ex, ey); c.stroke();
+      const L = 11 + grosor;
+      c.beginPath();
+      c.moveTo(ex, ey);
+      c.lineTo(ex - L * Math.cos(ang - .38), ey - L * Math.sin(ang - .38));
+      c.lineTo(ex - L * Math.cos(ang + .38), ey - L * Math.sin(ang + .38));
+      c.closePath(); c.fill();
+
+      // Valor del coeficiente junto a la flecha
+      const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+      const nx = -Math.sin(ang), ny = Math.cos(ang);
+      c.globalAlpha = 1;
+      c.font = `600 ${fs * .78}px ${getComputedStyle(document.body).fontFamily}`;
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      const tx = mx + nx * 15, ty = my + ny * 15;
+      const txt = Lab.fmt(valor[clave], 2);
+      const wtx = c.measureText(txt).width;
+      c.fillStyle = Lab.color('fondo-caja');
+      c.fillRect(tx - wtx / 2 - 3, ty - fs * .5, wtx + 6, fs);
+      c.fillStyle = colorFlecha[clave];
+      c.fillText(txt, tx, ty);
+      c.restore();
+    });
+
+    // Nodos
+    const controlado = { X: false, Y: false, Z: true };
+    Object.entries(pos).forEach(([nombre, [px, py]]) => {
+      c.save();
+      const esZ = nombre === 'Z';
+      c.beginPath(); c.arc(px, py, R, 0, Math.PI * 2);
+      c.fillStyle = esZ ? Lab.alfa(Lab.color('violeta'), .16) : Lab.color('fondo-caja');
+      c.fill();
+      c.lineWidth = esZ ? 3 : 2;
+      c.setLineDash(esZ ? [6, 4] : []);
+      c.strokeStyle = esZ ? Lab.color('violeta') : Lab.color('tinta-media');
+      c.stroke();
+      c.setLineDash([]);
+      c.fillStyle = esZ ? Lab.color('violeta') : Lab.color('tinta');
+      c.font = `600 ${fs}px ${getComputedStyle(document.documentElement).getPropertyValue('--serif') || getComputedStyle(document.body).fontFamily}`;
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText(nombre, px, py);
+      c.restore();
+    });
+
+    // Nota sobre el nodo Z. Se coloca del lado contrario a aquel por donde
+    // salen o entran sus flechas, para no caer encima de ellas: con Z arriba
+    // (confusor, mediador) va por encima; con Z abajo (colisionador), debajo.
+    c.save();
+    c.font = `${fs * .72}px ${getComputedStyle(document.body).fontFamily}`;
+    c.fillStyle = Lab.color('tinta-suave');
+    c.textAlign = 'center';
+    const [zx, zy] = pos.Z;
+    const zArriba = zy < (y0 + y1) / 2;
+    c.textBaseline = zArriba ? 'bottom' : 'top';
+    c.fillText('la variable de control', zx, zArriba ? zy - R - 8 : zy + R + 8);
+    c.restore();
+  }
+
+  /* ---- Nube de puntos ----------------------------------------------------- */
+
+  function dibujarXy(s) {
+    const { X, Y, Z } = s;
+    const px = 0.02;
+    const ordX = X.slice().sort((p, q) => p - q);
+    const ordY = Y.slice().sort((p, q) => p - q);
+    const XLIM = [Lab.cuantil(ordX, px), Lab.cuantil(ordX, 1 - px)];
+    const YLIM = [Lab.cuantil(ordY, px), Lab.cuantil(ordY, 1 - px)];
+
+    gXy.marco({ xlim: XLIM, ylim: YLIM, xlabel: 'X', ylabel: 'Y', xdec: 1, ydec: 1 });
+
+    // Terciles de Z
+    const ordZ = Z.slice().sort((p, q) => p - q);
+    const q1 = Lab.cuantil(ordZ, 1 / 3), q2 = Lab.cuantil(ordZ, 2 / 3);
+    const tercil = (z) => (z < q1 ? 0 : z < q2 ? 1 : 2);
+    const colores = [Lab.color('azul'), Lab.color('gris'), Lab.color('naranja')];
+    const trazos = [Lab.TRAZO.solido, Lab.TRAZO.guion, Lab.TRAZO.puntoRaya];
+
+    gXy.recortado(() => {
+      // Puntos por tercil
+      const grupos = [[], [], []];
+      X.forEach((x, i) => grupos[tercil(Z[i])].push([x, Y[i]]));
+      const r = X.length > 2000 ? 1.9 : X.length > 900 ? 2.5 : 3.3;
+      grupos.forEach((pts, k) => {
+        gXy.puntos(pts, { color: colores[k], r, alfa: .5, grosorBorde: 0 });
+      });
+
+      // Recta dentro de cada tercil
+      if (Lab.val('verEstratos')) {
+        grupos.forEach((pts, k) => {
+          if (pts.length < 5) return;
+          const f = Lab.mco(pts.map((p) => [1, p[0]]), pts.map((p) => p[1]));
+          if (!f) return;
+          gXy.linea(
+            [[XLIM[0], f.b[0] + f.b[1] * XLIM[0]], [XLIM[1], f.b[0] + f.b[1] * XLIM[1]]],
+            { color: colores[k], grosor: 2.1, trazo: trazos[k] }
+          );
+        });
+      }
+
+      // Recta marginal, encima
+      const f = Lab.mco(X.map((x) => [1, x]), Y);
+      gXy.linea(
+        [[XLIM[0], f.b[0] + f.b[1] * XLIM[0]], [XLIM[1], f.b[0] + f.b[1] * XLIM[1]]],
+        { color: Lab.color('tinta'), grosor: 4 }
+      );
+    });
+
+    gXy.leyenda([
+      { texto: 'sin controlar (toda la muestra)', color: Lab.color('tinta'), grosor: 3.4 },
+      { texto: 'tercil bajo de Z', color: colores[0], trazo: trazos[0] },
+      { texto: 'tercil medio de Z', color: colores[1], trazo: trazos[1] },
+      { texto: 'tercil alto de Z', color: colores[2], trazo: trazos[2] }
+    ], { esquina: 'si' });
+  }
+
+  /* ---- Dibujo completo ---------------------------------------------------- */
+
+  function dibujar() {
+    const tipo = Lab.grupo('tipo');
+    const t = TEXTOS[tipo];
+    document.getElementById('descripcion').textContent = t.desc;
+    document.getElementById('lbl-a').textContent = t.a;
+    document.getElementById('lbl-c').textContent = t.c;
+    document.getElementById('nota-beta').textContent = t.notaBeta;
+    document.getElementById('veredicto').innerHTML = t.veredicto;
+
+    const s = simular();
+    dibujarDag(s);
+    dibujarXy(s);
+
+    const esMediador = tipo === 'mediador';
+    const refSin = esMediador ? s.verdadero.total : s.verdadero.directo;
+    const refCon = s.verdadero.directo;
+
+    Lab.mostrar('r-verdadero',
+      esMediador
+        ? Lab.fmt(s.verdadero.total, 3) + ' total / ' + Lab.fmt(s.verdadero.directo, 3) + ' directo'
+        : Lab.fmt(s.verdadero.directo, 3),
+      'violeta');
+    Lab.mostrar('r-sin', Lab.fmt(s.sin, 3), 'naranja');
+    Lab.mostrar('r-con', Lab.fmt(s.con, 3), 'azul');
+
+    const dSin = s.sin - refSin, dCon = s.con - refCon;
+    const etiqueta = (d, refTxt) => {
+      const grande = Math.abs(d) > 0.08;
+      return `<span class="senal ${grande ? 'mal' : 'bien'}">${Lab.fmtSigno(d, 3)}</span> ${refTxt}`;
+    };
+    document.getElementById('r-sesgoSin').innerHTML =
+      etiqueta(dSin, esMediador ? 'vs. total' : '');
+    document.getElementById('r-sesgoCon').innerHTML =
+      etiqueta(dCon, esMediador ? 'vs. directo' : '');
+
+    Lab.mostrar('r-corr', Lab.fmt(Lab.correlacion(s.X, s.Y), 3), 'gris');
+  }
+
+  Lab.iniciar(dibujar).then(() => Lab.enlazar(dibujar));
+})();
+</script>
+</body>
+</html>

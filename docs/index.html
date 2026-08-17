@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de Econometría I · Facultad de Ciencias, UNAM</title>
+<meta name="description" content="Simuladores interactivos para las clases de Econometría I de la Facultad de Ciencias, UNAM. Mínimos cuadrados, DAG, instrumentos débiles, datos panel, diferencia en diferencias y modelos de respuesta binaria.">
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body>
+
+<div class="envoltura">
+
+  <header class="encabezado">
+    <div class="marbete">Facultad de Ciencias · UNAM · Semestre 2027-I</div>
+    <h1>Laboratorio de Econometría&nbsp;I</h1>
+    <p class="entrada">
+      Seis simuladores para proyectar en clase. Cada uno aísla un resultado del curso que se
+      entiende mucho mejor moviéndolo que leyéndolo: se cambia un parámetro y se ve, en el mismo
+      instante, qué le pasa al estimador. Todo corre en el navegador, sin instalar nada y sin
+      conexión una vez cargada la página.
+    </p>
+  </header>
+
+  <section class="seccion" style="padding-top:0">
+    <div class="rejilla-tarjetas">
+
+      <a class="tarjeta" href="sim/mco.html">
+        <div class="cabeza"><span class="u">Unidad 1 · b, c</span><span>Notas, caps. 1 y 2</span></div>
+        <h3>¿Qué minimiza MCO?</h3>
+        <p>
+          La recta de mínimos cuadrados como solución de un problema de minimización, con la
+          función criterio dibujada aparte. Distancia vertical contra perpendicular, y qué le
+          hace a la recta una observación influyente.
+        </p>
+        <div class="pie">Arrastre los puntos · compare con desviaciones absolutas</div>
+      </a>
+
+      <a class="tarjeta t-violeta" href="sim/colisionador.html">
+        <div class="cabeza"><span class="u">Unidad 1 · a</span><span>Notas, cap. 1 §1.9</span></div>
+        <h3>Confusor, mediador y colisionador</h3>
+        <p>
+          La misma acción — meter Z en la regresión — quita el sesgo, cambia la pregunta o lo
+          crea desde cero, según la estructura causal. El único inciso del temario que hoy se
+          cubre sólo con teoría.
+        </p>
+        <div class="pie">DAG en vivo · el control como fuente de sesgo</div>
+      </a>
+
+      <a class="tarjeta t-naranja" href="sim/instrumentos.html">
+        <div class="cabeza"><span class="u">Unidad 1 · d</span><span>Notas, cap. 3</span></div>
+        <h3>Instrumentos débiles</h3>
+        <p>
+          Un experimento Monte Carlo completo por corrida. La distribución de 2SLS se derrumba
+          sobre el sesgo de MCO conforme la primera etapa se debilita, y la cobertura del
+          intervalo de confianza se desploma con ella.
+        </p>
+        <div class="pie">Regla F &gt; 10 · Staiger y Stock · cobertura real</div>
+      </a>
+
+      <a class="tarjeta" href="sim/efectos-fijos.html">
+        <div class="cabeza"><span class="u">Unidad 2 · e</span><span>Notas, cap. 5</span></div>
+        <h3>La transformación intragrupos</h3>
+        <p>
+          Cuando el efecto individual está correlacionado con el regresor, la regresión agrupada
+          puede invertir el signo del coeficiente. Los cuatro estimadores del capítulo, y el
+          parámetro θ que los ordena en una sola familia.
+        </p>
+        <div class="pie">Inversión de signo · pool, within, primeras diferencias y θ</div>
+      </a>
+
+      <a class="tarjeta t-naranja" href="sim/did.html">
+        <div class="cabeza"><span class="u">Unidad 3 · e</span><span>Notas, cap. 9</span></div>
+        <h3>Tendencias paralelas y DiD</h3>
+        <p>
+          El estimador 2×2 descompuesto en el ATT más el sesgo por tendencias no paralelas, con
+          el estudio de eventos al lado. Incluye el caso incómodo: sesgo real que la prueba de
+          tendencias previas no alcanza a detectar.
+        </p>
+        <div class="pie">Contrafactual · estudio de eventos · hoyo de Ashenfelter</div>
+      </a>
+
+      <a class="tarjeta t-violeta" href="sim/logit-probit.html">
+        <div class="cabeza"><span class="u">Unidad 3 · b</span><span>Notas, cap. 7</span></div>
+        <h3>MPL, Logit y Probit</h3>
+        <p>
+          Por qué el modelo de probabilidad lineal predice probabilidades imposibles, en qué se
+          parecen logit y probit una vez reescalados, y la diferencia entre efecto marginal
+          promedio y efecto marginal en la media.
+        </p>
+        <div class="pie">Estimación por máxima verosimilitud · AME contra MEM</div>
+      </a>
+
+    </div>
+  </section>
+
+  <hr class="regla">
+
+  <section class="seccion">
+    <h2>Cómo usarlo proyectado</h2>
+    <p class="entrada">
+      Las páginas están pensadas para pantalla compartida. Con <kbd>P</kbd> se entra en modo
+      proyección, que oculta el texto explicativo y agranda la tipografía para dejar el lienzo
+      y los controles solos.
+    </p>
+
+    <div class="tabla-caja">
+      <table>
+        <thead>
+          <tr><th>Tecla</th><th>Qué hace</th><th>Cuándo sirve</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><kbd>P</kbd></td><td>Modo proyección</td><td>Al empezar a compartir pantalla</td></tr>
+          <tr><td><kbd>+</kbd> <kbd>−</kbd></td><td>Escala de la tipografía</td><td>Si la última fila no alcanza a leer</td></tr>
+          <tr><td><kbd>T</kbd></td><td>Tema claro u oscuro</td><td>Según la iluminación del aula</td></tr>
+          <tr><td><kbd>Tab</kbd> y <kbd>←</kbd> <kbd>→</kbd></td><td>Enfocar un control y moverlo</td><td>Para no perseguir el deslizador con el ratón</td></tr>
+          <tr><td><kbd>R</kbd></td><td>Reiniciar los valores</td><td>Al pasar de un ejemplo al siguiente</td></tr>
+          <tr><td><kbd>Espacio</kbd></td><td>Volver a simular</td><td>En el simulador de instrumentos débiles</td></tr>
+          <tr><td><kbd>?</kbd></td><td>Recordatorio de atajos</td><td>Cuando se olvide alguno de éstos</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="glosa" style="margin-top:1.2rem">
+      <h4>Cada simulador trae su guion</h4>
+      <p>
+        Al pie de cada página hay una secuencia sugerida de cuatro o cinco movimientos, pensada
+        para una intervención de diez minutos dentro de la clase. No pretende sustituir la
+        exposición: marca el momento en que conviene dejar de escribir en el pizarrón y mover
+        un parámetro.
+      </p>
+    </div>
+  </section>
+
+  <hr class="regla">
+
+  <section class="seccion">
+    <h2>Correspondencia con el curso</h2>
+    <p class="entrada">
+      Cada simulador apunta a un inciso del temario oficial, a un capítulo de las Notas de Clase
+      y a la carpeta de cuadernos donde vive la aplicación con datos reales.
+    </p>
+
+    <div class="tabla-caja">
+      <table>
+        <thead>
+          <tr>
+            <th>Simulador</th><th>Temario</th><th>Notas</th><th>Cuaderno</th><th>Aplicación real</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="sim/mco.html">¿Qué minimiza MCO?</a></td>
+            <td>1.b, 1.c</td><td>caps. 1 y 2</td>
+            <td><a href="../Clase_01_RegresionLineal/">Clase_01</a></td>
+            <td>Nerlove (1963), función de costos</td>
+          </tr>
+          <tr>
+            <td><a href="sim/colisionador.html">Confusor, mediador, colisionador</a></td>
+            <td>1.a</td><td>cap. 1 §1.9</td>
+            <td>—</td>
+            <td>—&nbsp;<em>sólo teoría en el temario</em></td>
+          </tr>
+          <tr>
+            <td><a href="sim/instrumentos.html">Instrumentos débiles</a></td>
+            <td>1.d</td><td>cap. 3</td>
+            <td><a href="../Clase_02_VariablesInstrumentales/">Clase_02</a></td>
+            <td>Acemoglu, Johnson y Robinson (2001)</td>
+          </tr>
+          <tr>
+            <td><a href="sim/efectos-fijos.html">Transformación intragrupos</a></td>
+            <td>2.e</td><td>cap. 5</td>
+            <td><a href="../Clase_04_DatosPanel/">Clase_04</a></td>
+            <td>Grunfeld (1958) y panel NLSY</td>
+          </tr>
+          <tr>
+            <td><a href="sim/did.html">Tendencias paralelas y DiD</a></td>
+            <td>3.e</td><td>cap. 9</td>
+            <td><a href="../Clase_11_DiferenciaEnDiferencias/">Clase_11</a></td>
+            <td>Card y Krueger (1994)</td>
+          </tr>
+          <tr>
+            <td><a href="sim/logit-probit.html">MPL, Logit y Probit</a></td>
+            <td>3.b</td><td>cap. 7</td>
+            <td><a href="../Clase_05_EleccionBinaria/">Clase_05</a></td>
+            <td>Mroz (1987), participación laboral</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="regla">
+
+  <section class="seccion">
+    <h2>Qué es y qué no es</h2>
+
+    <div class="fila-dos">
+      <div class="glosa">
+        <h4>Lo que hace</h4>
+        <p>
+          Todos los números que se muestran se <strong>calculan de verdad</strong>: hay
+          simulación con semilla fija, mínimos cuadrados resueltos por álgebra matricial, 2SLS,
+          máxima verosimilitud por Newton-Raphson y errores estándar agrupados. Nada está
+          dibujado de forma esquemática ni con cifras preescritas.
+        </p>
+      </div>
+      <div class="glosa aviso">
+        <h4>Lo que no hace</h4>
+        <p>
+          No sustituye a los cuadernos. Aquí los datos son simulados, y eso es precisamente lo
+          que permite conocer el valor verdadero y medir el sesgo — algo imposible con datos
+          reales. El paso siguiente siempre es el cuaderno de la carpeta correspondiente, con
+          los datos del artículo original.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="regla">
+
+  <section class="seccion">
+    <h2>Material del curso</h2>
+    <div class="tabla-caja">
+      <table>
+        <tbody>
+          <tr>
+            <td><strong>Repositorio completo</strong></td>
+            <td><a href="https://github.com/benjov/Econometria-I-2026">github.com/benjov/Econometria-I-2026</a></td>
+          </tr>
+          <tr>
+            <td><strong>Notas de Clase</strong> (Econometría I y II)</td>
+            <td><a href="../Notas/Notas-Econometria-UNAM.pdf">Notas-Econometria-UNAM.pdf</a></td>
+          </tr>
+          <tr>
+            <td><strong>Temario oficial</strong></td>
+            <td><a href="../Notas/Programa_Econometria_I.pdf">Programa_Econometria_I.pdf</a></td>
+          </tr>
+          <tr>
+            <td><strong>Videos de las clases</strong></td>
+            <td><a href="https://www.youtube.com/playlist?list=PLlCKfRj1U6SxFNrR7vLe_xMefqbdM1XTB">Lista de reproducción en YouTube</a></td>
+          </tr>
+          <tr>
+            <td><strong>Material complementario</strong></td>
+            <td><a href="https://drive.google.com/drive/folders/1dhWf9xWX3Q_XpEDNyhI2rnwQ5ljbyQC5?usp=sharing">Carpeta compartida en Drive</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="pie-sitio">
+    <p>
+      <strong>Econometría I</strong> · Facultad de Ciencias, UNAM · semestre 2027-I<br>
+      Benjamín Oliva · Jésica Tapia · Omar Alfaro
+    </p>
+    <p style="margin-top:.6rem">
+      Los simuladores acompañan a las Notas de Clase y comparten su paleta y sus convenciones de
+      figura: color y patrón de trazo a la vez, de modo que siguen siendo legibles impresas en
+      blanco y negro y para quien tiene daltonismo.
+    </p>
+  </footer>
+
+</div>
+
+<script src="assets/lab.js"></script>
+<script>
+  Lab.iniciar(null);
+</script>
+</body>
+</html>

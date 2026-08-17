@@ -2,7 +2,7 @@
 
 | Archivo | Contenido |
 |---|---|
-| `Notas-Econometria-FE-UNAM.pdf` | **Notas de Clase.** Documento único que cubre **Econometría I y II**: 11 capítulos más un apéndice de teoría de convergencia asintótica, con demostraciones, figuras y ejercicios al final de cada capítulo. Es el documento al que remiten todos los cuadernos del repositorio. |
+| `Notas-Econometria-UNAM.pdf` | **Notas de Clase.** Documento único que cubre **Econometría I y II**: 11 capítulos más un apéndice de teoría de convergencia asintótica, con demostraciones, figuras y ejercicios al final de cada capítulo. Es el documento al que remiten todos los cuadernos del repositorio. |
 | `Programa_Econometria_I.pdf` | **Temario oficial** del semestre 2027-I: objetivos, las cuatro unidades con su duración en semanas, bibliografía, criterios de evaluación y reglas del curso. |
 | `Notas-Econometría-II-FE-UNAM.pdf` | **Edición anterior**, *Draft* de febrero de 2025, titulada «Notas de Clase: Econometría II». Se conserva por referencia; el documento vigente es el primero de este cuadro, que la reemplaza y cubre Econometría I y II en un solo texto. |
 

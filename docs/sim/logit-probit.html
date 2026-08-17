@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MPL, Logit y Probit · Econometría I · UNAM</title>
+<meta name="description" content="Simulador para clase: por qué el modelo de probabilidad lineal se sale del intervalo unitario, en qué se parecen logit y probit, y la diferencia entre efecto marginal promedio y en la media.">
+<link rel="stylesheet" href="../assets/estilo.css">
+</head>
+<body>
+
+<div class="envoltura">
+
+  <header class="encabezado">
+    <div class="marbete">Unidad 3 · inciso b — Notas, cap. 7</div>
+    <h1>Tres formas de modelar una respuesta binaria</h1>
+    <p class="entrada">
+      El modelo de probabilidad lineal es cómodo de estimar e imposible de defender en los
+      extremos: predice probabilidades fuera del intervalo unitario. Logit y probit lo resuelven
+      con funciones de distribución acumuladas, y aunque sus coeficientes difieren en escala,
+      <strong>sus efectos marginales coinciden</strong>.
+    </p>
+  </header>
+
+  <div class="lab">
+    <div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo">
+          <span>Probabilidad ajustada</span>
+          <span id="alerta"></span>
+        </div>
+        <canvas id="cvProb"></canvas>
+      </div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo"><span id="tit2">Efecto marginal de x sobre la probabilidad</span></div>
+        <canvas id="cvMarg"></canvas>
+      </div>
+
+      <div class="glosa">
+        <h4>Lo que se ve</h4>
+        <p>
+          La zona sombreada del panel superior marca dónde el modelo lineal predice
+          probabilidades negativas o mayores que uno. No es una patología rara de los extremos:
+          basta con que haya observaciones alejadas de la media para que ocurra con datos
+          perfectamente normales.
+        </p>
+        <p>
+          En el panel inferior, el efecto marginal del modelo lineal es una constante — la misma
+          respuesta para quien está casi seguro de participar y para quien casi seguro no. Logit
+          y probit dan la campana que uno espera: el efecto es máximo donde la decisión está más
+          reñida, alrededor de la probabilidad de 0.5.
+        </p>
+      </div>
+
+      <div class="glosa aviso">
+        <h4>AME contra MEM, el error que corre sin protestar</h4>
+        <p>
+          El <strong>efecto marginal promedio</strong> evalúa el efecto en cada observación y
+          luego promedia. El <strong>efecto marginal en la media</strong> evalúa una sola vez, en
+          el individuo promedio — que suele no existir. Los dos son números legítimos y
+          responden a preguntas distintas, pero se confunden con facilidad porque ningún programa
+          protesta. Compare las dos cifras del panel: la diferencia es sistemática, no ruido.
+        </p>
+      </div>
+
+      <div class="glosa guion-caja">
+        <h4>Guion sugerido para la sesión</h4>
+        <ol class="guion">
+          <li>Empiece con la pendiente alta: la recta del modelo lineal <strong>sale del
+            cuadro</strong> por ambos lados y el porcentaje de predicciones imposibles aparece
+            en el panel de resultados.</li>
+          <li>Active «comparar en la escala del índice»: logit y probit se distinguen apenas
+            después de reescalar. De ahí que la elección entre ambos rara vez cambie una
+            conclusión sustantiva.</li>
+          <li>Mire la razón entre los coeficientes: ronda 1.6 a 1.8, según el diseño. El
+            <strong>1.6 es una regla práctica, no una identidad</strong> — conviene decirlo.</li>
+          <li>Contraste los AME de logit y probit: coinciden casi exactamente aunque los
+            coeficientes no. Es la mejor razón para reportar efectos marginales y no
+            coeficientes crudos.</li>
+          <li>Ligue con la unidad 4: confundir AME con MEM es uno de los errores del catálogo de
+            <code>Clase_15/04</code>, porque el código corre y la tabla se ve normal.</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <aside class="panel">
+
+      <section class="panel-seccion">
+        <h3>El proceso generador</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Pendiente del índice &nbsp;β<sub>1</sub></span><span class="val"></span></div>
+          <input type="range" id="b1" min="0.1" max="3" step="0.05" value="1.4" data-dec="2">
+          <div class="control-nota">Mayor pendiente estira el índice y agrava el problema del modelo lineal.</div>
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Constante &nbsp;β<sub>0</sub></span><span class="val"></span></div>
+          <input type="range" id="b0" min="-2.5" max="2.5" step="0.05" value="0" data-dec="2">
+          <div class="control-nota">Al alejarlo de cero, la muestra se desbalancea y AME y MEM se separan más.</div>
+        </div>
+        <div class="opciones" role="radiogroup" style="margin-top:.9rem">
+          <label><input type="radio" name="dgp" value="logit" checked>Datos de un Logit</label>
+          <label><input type="radio" name="dgp" value="probit">de un Probit</label>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>La muestra</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Observaciones &nbsp;<em>N</em></span><span class="val"></span></div>
+          <input type="range" id="N" min="60" max="4000" step="20" value="600" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Semilla</span><span class="val"></span></div>
+          <input type="range" id="semilla" min="1" max="60" step="1" value="8" data-dec="0">
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Qué se dibuja</h3>
+        <label class="casilla"><input type="checkbox" id="verMpl" checked><span>Modelo de probabilidad lineal</span></label>
+        <label class="casilla"><input type="checkbox" id="verLogit" checked><span>Logit</span></label>
+        <label class="casilla"><input type="checkbox" id="verProbit" checked><span>Probit</span></label>
+        <label class="casilla"><input type="checkbox" id="verIndice"><span>Comparar en la escala del índice: Λ(1.6z) contra Φ(z)</span></label>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Diagnóstico del modelo lineal</h3>
+        <div class="lecturas">
+          <div class="lectura destaca">
+            <span class="k">Predicciones fuera de [0, 1]</span>
+            <span class="v" id="r-fuera">—</span>
+          </div>
+          <div class="lectura"><span class="k">Predicción mínima</span><span class="v naranja" id="r-min">—</span></div>
+          <div class="lectura"><span class="k">Predicción máxima</span><span class="v naranja" id="r-max">—</span></div>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Coeficientes</h3>
+        <div class="lecturas">
+          <div class="lectura"><span class="k">β̂₁ del Logit</span><span class="v azul" id="r-bLogit">—</span></div>
+          <div class="lectura"><span class="k">β̂₁ del Probit</span><span class="v violeta" id="r-bProbit">—</span></div>
+          <div class="lectura destaca"><span class="k">Razón Logit / Probit</span><span class="v" id="r-razon">—</span></div>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Efectos marginales</h3>
+        <div class="lecturas">
+          <div class="lectura destaca"><span class="k">AME — promedio (Logit)</span><span class="v azul" id="r-ame">—</span></div>
+          <div class="lectura destaca"><span class="k">MEM — en la media (Logit)</span><span class="v azul" id="r-mem">—</span></div>
+          <div class="lectura"><span class="k">Diferencia MEM − AME</span><span class="v" id="r-difEm">—</span></div>
+          <div class="lectura"><span class="k">AME del Probit</span><span class="v violeta" id="r-ameP">—</span></div>
+          <div class="lectura"><span class="k">Pendiente del modelo lineal</span><span class="v naranja" id="r-bMpl">—</span></div>
+          <div class="lectura"><span class="k">Proporción de unos en la muestra</span><span class="v gris" id="r-prop">—</span></div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <footer class="pie-sitio">
+    <p>
+      Notas de Clase, cap. 7 (respuesta binaria, Logit, Probit) y cap. 6 (máxima verosimilitud).
+      Cuaderno: <a href="../../Clase_05_EleccionBinaria/">Clase_05_EleccionBinaria</a> —
+      participación laboral femenina, Mroz (1987).
+    </p>
+  </footer>
+
+</div>
+
+<script src="../assets/lab.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const gP = new Lab.Grafica(document.getElementById('cvProb'), { razon: 0.44, minAlto: 250, maxAlto: 400 });
+  const gM = new Lab.Grafica(document.getElementById('cvMarg'), { razon: 0.32, minAlto: 190, maxAlto: 300 });
+
+  /* ---- Simulación --------------------------------------------------------- */
+
+  function generar() {
+    const N = Lab.val('N'), b0 = Lab.val('b0'), b1 = Lab.val('b1');
+    const enlace = Lab.grupo('dgp');
+    const g = Lab.rng(Lab.val('semilla') * 8191 + 29);
+    const F = enlace === 'probit' ? Lab.Phi : Lab.Lambda;
+
+    const X = [], y = [], xs = [];
+    for (let i = 0; i < N; i++) {
+      const x = g.n() * 1.6;
+      const p = F(b0 + b1 * x);
+      X.push([1, x]);
+      y.push(g.u() < p ? 1 : 0);
+      xs.push(x);
+    }
+    return { X, y, xs, N, b0, b1, enlace };
+  }
+
+  /* ---- Dibujo ------------------------------------------------------------- */
+
+  function dibujar() {
+    const d = generar();
+    const modoIndice = Lab.val('verIndice');
+
+    const mpl = Lab.mco(d.X, d.y);
+    const lg = Lab.indiceBinario(d.X, d.y, 'logit');
+    const pb = Lab.indiceBinario(d.X, d.y, 'probit');
+
+    const ordX = d.xs.slice().sort((a, b) => a - b);
+    const XL = [Lab.cuantil(ordX, .002) - .4, Lab.cuantil(ordX, .998) + .4];
+
+    /* ================= Modo A: comparar en la escala del índice ============ */
+
+    if (modoIndice) {
+      document.getElementById('tit2').textContent =
+        'Diferencia entre las dos curvas, en puntos de probabilidad';
+
+      const ZL = [-4, 4];
+      gP.marco({
+        xlim: ZL, ylim: [-0.04, 1.04],
+        xlabel: 'índice  z', ylabel: 'probabilidad',
+        ydec: 1, xdec: 0
+      });
+
+      const logi = [], prob = [], logiEsc = [];
+      for (let i = 0; i <= 240; i++) {
+        const z = ZL[0] + (ZL[1] - ZL[0]) * i / 240;
+        logi.push([z, Lab.Lambda(z)]);
+        prob.push([z, Lab.Phi(z)]);
+        logiEsc.push([z, Lab.Lambda(1.6 * z)]);
+      }
+
+      gP.recortado(() => {
+        gP.hlinea(0, { color: Lab.color('borde'), grosor: 1, trazo: Lab.TRAZO.punteado });
+        gP.hlinea(1, { color: Lab.color('borde'), grosor: 1, trazo: Lab.TRAZO.punteado });
+        gP.linea(logi, { color: Lab.color('gris'), grosor: 2, trazo: Lab.TRAZO.punteado });
+        gP.linea(prob, { color: Lab.color('violeta'), grosor: 3 });
+        gP.linea(logiEsc, { color: Lab.color('azul'), grosor: 3, trazo: Lab.TRAZO.guion });
+      });
+
+      gP.leyenda([
+        { texto: 'Φ(z) — probit', color: Lab.color('violeta'), grosor: 3 },
+        { texto: 'Λ(1.6 z) — logit reescalado', color: Lab.color('azul'), trazo: Lab.TRAZO.guion },
+        { texto: 'Λ(z) — logit sin reescalar', color: Lab.color('gris'), trazo: Lab.TRAZO.punteado }
+      ], { esquina: 'si' });
+
+      // Panel inferior: la diferencia, que es lo que no se ve arriba
+      const dif = logiEsc.map((p, i) => [p[0], (p[1] - prob[i][1]) * 100]);
+      const maxDif = Math.max(...dif.map((p) => Math.abs(p[1]))) * 1.3 + .2;
+      gM.marco({
+        xlim: ZL, ylim: [-maxDif, maxDif],
+        xlabel: 'índice  z', ylabel: 'Λ(1.6z) − Φ(z), en puntos',
+        nyticks: 3, xdec: 0, ydec: 1
+      });
+      gM.recortado(() => {
+        gM.hlinea(0, { color: Lab.color('borde-firme'), grosor: 1.4, trazo: Lab.TRAZO.solido });
+        gM.area(dif, { color: Lab.alfa(Lab.color('azul'), .16), base: 0 });
+        gM.linea(dif, { color: Lab.color('azul'), grosor: 2.6 });
+        const pico = dif.reduce((k, p, i) => (Math.abs(p[1]) > Math.abs(dif[k][1]) ? i : k), 0);
+        gM.rotulo(dif[pico][0], dif[pico][1], ' máx ' + Lab.fmt(Math.abs(dif[pico][1]), 2) + ' pts', {
+          color: Lab.color('azul'), align: 'left', tam: .9
+        });
+      });
+
+      document.getElementById('alerta').innerHTML =
+        '<span class="senal bien">la diferencia máxima es de fracciones de punto</span>';
+
+    /* ================= Modo B: los ajustes sobre los datos ================= */
+
+    } else {
+      document.getElementById('tit2').textContent = 'Efecto marginal de x sobre la probabilidad';
+
+      gP.marco({
+        xlim: XL, ylim: [-0.22, 1.22],
+        xlabel: 'x', ylabel: 'P(y = 1 | x)',
+        yticks: [0, 0.25, 0.5, 0.75, 1], ydec: 2, xdec: 0
+      });
+
+      gP.recortado(() => {
+        // Zona imposible para una probabilidad
+        gP.rect(XL[0], 1, XL[1], 1.22, { relleno: Lab.alfa(Lab.color('naranja'), .10) });
+        gP.rect(XL[0], -0.22, XL[1], 0, { relleno: Lab.alfa(Lab.color('naranja'), .10) });
+        gP.hlinea(0, { color: Lab.color('naranja'), grosor: 1.4, trazo: Lab.TRAZO.punteado });
+        gP.hlinea(1, { color: Lab.color('naranja'), grosor: 1.4, trazo: Lab.TRAZO.punteado });
+        // Se rotula por la izquierda: la recta del modelo lineal sube hacia la
+        // derecha y cruzaría el texto si se colocara de aquel lado.
+        gP.rotulo(XL[0] + .15, 1.12, 'probabilidad > 1', {
+          color: Lab.color('naranja'), align: 'left', tam: .82
+        });
+        gP.rotulo(XL[0] + .15, -0.12, 'probabilidad < 0', {
+          color: Lab.color('naranja'), align: 'left', tam: .82
+        });
+
+        // Datos: los ceros y los unos, con dispersión vertical para verlos
+        const g = Lab.rng(99);
+        const unos = [], ceros = [];
+        d.xs.forEach((x, i) => {
+          const jitter = (g.u() - .5) * .13;
+          (d.y[i] ? unos : ceros).push([x, (d.y[i] ? 1 : 0) + jitter]);
+        });
+        const r = d.N > 1500 ? 1.8 : 2.8;
+        gP.puntos(ceros, { color: Lab.alfa(Lab.color('gris'), .5), r, grosorBorde: 0 });
+        gP.puntos(unos, { color: Lab.alfa(Lab.color('gris'), .5), r, grosorBorde: 0 });
+
+        const malla = [];
+        for (let i = 0; i <= 220; i++) malla.push(XL[0] + (XL[1] - XL[0]) * i / 220);
+
+        if (Lab.val('verMpl')) {
+          gP.linea(malla.map((x) => [x, mpl.b[0] + mpl.b[1] * x]),
+            { color: Lab.color('naranja'), grosor: 3 });
+        }
+        if (Lab.val('verLogit')) {
+          gP.linea(malla.map((x) => [x, Lab.Lambda(lg.b[0] + lg.b[1] * x)]),
+            { color: Lab.color('azul'), grosor: 3 });
+        }
+        if (Lab.val('verProbit')) {
+          gP.linea(malla.map((x) => [x, Lab.Phi(pb.b[0] + pb.b[1] * x)]),
+            { color: Lab.color('violeta'), grosor: 2.6, trazo: Lab.TRAZO.guion });
+        }
+      });
+
+      const ent = [];
+      if (Lab.val('verMpl')) ent.push({ texto: 'modelo lineal', color: Lab.color('naranja') });
+      if (Lab.val('verLogit')) ent.push({ texto: 'logit', color: Lab.color('azul') });
+      if (Lab.val('verProbit')) ent.push({ texto: 'probit', color: Lab.color('violeta'), trazo: Lab.TRAZO.guion });
+      // Abajo a la derecha: con la pendiente positiva, esa esquina queda
+      // vacía de observaciones y libre de la banda sombreada de arriba.
+      if (ent.length) gP.leyenda(ent, { esquina: 'id' });
+
+      // Panel inferior: efectos marginales
+      const malla = [];
+      for (let i = 0; i <= 220; i++) malla.push(XL[0] + (XL[1] - XL[0]) * i / 220);
+      const emLogit = malla.map((x) => [x, Lab.lambdaDens(lg.b[0] + lg.b[1] * x) * lg.b[1]]);
+      const emProbit = malla.map((x) => [x, Lab.phi(pb.b[0] + pb.b[1] * x) * pb.b[1]]);
+      const techo = Math.max(
+        ...emLogit.map((p) => p[1]), ...emProbit.map((p) => p[1]), Math.abs(mpl.b[1])
+      ) * 1.35;
+
+      gM.marco({
+        xlim: XL, ylim: [0, techo],
+        xlabel: 'x', ylabel: '∂P / ∂x',
+        nyticks: 3, xdec: 0, ydec: 2
+      });
+
+      gM.recortado(() => {
+        if (Lab.val('verMpl')) {
+          gM.linea([[XL[0], mpl.b[1]], [XL[1], mpl.b[1]]],
+            { color: Lab.color('naranja'), grosor: 3 });
+          gM.rotulo(XL[0] + .3, mpl.b[1] + techo * .09, 'constante — no depende de x', {
+            color: Lab.color('naranja'), align: 'left', tam: .85
+          });
+        }
+        if (Lab.val('verLogit')) gM.linea(emLogit, { color: Lab.color('azul'), grosor: 3 });
+        if (Lab.val('verProbit')) gM.linea(emProbit, { color: Lab.color('violeta'), grosor: 2.6, trazo: Lab.TRAZO.guion });
+
+        // AME y MEM del logit, como líneas horizontales
+        if (Lab.val('verLogit')) {
+          gM.hlinea(lg.ame[1], { color: Lab.color('azul'), grosor: 1.8, trazo: Lab.TRAZO.punteado });
+          gM.hlinea(lg.mem[1], { color: Lab.color('azul'), grosor: 1.8, trazo: Lab.TRAZO.puntoRaya });
+          gM.rotulo(XL[1] - .2, lg.ame[1], 'AME ', { color: Lab.color('azul'), align: 'right', tam: .85, base: 'top' });
+          gM.rotulo(XL[1] - .2, lg.mem[1], 'MEM ', { color: Lab.color('azul'), align: 'right', tam: .85, base: 'bottom' });
+        }
+      });
+
+      const fuera = mpl.ajustado.filter((p) => p < 0 || p > 1).length;
+      document.getElementById('alerta').innerHTML = fuera > 0
+        ? `<span class="senal mal">${Lab.fmt(100 * fuera / d.N, 1)} % de predicciones imposibles</span>`
+        : '<span class="senal bien">ninguna predicción fuera de [0,1]</span>';
+    }
+
+    /* ---- Lecturas (comunes a los dos modos) ---- */
+
+    const fuera = mpl.ajustado.filter((p) => p < 0 || p > 1).length;
+    const pct = 100 * fuera / d.N;
+    document.getElementById('r-fuera').innerHTML =
+      `${Lab.fmt(pct, 1)} % <span class="senal ${pct > 0 ? 'mal' : 'bien'}">${fuera} de ${d.N}</span>`;
+    Lab.mostrar('r-min', Lab.fmt(Math.min(...mpl.ajustado), 3), 'naranja');
+    Lab.mostrar('r-max', Lab.fmt(Math.max(...mpl.ajustado), 3), 'naranja');
+
+    Lab.mostrar('r-bLogit', Lab.fmt(lg.b[1], 3), 'azul');
+    Lab.mostrar('r-bProbit', Lab.fmt(pb.b[1], 3), 'violeta');
+
+    const razon = pb.b[1] !== 0 ? lg.b[1] / pb.b[1] : NaN;
+    document.getElementById('r-razon').innerHTML =
+      `${Lab.fmt(razon, 3)} <span class="senal bien">la regla dice ≈ 1.6</span>`;
+
+    Lab.mostrar('r-ame', Lab.fmt(lg.ame[1], 4), 'azul');
+    Lab.mostrar('r-mem', Lab.fmt(lg.mem[1], 4), 'azul');
+
+    const dif = lg.mem[1] - lg.ame[1];
+    const pctDif = lg.ame[1] !== 0 ? 100 * dif / lg.ame[1] : NaN;
+    document.getElementById('r-difEm').innerHTML =
+      `${Lab.fmtSigno(dif, 4)} <span class="senal ${Math.abs(pctDif) > 5 ? 'mal' : 'bien'}">${Lab.fmtSigno(pctDif, 1)} %</span>`;
+
+    Lab.mostrar('r-ameP', Lab.fmt(pb.ame[1], 4), 'violeta');
+    Lab.mostrar('r-bMpl', Lab.fmt(mpl.b[1], 4), 'naranja');
+    Lab.mostrar('r-prop', Lab.fmt(Lab.media(d.y), 3), 'gris');
+  }
+
+  Lab.iniciar(dibujar).then(() => Lab.enlazar(dibujar));
+})();
+</script>
+</body>
+</html>

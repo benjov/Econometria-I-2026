@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instrumentos débiles · Econometría I · UNAM</title>
+<meta name="description" content="Simulador Monte Carlo para clase: cómo la distribución muestral de 2SLS se derrumba sobre el sesgo de MCO cuando el instrumento pierde fuerza, y por qué la regla F > 10.">
+<link rel="stylesheet" href="../assets/estilo.css">
+</head>
+<body>
+
+<div class="envoltura">
+
+  <header class="encabezado">
+    <div class="marbete">Unidad 1 · inciso d — Notas, cap. 3</div>
+    <h1>Cuando el instrumento es débil</h1>
+    <p class="entrada">
+      Un instrumento válido no basta: tiene que ser <strong>fuerte</strong>. Debilite la primera
+      etapa y verá que 2SLS no sólo pierde precisión — se <em>corre</em> hacia el sesgo de MCO,
+      cría colas pesadas y su intervalo de confianza deja de cubrir el valor verdadero. Cada
+      corrida es un experimento Monte Carlo completo.
+    </p>
+  </header>
+
+  <div class="lab">
+    <div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo">
+          <span>Distribución muestral de los estimadores</span>
+          <span id="estado"></span>
+        </div>
+        <canvas id="cvDist"></canvas>
+      </div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo"><span>Estadística F de la primera etapa, réplica por réplica</span></div>
+        <canvas id="cvF"></canvas>
+      </div>
+
+      <div class="glosa">
+        <h4>Lo que se ve</h4>
+        <p>
+          Con el instrumento fuerte, la distribución de 2SLS (azul) se centra en el valor
+          verdadero y la de MCO (naranja) está desplazada: es el sesgo de endogeneidad. Al bajar
+          π, la nube azul <strong>se ensancha, se deforma y migra hacia la naranja</strong>. En
+          el límite π = 0 el instrumento no explica nada y 2SLS hereda por completo el sesgo que
+          venía a corregir.
+        </p>
+        <p>
+          La lectura decisiva no es el sesgo sino la <strong>cobertura</strong>: la proporción de
+          réplicas cuyo intervalo al 95 % contiene al verdadero β. Debería ser 0.95. Con
+          instrumentos débiles cae muy por debajo, y eso significa que los errores estándar que
+          reporta el programa mienten.
+        </p>
+      </div>
+
+      <div class="glosa guion-caja">
+        <h4>Guion sugerido para la sesión</h4>
+        <ol class="guion">
+          <li>Empiece con π = 1.00 y señale las dos distribuciones: <strong>2SLS centrado,
+            MCO sesgado</strong>. Este es el argumento entero de variables instrumentales en
+            una imagen.</li>
+          <li>Baje π lentamente hasta 0.10. Pida que observen <em>tres</em> cosas a la vez:
+            la mediana que se corre, las colas que engordan y la F que se desploma.</li>
+          <li>Detenga el recorrido cuando la <strong>F mediana cruce 10</strong> — el umbral de
+            Staiger y Stock — y compare con la cobertura de ese mismo momento.</li>
+          <li>Suba N con π pequeño: la F mejora porque depende de N, pero el sesgo relativo
+            tarda mucho más en irse. <strong>Más datos no arreglan un instrumento débil</strong>.</li>
+          <li>Contraste con el caso real del curso: en Acemoglu, Johnson y Robinson (2001) la
+            F de la primera etapa es 22.95, cómodamente por encima del umbral.</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <aside class="panel">
+
+      <section class="panel-seccion">
+        <h3>Fuerza del instrumento</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">π — coeficiente de z en la 1ª etapa</span><span class="val"></span></div>
+          <input type="range" id="pi" min="0" max="1.2" step="0.01" value="1" data-dec="2">
+          <div class="control-nota">En π = 0 el instrumento es irrelevante y β deja de estar identificado.</div>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Endogeneidad</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">ρ — correlación entre x y el error</span><span class="val"></span></div>
+          <input type="range" id="rho" min="-0.9" max="0.9" step="0.05" value="0.6" data-dec="2">
+          <div class="control-nota">Es lo que hace inconsistente a MCO. En ρ = 0 ambos estimadores coinciden y VI sólo pierde eficiencia.</div>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>El experimento</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Observaciones por réplica &nbsp;<em>N</em></span><span class="val"></span></div>
+          <input type="range" id="N" min="30" max="1500" step="10" value="200" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Réplicas Monte Carlo</span><span class="val"></span></div>
+          <input type="range" id="R" min="200" max="4000" step="100" value="1500" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Semilla</span><span class="val"></span></div>
+          <input type="range" id="semilla" min="1" max="60" step="1" value="4" data-dec="0">
+        </div>
+        <label class="casilla"><input type="checkbox" id="verMco" checked><span>Mostrar también MCO</span></label>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Resultados</h3>
+        <div class="lecturas">
+          <div class="lectura destaca">
+            <span class="k">F mediana de 1ª etapa</span>
+            <span class="v" id="r-F">—</span>
+          </div>
+          <div class="lectura destaca">
+            <span class="k">Cobertura del IC al 95 % de 2SLS</span>
+            <span class="v" id="r-cob">—</span>
+          </div>
+          <div class="lectura"><span class="k">β verdadero</span><span class="v violeta" id="r-beta">1.000</span></div>
+          <div class="lectura"><span class="k">Mediana de 2SLS</span><span class="v azul" id="r-med2sls">—</span></div>
+          <div class="lectura"><span class="k">Mediana de MCO</span><span class="v naranja" id="r-medMco">—</span></div>
+          <div class="lectura"><span class="k">Sesgo mediano de 2SLS</span><span class="v azul" id="r-sesgo2sls">—</span></div>
+          <div class="lectura"><span class="k">Sesgo asintótico de MCO</span><span class="v naranja" id="r-plimMco">—</span></div>
+          <div class="lectura"><span class="k">Sesgo relativo de 2SLS frente a MCO</span><span class="v" id="r-relativo">—</span></div>
+          <div class="lectura"><span class="k">Réplicas con F &lt; 10</span><span class="v" id="r-pctF">—</span></div>
+          <div class="lectura"><span class="k">Rango intercuartílico de 2SLS</span><span class="v gris" id="r-iqr">—</span></div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <footer class="pie-sitio">
+    <p>
+      Notas de Clase, cap. 3 (instrumentos débiles, Staiger-Stock, Stock-Yogo). Cuaderno:
+      <a href="../../Clase_02_VariablesInstrumentales/">Clase_02_VariablesInstrumentales</a> —
+      orígenes coloniales del desarrollo, Acemoglu, Johnson y Robinson (2001), 2SLS = 0.9443
+      contra 0.94 publicado.
+    </p>
+  </footer>
+
+</div>
+
+<script src="../assets/lab.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const gD = new Lab.Grafica(document.getElementById('cvDist'), { razon: 0.46, minAlto: 250, maxAlto: 420 });
+  const gF = new Lab.Grafica(document.getElementById('cvF'), { razon: 0.24, minAlto: 140, maxAlto: 210 });
+
+  const BETA = 1.0;
+
+  /* ---- El experimento Monte Carlo ---------------------------------------- */
+
+  function correr() {
+    const pi = Lab.val('pi'), rho = Lab.val('rho');
+    const N = Lab.val('N'), R = Lab.val('R');
+    const g = Lab.rng(Lab.val('semilla') * 104729 + 11);
+
+    const bMco = [], bIv = [], Fs = [];
+    let cubre = 0, validas = 0;
+    const raizRho = Math.sqrt(Math.max(1 - rho * rho, 0));
+
+    for (let r = 0; r < R; r++) {
+      const X = [], Z = [], y = [], xs = [], zs = [];
+      for (let i = 0; i < N; i++) {
+        const z = g.n();
+        const e = g.n();                              // error estructural
+        const v = rho * e + raizRho * g.n();          // error de la 1ª etapa, corr(e,v) = rho
+        const x = pi * z + v;
+        X.push([1, x]); Z.push([1, z]); y.push(BETA * x + e);
+        xs.push(x); zs.push([z]);
+      }
+
+      const m = Lab.mco(X, y);
+      const iv = Lab.dosEtapas(y, X, Z);
+      if (!m || !iv || !Number.isFinite(iv.b[1])) continue;
+
+      bMco.push(m.b[1]);
+      bIv.push(iv.b[1]);
+
+      const F = Lab.fPrimeraEtapa(xs, zs, X.map(() => [1]));
+      Fs.push(Number.isFinite(F) ? F : 0);
+
+      // Cobertura del intervalo al 95 % construido como lo hace el software
+      const li = iv.b[1] - 1.96 * iv.ee[1], ls = iv.b[1] + 1.96 * iv.ee[1];
+      if (li <= BETA && BETA <= ls) cubre++;
+      validas++;
+    }
+
+    return { bMco, bIv, Fs, cobertura: validas ? cubre / validas : NaN, pi, rho, N, R: validas };
+  }
+
+  /* ---- Dibujo ------------------------------------------------------------ */
+
+  function dibujar() {
+    const est = document.getElementById('estado');
+    est.textContent = 'simulando…';
+
+    const s = correr();
+    const verMco = Lab.val('verMco');
+
+    const ivOrd = s.bIv.slice().sort((a, b) => a - b);
+    const mcoOrd = s.bMco.slice().sort((a, b) => a - b);
+
+    // El eje se fija con cuantiles robustos: con instrumentos débiles hay
+    // valores extremos que, si se usara el mínimo y el máximo, aplastarían
+    // toda la figura contra el centro.
+    const lo = Math.min(Lab.cuantil(ivOrd, .02), Lab.cuantil(mcoOrd, .02), BETA) - .25;
+    const hi = Math.max(Lab.cuantil(ivOrd, .98), Lab.cuantil(mcoOrd, .98), BETA) + .25;
+    const XLIM = [lo, hi];
+
+    const bins = 46;
+    const picoIv = Lab.Grafica.picoHistograma(s.bIv, bins, XLIM);
+    const picoMco = verMco ? Lab.Grafica.picoHistograma(s.bMco, bins, XLIM) : 0;
+    const techo = Math.max(picoIv, picoMco) * 1.18;
+
+    gD.marco({
+      xlim: XLIM, ylim: [0, techo],
+      xlabel: 'estimación de β', ylabel: 'densidad',
+      nyticks: 4, xdec: 2, ydec: 1
+    });
+
+    gD.recortado(() => {
+      if (verMco) {
+        gD.histograma(s.bMco, { bins, rango: XLIM, color: Lab.alfa(Lab.color('naranja'), .5) });
+      }
+      gD.histograma(s.bIv, { bins, rango: XLIM, color: Lab.alfa(Lab.color('azul'), .55) });
+
+      // β verdadero
+      gD.vlinea(BETA, { color: Lab.color('violeta'), grosor: 2.6, trazo: Lab.TRAZO.solido });
+      gD.rotulo(BETA, techo * .95, ' β verdadero', {
+        color: Lab.color('violeta'), align: 'left', tam: .92
+      });
+
+      // Medianas
+      const medIv = Lab.cuantil(ivOrd, .5);
+      gD.vlinea(medIv, { color: Lab.color('azul'), grosor: 2, trazo: Lab.TRAZO.guion });
+      if (verMco) {
+        const medMco = Lab.cuantil(mcoOrd, .5);
+        gD.vlinea(medMco, { color: Lab.color('naranja'), grosor: 2, trazo: Lab.TRAZO.guion });
+        gD.rotulo(medMco, techo * .55, 'MCO', { color: Lab.color('naranja'), align: 'center', tam: .95 });
+      }
+      gD.rotulo(medIv, techo * .74, '2SLS', { color: Lab.color('azul'), align: 'center', tam: .95 });
+    });
+
+    /* --- Panel de la F --- */
+
+    const fOrd = s.Fs.slice().sort((a, b) => a - b);
+    const fTecho = Math.max(Lab.cuantil(fOrd, .97), 14);
+    gF.marco({
+      xlim: [0, s.Fs.length], ylim: [0, fTecho],
+      xlabel: 'réplica', ylabel: 'F',
+      nyticks: 3, xdec: 0, ydec: 0
+    });
+
+    gF.recortado(() => {
+      // Nube de F por réplica
+      const paso = Math.max(1, Math.floor(s.Fs.length / 900));
+      const pts = [];
+      for (let i = 0; i < s.Fs.length; i += paso) pts.push([i, s.Fs[i]]);
+      gF.puntos(pts, { color: Lab.alfa(Lab.color('gris'), .5), r: 1.8, grosorBorde: 0 });
+
+      // Umbral de Staiger y Stock
+      gF.hlinea(10, { color: Lab.color('naranja'), grosor: 2.2, trazo: Lab.TRAZO.guion });
+      gF.rotulo(s.Fs.length * .015, 10 + fTecho * .06, 'umbral F = 10', {
+        color: Lab.color('naranja'), align: 'left', tam: .88
+      });
+
+      const medF = Lab.cuantil(fOrd, .5);
+      gF.hlinea(medF, { color: Lab.color('azul'), grosor: 2, trazo: Lab.TRAZO.solido });
+      gF.rotulo(s.Fs.length * .985, medF + fTecho * .07, 'mediana ' + Lab.fmt(medF, 1), {
+        color: Lab.color('azul'), align: 'right', tam: .88
+      });
+    });
+
+    /* --- Lecturas --- */
+
+    const medIv = Lab.cuantil(ivOrd, .5);
+    const medMco = Lab.cuantil(mcoOrd, .5);
+    const medF = Lab.cuantil(fOrd, .5);
+    const pctF = s.Fs.filter((f) => f < 10).length / s.Fs.length;
+    const plimSesgo = s.rho / (s.pi * s.pi + 1);      // sesgo asintótico de MCO
+
+    document.getElementById('r-F').innerHTML =
+      `${Lab.fmt(medF, 1)} <span class="senal ${medF >= 10 ? 'bien' : 'mal'}">${medF >= 10 ? 'fuerte' : 'débil'}</span>`;
+
+    const cob = s.cobertura;
+    document.getElementById('r-cob').innerHTML =
+      `${Lab.fmt(cob, 3)} <span class="senal ${cob >= 0.90 ? 'bien' : 'mal'}">${cob >= 0.90 ? 'aceptable' : 'falla'}</span>`;
+
+    Lab.mostrar('r-med2sls', Lab.fmt(medIv, 3), 'azul');
+    Lab.mostrar('r-medMco', Lab.fmt(medMco, 3), 'naranja');
+    Lab.mostrar('r-sesgo2sls', Lab.fmtSigno(medIv - BETA, 3), 'azul');
+    Lab.mostrar('r-plimMco', Lab.fmtSigno(plimSesgo, 3), 'naranja');
+
+    const rel = Math.abs(medMco - BETA) > 1e-6 ? (medIv - BETA) / (medMco - BETA) : NaN;
+    document.getElementById('r-relativo').innerHTML = Number.isFinite(rel)
+      ? `${Lab.fmt(100 * rel, 0)} % <span class="senal ${Math.abs(rel) < .2 ? 'bien' : 'mal'}">${Math.abs(rel) < .2 ? 'corrige' : 'apenas corrige'}</span>`
+      : '—';
+
+    Lab.mostrar('r-pctF', Lab.fmt(100 * pctF, 1) + ' %', pctF > .5 ? 'naranja' : 'gris');
+    Lab.mostrar('r-iqr', Lab.fmt(Lab.cuantil(ivOrd, .75) - Lab.cuantil(ivOrd, .25), 3), 'gris');
+
+    est.textContent = `${s.R} réplicas · N = ${s.N}`;
+  }
+
+  Lab.iniciar(dibujar).then(() => {
+    Lab.enlazar(dibujar);
+    window.addEventListener('lab:correr', dibujar);
+  });
+})();
+</script>
+</body>
+</html>

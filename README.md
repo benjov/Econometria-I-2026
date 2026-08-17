@@ -16,11 +16,34 @@ Clase**, y cada cuaderno corresponde a una sección concreta de esas notas.
 > El cuadro de la sección siguiente marca con **`[I]`** las carpetas que corresponden al temario
 > de Econometría I y con **`[+]`** las que son material adicional, fuera de ese temario.
 
+### Laboratorio interactivo
+
+**<https://benjov.github.io/Econometria-I-2026/>**
+
+Seis simuladores que corren en el navegador, pensados para proyectar en clase: se mueve un
+parámetro y se ve en el acto qué le pasa al estimador. Cubren mínimos cuadrados, los DAG,
+instrumentos débiles, datos panel, diferencia en diferencias y modelos de respuesta binaria.
+Cada uno indica a qué inciso del temario y a qué capítulo de las notas corresponde, y enlaza al
+cuaderno con la aplicación real. El código vive en [`docs/`](docs/).
+
+| Simulador | Temario | Notas | Qué muestra |
+|---|:--:|:--:|---|
+| [¿Qué minimiza MCO?](https://benjov.github.io/Econometria-I-2026/sim/mco.html) | 1.b, 1.c | caps. 1-2 | La función criterio y su mínimo; distancia vertical contra perpendicular |
+| [Confusor, mediador y colisionador](https://benjov.github.io/Econometria-I-2026/sim/colisionador.html) | 1.a | cap. 1 | Cuándo controlar por una variable **crea** el sesgo |
+| [Instrumentos débiles](https://benjov.github.io/Econometria-I-2026/sim/instrumentos.html) | 1.d | cap. 3 | Monte Carlo de 2SLS, la regla F > 10 y la cobertura real del IC |
+| [Transformación intragrupos](https://benjov.github.io/Econometria-I-2026/sim/efectos-fijos.html) | 2.e | cap. 5 | La regresión agrupada invirtiendo el signo; pool, within, FD, RE y θ |
+| [Tendencias paralelas y DiD](https://benjov.github.io/Econometria-I-2026/sim/did.html) | 3.e | cap. 9 | DiD = ATT + sesgo, con estudio de eventos |
+| [MPL, Logit y Probit](https://benjov.github.io/Econometria-I-2026/sim/logit-probit.html) | 3.b | cap. 7 | Probabilidades imposibles del MPL; AME contra MEM |
+
+> Los datos de los simuladores son **simulados**, y ésa es justamente la razón de ser de la
+> herramienta: sólo conociendo el valor verdadero se puede medir el sesgo. El paso siguiente es
+> siempre el cuaderno de la carpeta correspondiente, con los datos del artículo original.
+
 ### Documentos del curso
 
 | Documento | Ubicación |
 |---|---|
-| **Notas de Clase** (teoría, demostraciones y ejercicios; Econometría I y II) | [`Notas/Notas-Econometria-FE-UNAM.pdf`](Notas/Notas-Econometria-FE-UNAM.pdf) |
+| **Notas de Clase** (teoría, demostraciones y ejercicios; Econometría I y II) | [`Notas/Notas-Econometria-UNAM.pdf`](Notas/Notas-Econometria-UNAM.pdf) |
 | **Temario oficial de Econometría I** (objetivos, unidades, evaluación) | [`Notas/Programa_Econometria_I.pdf`](Notas/Programa_Econometria_I.pdf) |
 | *Edición anterior de las notas* (Econometría II, febrero 2025; superada) | [`Notas/Notas-Econometría-II-FE-UNAM.pdf`](Notas/Notas-Econometría-II-FE-UNAM.pdf) |
 

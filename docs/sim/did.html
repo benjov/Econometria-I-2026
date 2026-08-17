@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tendencias paralelas y DiD · Econometría I · UNAM</title>
+<meta name="description" content="Simulador para clase: la descomposición del estimador de diferencia en diferencias en el ATT más el sesgo por tendencias no paralelas, y qué detecta un estudio de eventos.">
+<link rel="stylesheet" href="../assets/estilo.css">
+</head>
+<body>
+
+<div class="envoltura">
+
+  <header class="encabezado">
+    <div class="marbete">Unidad 3 · inciso e — Notas, cap. 9</div>
+    <h1>Diferencia en diferencias descansa en un supuesto que no se puede probar</h1>
+    <p class="entrada">
+      El estimador 2×2 no mide el efecto del tratamiento: mide el efecto <strong>más</strong> el
+      sesgo por tendencias no paralelas. Rompa el supuesto con el segundo control y observe cómo
+      se separan el ATT verdadero y lo que estima la regresión — y cómo el estudio de eventos
+      enciende las alarmas en los periodos previos.
+    </p>
+  </header>
+
+  <div class="lab">
+    <div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo">
+          <span>Trayectorias promedio por grupo</span>
+          <span id="alerta"></span>
+        </div>
+        <canvas id="cvSerie"></canvas>
+      </div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo"><span>Estudio de eventos — coeficientes con intervalo al 95 %</span></div>
+        <canvas id="cvEvento"></canvas>
+      </div>
+
+      <div class="glosa">
+        <h4>Lo que se ve</h4>
+        <p>
+          La línea punteada violeta es el <strong>contrafactual</strong>: dónde habría estado el
+          grupo tratado si hubiera seguido la trayectoria del control. La distancia vertical
+          entre esa línea y la trayectoria observada es lo que DiD llama efecto. Cuando las
+          tendencias previas no son paralelas, esa distancia recoge además la brecha que ya se
+          venía abriendo por su cuenta.
+        </p>
+        <p>
+          En el estudio de eventos, el coeficiente de <em>k</em> = −1 es cero <strong>por
+          construcción</strong>, no por evidencia: es el periodo de referencia. Lo informativo
+          es si los demás coeficientes previos se despegan de cero.
+        </p>
+      </div>
+
+      <div class="glosa aviso">
+        <h4>Una advertencia que conviene decir en voz alta</h4>
+        <p>
+          Que las tendencias previas se vean planas <strong>no demuestra</strong> que el supuesto
+          se cumpla: sólo dice que no se detectó su violación con la potencia disponible. Suba el
+          ruido con la diferencia de tendencias fija en un valor distinto de cero y verá que las
+          barras de error se tragan la violación sin que nada la delate. Roth (2022) muestra
+          además que condicionar el análisis a «haber pasado» esa prueba <em>introduce</em> sesgo
+          de preselección.
+        </p>
+      </div>
+
+      <div class="glosa guion-caja">
+        <h4>Guion sugerido para la sesión</h4>
+        <ol class="guion">
+          <li>Con la diferencia de tendencias en 0.00, señale que <strong>DiD acierta</strong>:
+            la estimación y el ATT coinciden salvo ruido muestral.</li>
+          <li>Suba la diferencia de tendencias y lea las tres cifras juntas:
+            <em>estimado = verdadero + sesgo</em>. La descomposición no es una metáfora, es
+            aritmética.</li>
+          <li>Ponga el ATT en 0.00 con tendencias no paralelas: DiD reporta un efecto donde
+            <strong>no hay ninguno</strong>. Es el modo más rápido de justificar por qué se
+            exige mirar los periodos previos.</li>
+          <li>Encienda el <strong>hoyo de Ashenfelter</strong> con tendencias paralelas: el
+            estudio de eventos se ve mal aunque el supuesto de tendencias sí se cumple. Sirve
+            para distinguir violación del supuesto de anticipación al tratamiento.</li>
+          <li>Suba el ruido hasta que las barras cubran el cero con el sesgo todavía presente:
+            <strong>ausencia de evidencia no es evidencia de ausencia</strong>.</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <aside class="panel">
+
+      <section class="panel-seccion">
+        <h3>El experimento</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">ATT verdadero</span><span class="val"></span></div>
+          <input type="range" id="att" min="-3" max="6" step="0.1" value="2.8" data-dec="2">
+          <div class="control-nota">Card y Krueger (1994) obtienen 2.76 en su cuadro 3; el cuaderno del curso replica 2.75.</div>
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Diferencia de tendencias por periodo</span><span class="val"></span></div>
+          <input type="range" id="dtend" min="-1.2" max="1.2" step="0.05" value="0" data-dec="2">
+          <div class="control-nota">Distinto de cero rompe el supuesto de tendencias paralelas.</div>
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Hoyo de Ashenfelter</span><span class="val"></span></div>
+          <input type="range" id="dip" min="0" max="4" step="0.1" value="0" data-dec="2">
+          <div class="control-nota">Caída transitoria del grupo tratado justo antes del tratamiento.</div>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>El panel</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Unidades por grupo</span><span class="val"></span></div>
+          <input type="range" id="Ng" min="15" max="400" step="5" value="120" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Periodos &nbsp;<em>T</em></span><span class="val"></span></div>
+          <input type="range" id="T" min="4" max="12" step="1" value="8" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Periodo del tratamiento</span><span class="val"></span></div>
+          <input type="range" id="t0" min="2" max="9" step="1" value="4" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Ruido &nbsp;σ</span><span class="val"></span></div>
+          <input type="range" id="sigma" min="0.2" max="8" step="0.1" value="2" data-dec="1">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Semilla</span><span class="val"></span></div>
+          <input type="range" id="semilla" min="1" max="60" step="1" value="9" data-dec="0">
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>La descomposición</h3>
+        <div class="lecturas">
+          <div class="lectura destaca"><span class="k">DiD estimado</span><span class="v naranja" id="r-did">—</span></div>
+          <div class="lectura destaca"><span class="k">ATT verdadero</span><span class="v violeta" id="r-att">—</span></div>
+          <div class="lectura destaca"><span class="k">Sesgo por tendencias</span><span class="v" id="r-sesgo">—</span></div>
+          <div class="lectura"><span class="k">Error estándar del DiD</span><span class="v gris" id="r-ee">—</span></div>
+          <div class="lectura"><span class="k">Sesgo teórico esperado</span><span class="v gris" id="r-sesgoT">—</span></div>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Prueba de tendencias previas</h3>
+        <div class="lecturas">
+          <div class="lectura">
+            <span class="k">¿Algún coeficiente previo es significativo?</span>
+            <span class="v" id="r-pretend">—</span>
+          </div>
+          <div class="lectura"><span class="k">Mayor |t| entre los previos</span><span class="v gris" id="r-maxt">—</span></div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <footer class="pie-sitio">
+    <p>
+      Notas de Clase, cap. 9 (tendencias paralelas, estudios de eventos, Ashenfelter, Roth 2022).
+      Cuaderno: <a href="../../Clase_11_DiferenciaEnDiferencias/">Clase_11_DiferenciaEnDiferencias</a>
+      — salario mínimo y empleo, Card y Krueger (1994).
+    </p>
+  </footer>
+
+</div>
+
+<script src="../assets/lab.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const gS = new Lab.Grafica(document.getElementById('cvSerie'),  { razon: 0.42, minAlto: 250, maxAlto: 400 });
+  const gE = new Lab.Grafica(document.getElementById('cvEvento'), { razon: 0.34, minAlto: 200, maxAlto: 320 });
+
+  /* ---- Simulación --------------------------------------------------------- */
+
+  function generar() {
+    const Ng = Lab.val('Ng'), T = Lab.val('T');
+    const t0 = Math.min(Lab.val('t0'), T - 1);
+    const att = Lab.val('att'), dtend = Lab.val('dtend'), dip = Lab.val('dip');
+    const s = Lab.val('sigma');
+    const g = Lab.rng(Lab.val('semilla') * 3571 + 13);
+
+    const obs = [];   // {u, tratado, t, y}
+    for (let grupo = 0; grupo < 2; grupo++) {
+      const tratado = grupo === 1;
+      for (let j = 0; j < Ng; j++) {
+        const u = grupo * Ng + j;
+        const mu = 20 + 3 * g.n();                   // heterogeneidad individual
+        for (let t = 0; t < T; t++) {
+          let y = mu
+            + 0.6 * t                                 // tendencia común
+            + (tratado ? 2.0 : 0)                     // diferencia de nivel entre grupos
+            + (tratado ? dtend * t : 0)               // violación de tendencias paralelas
+            + (tratado && t >= t0 ? att : 0)          // el tratamiento
+            - (tratado && t === t0 - 1 ? dip : 0)     // hoyo de Ashenfelter
+            + s * g.n();
+          obs.push({ u, tratado, t, y });
+        }
+      }
+    }
+    return { obs, T, t0, att, dtend, dip, Ng };
+  }
+
+  /* ---- Estimación --------------------------------------------------------- */
+
+  /** DiD por regresión saturada: tratado + post + tratado×post. */
+  function estimarDid(d) {
+    const X = [], y = [], gid = [];
+    d.obs.forEach((o) => {
+      const post = o.t >= d.t0 ? 1 : 0;
+      const tr = o.tratado ? 1 : 0;
+      X.push([1, tr, post, tr * post]);
+      y.push(o.y);
+      gid.push(o.u);
+    });
+    const r = Lab.mco(X, y, { grupo: gid });
+    return { coef: r.b[3], ee: r.ee[3] };
+  }
+
+  /** Estudio de eventos: interacciones por tiempo relativo, con k = −1 omitido. */
+  function estimarEvento(d) {
+    const ks = [];
+    for (let t = 0; t < d.T; t++) {
+      const k = t - d.t0;
+      if (k !== -1) ks.push(k);
+    }
+
+    const X = [], y = [], gid = [];
+    d.obs.forEach((o) => {
+      const fila = [1, o.tratado ? 1 : 0];
+      // Efectos fijos de tiempo (t = 0 como referencia)
+      for (let t = 1; t < d.T; t++) fila.push(o.t === t ? 1 : 0);
+      // Interacciones de tiempo relativo
+      const k = o.t - d.t0;
+      ks.forEach((kk) => fila.push(o.tratado && k === kk ? 1 : 0));
+      X.push(fila);
+      y.push(o.y);
+      gid.push(o.u);
+    });
+
+    const r = Lab.mco(X, y, { grupo: gid });
+    if (!r) return null;
+    const base = 2 + (d.T - 1);
+    return ks.map((k, i) => ({
+      k,
+      coef: r.b[base + i],
+      ee: r.ee[base + i],
+      t: r.ee[base + i] > 0 ? r.b[base + i] / r.ee[base + i] : 0
+    })).concat([{ k: -1, coef: 0, ee: 0, t: 0, referencia: true }])
+      .sort((a, b) => a.k - b.k);
+  }
+
+  /* ---- Dibujo ------------------------------------------------------------- */
+
+  function dibujar() {
+    const d = generar();
+    const did = estimarDid(d);
+    const ev = estimarEvento(d);
+
+    /* --- Medias por grupo y periodo --- */
+
+    const mTrat = [], mCtrl = [];
+    for (let t = 0; t < d.T; t++) {
+      const a = d.obs.filter((o) => o.t === t && o.tratado).map((o) => o.y);
+      const b = d.obs.filter((o) => o.t === t && !o.tratado).map((o) => o.y);
+      mTrat.push(Lab.media(a));
+      mCtrl.push(Lab.media(b));
+    }
+
+    // Contrafactual: la trayectoria del tratado si hubiera seguido al control
+    const anclaT = mTrat[d.t0 - 1], anclaC = mCtrl[d.t0 - 1];
+    const contraf = [];
+    for (let t = d.t0 - 1; t < d.T; t++) contraf.push([t, anclaT + (mCtrl[t] - anclaC)]);
+
+    const todos = mTrat.concat(mCtrl, contraf.map((p) => p[1]));
+    const lo = Math.min(...todos), hi = Math.max(...todos);
+    const pad = (hi - lo) * .18 + .5;
+
+    gS.marco({
+      xlim: [-0.35, d.T - 0.65], ylim: [lo - pad, hi + pad],
+      xlabel: 'periodo', ylabel: 'promedio de y',
+      xticks: Array.from({ length: d.T }, (_, i) => i), xdec: 0, ydec: 0
+    });
+
+    gS.recortado(() => {
+      // Sombreado del periodo de tratamiento
+      gS.rect(d.t0 - 0.5, lo - pad, d.T - 0.65, hi + pad, {
+        relleno: Lab.alfa(Lab.color('azul'), .05)
+      });
+      gS.vlinea(d.t0 - 0.5, { color: Lab.color('tinta-suave'), grosor: 1.8, trazo: Lab.TRAZO.guion });
+      gS.rotulo(d.t0 - 0.45, hi + pad * .55, ' tratamiento', {
+        color: Lab.color('tinta-suave'), align: 'left', tam: .88
+      });
+
+      // Contrafactual
+      gS.linea(contraf, { color: Lab.color('violeta'), grosor: 2.4, trazo: Lab.TRAZO.punteado });
+
+      // Series observadas
+      const serieC = mCtrl.map((v, t) => [t, v]);
+      const serieT = mTrat.map((v, t) => [t, v]);
+      gS.linea(serieC, { color: Lab.color('azul'), grosor: 3, trazo: Lab.TRAZO.guion });
+      gS.linea(serieT, { color: Lab.color('naranja'), grosor: 3.4 });
+      gS.puntos(serieC, { color: Lab.color('azul'), r: 4.4 });
+      gS.puntos(serieT, { color: Lab.color('naranja'), r: 4.4 });
+
+      // El ATT como distancia vertical en el último periodo
+      const tf = d.T - 1;
+      const cf = contraf[contraf.length - 1][1];
+      if (Math.abs(mTrat[tf] - cf) > (hi - lo) * .012) {
+        gS.flecha(tf - .28, cf, tf - .28, mTrat[tf], {
+          color: Lab.color('tinta'), grosor: 1.8, doble: true, punta: 7
+        });
+        gS.rotulo(tf - .35, (cf + mTrat[tf]) / 2, 'DiD\n' + Lab.fmt(did.coef, 2), {
+          color: Lab.color('tinta'), align: 'right', tam: .9
+        });
+      }
+    });
+
+    gS.leyenda([
+      { texto: 'tratado', color: Lab.color('naranja'), grosor: 3.2 },
+      { texto: 'control', color: Lab.color('azul'), trazo: Lab.TRAZO.guion },
+      { texto: 'contrafactual', color: Lab.color('violeta'), trazo: Lab.TRAZO.punteado }
+    ], { esquina: 'si' });
+
+    /* --- Estudio de eventos --- */
+
+    const kMin = Math.min(...ev.map((e) => e.k)), kMax = Math.max(...ev.map((e) => e.k));
+    const lim = Math.max(...ev.map((e) => Math.abs(e.coef) + 1.96 * e.ee), 1) * 1.2;
+    // Se deja un margen a la derecha, libre de marcadores, para rotular ahí la
+    // línea del ATT verdadero sin encimarla sobre el último intervalo.
+    const kTope = kMax + 1.6;
+
+    gE.marco({
+      xlim: [kMin - .6, kTope], ylim: [-lim, lim],
+      xlabel: 'periodos desde el tratamiento (k)', ylabel: 'coeficiente',
+      xticks: ev.map((e) => e.k), xdec: 0, ydec: 1
+    });
+
+    gE.recortado(() => {
+      gE.rect(kMin - .6, -lim, -0.5, lim, { relleno: Lab.alfa(Lab.color('gris'), .07) });
+      gE.hlinea(0, { color: Lab.color('borde-firme'), grosor: 1.4, trazo: Lab.TRAZO.solido });
+      gE.vlinea(-0.5, { color: Lab.color('tinta-suave'), grosor: 1.6, trazo: Lab.TRAZO.guion });
+
+      // Nivel verdadero del efecto en los periodos posteriores
+      gE.linea([[-0.5, d.att], [kTope, d.att]], {
+        color: Lab.color('violeta'), grosor: 2, trazo: Lab.TRAZO.punteado
+      });
+      gE.rotulo(kMax + 0.35, d.att, ' ATT\n verdadero', {
+        color: Lab.color('violeta'), align: 'left', tam: .82
+      });
+
+      ev.forEach((e) => {
+        const previo = e.k < 0;
+        const col = e.referencia ? Lab.color('tinta-suave') : previo ? Lab.color('gris') : Lab.color('naranja');
+        if (!e.referencia) {
+          const c = gE.ctx;
+          c.save();
+          c.strokeStyle = col;
+          c.lineWidth = 2;
+          c.lineCap = 'round';
+          const X = gE.x(e.k);
+          c.beginPath();
+          c.moveTo(X, gE.y(e.coef - 1.96 * e.ee));
+          c.lineTo(X, gE.y(e.coef + 1.96 * e.ee));
+          c.stroke();
+          c.beginPath(); c.moveTo(X - 5, gE.y(e.coef - 1.96 * e.ee)); c.lineTo(X + 5, gE.y(e.coef - 1.96 * e.ee));
+          c.moveTo(X - 5, gE.y(e.coef + 1.96 * e.ee)); c.lineTo(X + 5, gE.y(e.coef + 1.96 * e.ee));
+          c.stroke();
+          c.restore();
+        }
+        gE.puntos([[e.k, e.coef]], { color: col, r: e.referencia ? 6 : 5.2 });
+      });
+
+      const ref = ev.find((e) => e.referencia);
+      gE.rotulo(ref.k, -lim * .82, 'referencia', {
+        color: Lab.color('tinta-suave'), align: 'center', tam: .82
+      });
+      gE.rotulo(kMin - .5, lim * .88, 'antes', { color: Lab.color('tinta-suave'), align: 'left', tam: .85 });
+    });
+
+    /* --- Lecturas --- */
+
+    Lab.mostrar('r-did', Lab.fmt(did.coef, 3), 'naranja');
+    Lab.mostrar('r-att', Lab.fmt(d.att, 3), 'violeta');
+
+    const sesgo = did.coef - d.att;
+    document.getElementById('r-sesgo').innerHTML =
+      `${Lab.fmtSigno(sesgo, 3)} <span class="senal ${Math.abs(sesgo) > 2 * did.ee ? 'mal' : 'bien'}">${Math.abs(sesgo) > 2 * did.ee ? 'sustantivo' : 'ruido'}</span>`;
+
+    Lab.mostrar('r-ee', Lab.fmt(did.ee, 3), 'gris');
+
+    // Sesgo teórico: la diferencia de tendencias por la brecha entre el
+    // promedio de los periodos posteriores y el de los previos.
+    let sPre = 0, nPre = 0, sPost = 0, nPost = 0;
+    for (let t = 0; t < d.T; t++) {
+      if (t < d.t0) { sPre += t; nPre++; } else { sPost += t; nPost++; }
+    }
+    const sesgoTeorico = d.dtend * (sPost / nPost - sPre / nPre)
+      + (d.dip > 0 ? d.dip / nPre : 0);
+    Lab.mostrar('r-sesgoT', Lab.fmtSigno(sesgoTeorico, 3), 'gris');
+
+    // Prueba informal de tendencias previas
+    const previos = ev.filter((e) => e.k < -1 && !e.referencia);
+    const maxT = previos.length ? Math.max(...previos.map((e) => Math.abs(e.t))) : 0;
+    const detecta = maxT > 1.96;
+    document.getElementById('r-pretend').innerHTML = previos.length
+      ? `<span class="senal ${detecta ? 'mal' : 'bien'}">${detecta ? 'sí, se detecta' : 'no se detecta'}</span>`
+      : '<span class="senal bien">no hay previos</span>';
+    Lab.mostrar('r-maxt', Lab.fmt(maxT, 2), 'gris');
+
+    // Aviso: el caso didáctico más importante es sesgo real que NO se detecta
+    const al = document.getElementById('alerta');
+    const hayViolacion = Math.abs(d.dtend) > 0.02;
+    al.innerHTML = hayViolacion && !detecta
+      ? '<span class="senal mal">hay sesgo y la prueba previa no lo detecta</span>'
+      : hayViolacion
+        ? '<span class="senal mal">tendencias no paralelas</span>'
+        : '';
+  }
+
+  Lab.iniciar(dibujar).then(() => Lab.enlazar(dibujar));
+})();
+</script>
+</body>
+</html>

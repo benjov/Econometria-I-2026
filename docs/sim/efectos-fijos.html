@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La transformación intragrupos · Econometría I · UNAM</title>
+<meta name="description" content="Simulador para clase: cómo la regresión agrupada puede invertir el signo del efecto verdadero, y qué hace exactamente la transformación intragrupos para recuperarlo.">
+<link rel="stylesheet" href="../assets/estilo.css">
+</head>
+<body>
+
+<div class="envoltura">
+
+  <header class="encabezado">
+    <div class="marbete">Unidad 2 · inciso e — Notas, cap. 5</div>
+    <h1>Cuando la regresión agrupada invierte el signo</h1>
+    <p class="entrada">
+      Si el efecto individual está correlacionado con el regresor, la regresión agrupada no sólo
+      se sesga: puede darle al coeficiente <strong>el signo contrario al verdadero</strong>. La
+      transformación intragrupos resta la media de cada grupo y con eso barre el efecto
+      individual, sea cual sea su correlación con <em>x</em>.
+    </p>
+  </header>
+
+  <div class="lab">
+    <div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo">
+          <span>Datos originales — cada color es un grupo</span>
+          <span id="alerta"></span>
+        </div>
+        <canvas id="cvCrudo"></canvas>
+      </div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo"><span>Los mismos datos, en desviaciones respecto de la media de su grupo</span></div>
+        <canvas id="cvWithin"></canvas>
+      </div>
+
+      <div class="glosa">
+        <h4>Lo que se ve</h4>
+        <p>
+          Arriba, cada nube de color es un grupo. Dentro de cada nube la relación es negativa —
+          el efecto verdadero — pero las nubes están escalonadas hacia arriba y a la derecha,
+          porque los grupos con efecto individual alto tienen también <em>x</em> alta. La recta
+          gruesa, que ignora los grupos, atraviesa ese escalonamiento y sale positiva.
+        </p>
+        <p>
+          Abajo, tras restar a cada observación la media de su grupo, las nubes se superponen en
+          el origen y sólo queda la variación <strong>dentro</strong> de cada grupo. Es la única
+          variación que el estimador intragrupos utiliza — y por eso mismo, las variables que no
+          cambian dentro del grupo desaparecen y no son estimables.
+        </p>
+      </div>
+
+      <div class="glosa guion-caja">
+        <h4>Guion sugerido para la sesión</h4>
+        <ol class="guion">
+          <li>Arranque con la correlación en 0.95: <strong>pool positivo, intragrupos
+            negativo</strong>. Deje que la clase vea la contradicción antes de explicarla.</li>
+          <li>Baje la correlación a 0.00 y muestre que <strong>pool e intragrupos convergen</strong>.
+            La correlación entre el efecto individual y el regresor es exactamente lo que separa
+            efectos fijos de efectos aleatorios — no la «naturaleza» del efecto.</li>
+          <li>Mire θ mientras mueve la dispersión de los efectos individuales: en θ = 0 efectos
+            aleatorios <em>es</em> la regresión agrupada, y en θ = 1 <em>es</em> intragrupos.
+            Los tres modelos son una familia, no tres teorías rivales.</li>
+          <li>Con la correlación alta, note que efectos aleatorios queda <strong>entre</strong>
+            los dos y también es inconsistente. Esa brecha entre efectos aleatorios e
+            intragrupos es la que mide la prueba de Hausman.</li>
+          <li>Ponga el número de periodos en 2 y compare intragrupos con primeras diferencias:
+            coinciden <strong>exactamente</strong>, como demuestra el capítulo.</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <aside class="panel">
+
+      <section class="panel-seccion">
+        <h3>El corazón del asunto</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Correlación entre el efecto individual y <em>x</em></span><span class="val"></span></div>
+          <input type="range" id="lambda" min="-1" max="1" step="0.05" value="0.95" data-dec="2">
+          <div class="control-nota">En 0 el modelo es de efectos aleatorios; distinto de 0, de efectos fijos. Esa es toda la diferencia.</div>
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Dispersión de los efectos individuales &nbsp;σ<sub>α</sub></span><span class="val"></span></div>
+          <input type="range" id="sAlpha" min="0" max="16" step="0.5" value="8" data-dec="1">
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>El modelo</h3>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">β verdadero</span><span class="val"></span></div>
+          <input type="range" id="beta" min="-2" max="2" step="0.05" value="-1" data-dec="2">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Grupos &nbsp;<em>n</em></span><span class="val"></span></div>
+          <input type="range" id="n" min="4" max="120" step="1" value="30" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Periodos por grupo &nbsp;<em>M</em></span><span class="val"></span></div>
+          <input type="range" id="M" min="2" max="20" step="1" value="8" data-dec="0">
+        </div>
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Semilla</span><span class="val"></span></div>
+          <input type="range" id="semilla" min="1" max="60" step="1" value="3" data-dec="0">
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Qué se dibuja</h3>
+        <label class="casilla"><input type="checkbox" id="verGrupos" checked><span>Rectas por grupo (equivale a LSDV)</span></label>
+        <label class="casilla"><input type="checkbox" id="verMedias"><span>Medias de cada grupo</span></label>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Estimaciones de β</h3>
+        <div class="lecturas">
+          <div class="lectura destaca"><span class="k">β verdadero</span><span class="v violeta" id="r-beta">—</span></div>
+          <div class="lectura destaca"><span class="k">Regresión agrupada (pool)</span><span class="v naranja" id="r-pool">—</span></div>
+          <div class="lectura destaca"><span class="k">Intragrupos (efectos fijos)</span><span class="v azul" id="r-within">—</span></div>
+          <div class="lectura"><span class="k">Primeras diferencias</span><span class="v azul" id="r-fd">—</span></div>
+          <div class="lectura"><span class="k">Efectos aleatorios</span><span class="v gris" id="r-re">—</span></div>
+          <div class="lectura"><span class="k">Entre grupos (between)</span><span class="v gris" id="r-entre">—</span></div>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Diagnóstico</h3>
+        <div class="lecturas">
+          <div class="lectura">
+            <span class="k">θ — el parámetro que indexa la familia</span>
+            <span class="v" id="r-theta">—</span>
+          </div>
+          <div class="lectura"><span class="k">Sesgo del pool</span><span class="v" id="r-sesgoPool">—</span></div>
+          <div class="lectura"><span class="k">Brecha efectos aleatorios − intragrupos</span><span class="v" id="r-brecha">—</span></div>
+          <div class="lectura"><span class="k">Observaciones &nbsp;<em>nM</em></span><span class="v gris" id="r-N">—</span></div>
+        </div>
+        <p class="control-nota" style="margin-top:.8rem">
+          La brecha es lo que contrasta la prueba de Hausman de este capítulo. No confundirla con
+          la prueba de Hausman de endogeneidad del cap. 3, que es la que usa la Tarea-Examen.
+        </p>
+      </section>
+
+    </aside>
+  </div>
+
+  <footer class="pie-sitio">
+    <p>
+      Notas de Clase, cap. 5 (transformación intragrupos, Frisch-Waugh-Lovell, Mundlak, Hausman).
+      Cuaderno: <a href="../../Clase_04_DatosPanel/">Clase_04_DatosPanel</a> — inversión de
+      Grunfeld y panel de salarios NLSY.
+    </p>
+  </footer>
+
+</div>
+
+<script src="../assets/lab.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const gA = new Lab.Grafica(document.getElementById('cvCrudo'),  { razon: 0.44, minAlto: 250, maxAlto: 400 });
+  const gB = new Lab.Grafica(document.getElementById('cvWithin'), { razon: 0.38, minAlto: 210, maxAlto: 340 });
+
+  const S_MU = 2.5;    // dispersión de x ENTRE grupos
+  const S_NU = 1.0;    // dispersión de x DENTRO de cada grupo
+  const S_E  = 1.0;    // error idiosincrásico
+
+  /* ---- Simulación --------------------------------------------------------- */
+
+  function generar() {
+    const n = Lab.val('n'), M = Lab.val('M');
+    const beta = Lab.val('beta'), sAlpha = Lab.val('sAlpha'), lam = Lab.val('lambda');
+    const g = Lab.rng(Lab.val('semilla') * 6151 + 5);
+    const raiz = Math.sqrt(Math.max(1 - lam * lam, 0));
+
+    const y = [], x = [], gid = [];
+    for (let i = 0; i < n; i++) {
+      const a = g.n();
+      const alpha = sAlpha * a;
+      const mu = S_MU * (lam * a + raiz * g.n());
+      for (let t = 0; t < M; t++) {
+        const xit = mu + S_NU * g.n();
+        y.push(alpha + beta * xit + S_E * g.n());
+        x.push(xit);
+        gid.push(i);
+      }
+    }
+    return { y, x, gid, n, M, beta };
+  }
+
+  /* ---- Dibujo ------------------------------------------------------------- */
+
+  function paletaGrupo(i, n) {
+    // Tres colores rotando: el objetivo es distinguir nubes vecinas, no
+    // codificar la identidad del grupo (que no importa aquí).
+    const base = [Lab.color('azul'), Lab.color('naranja'), Lab.color('violeta')];
+    return base[i % base.length];
+  }
+
+  function dibujar() {
+    const d = generar();
+    const r = Lab.panel(d.y, d.x, d.gid);
+
+    /* --- Panel superior: datos crudos --- */
+
+    const ordX = d.x.slice().sort((a, b) => a - b);
+    const ordY = d.y.slice().sort((a, b) => a - b);
+    const XL = [Lab.cuantil(ordX, .005) - .3, Lab.cuantil(ordX, .995) + .3];
+    const YL = [Lab.cuantil(ordY, .005) - .5, Lab.cuantil(ordY, .995) + .5];
+
+    gA.marco({ xlim: XL, ylim: YL, xlabel: 'x', ylabel: 'y', xdec: 0, ydec: 0 });
+
+    const porGrupo = new Map();
+    d.gid.forEach((g, i) => {
+      if (!porGrupo.has(g)) porGrupo.set(g, []);
+      porGrupo.get(g).push([d.x[i], d.y[i]]);
+    });
+
+    gA.recortado(() => {
+      const radio = d.n * d.M > 600 ? 2.3 : 3.4;
+      porGrupo.forEach((pts, i) => {
+        gA.puntos(pts, { color: paletaGrupo(i, d.n), r: radio, alfa: .55, grosorBorde: 0 });
+      });
+
+      // Rectas por grupo: son las de LSDV, todas con la misma pendiente
+      if (Lab.val('verGrupos')) {
+        porGrupo.forEach((pts, i) => {
+          const mx = Lab.media(pts.map((p) => p[0]));
+          const my = Lab.media(pts.map((p) => p[1]));
+          const semi = Math.max(S_NU * 1.7, .6);
+          gA.linea(
+            [[mx - semi, my - r.within * semi], [mx + semi, my + r.within * semi]],
+            { color: paletaGrupo(i, d.n), grosor: 2, alfa: .95 }
+          );
+        });
+      }
+
+      if (Lab.val('verMedias')) {
+        const medias = [];
+        porGrupo.forEach((pts) => medias.push([
+          Lab.media(pts.map((p) => p[0])), Lab.media(pts.map((p) => p[1]))
+        ]));
+        gA.marcas(medias, { color: Lab.color('tinta'), r: 6, grosor: 2 });
+      }
+
+      // Recta agrupada
+      const mx = Lab.media(d.x), my = Lab.media(d.y);
+      gA.linea(
+        [[XL[0], my + r.pool * (XL[0] - mx)], [XL[1], my + r.pool * (XL[1] - mx)]],
+        { color: Lab.color('tinta'), grosor: 4.5 }
+      );
+    });
+
+    gA.leyenda([
+      { texto: 'regresión agrupada (pool)', color: Lab.color('tinta'), grosor: 3.6 },
+      { texto: 'pendiente dentro de cada grupo', color: Lab.color('azul'), grosor: 2.2 }
+    ], { esquina: 'si' });
+
+    /* --- Panel inferior: datos transformados --- */
+
+    const ordXw = r.xw.slice().sort((a, b) => a - b);
+    const ordYw = r.yw.slice().sort((a, b) => a - b);
+    const XLW = [Lab.cuantil(ordXw, .002) - .2, Lab.cuantil(ordXw, .998) + .2];
+    const YLW = [Lab.cuantil(ordYw, .002) - .4, Lab.cuantil(ordYw, .998) + .4];
+
+    gB.marco({
+      xlim: XLW, ylim: YLW,
+      xlabel: 'x − media de x en su grupo',
+      ylabel: 'y − media de y',
+      xdec: 1, ydec: 1
+    });
+
+    gB.recortado(() => {
+      const pts = r.xw.map((v, i) => [v, r.yw[i]]);
+      const porG = new Map();
+      d.gid.forEach((g, i) => {
+        if (!porG.has(g)) porG.set(g, []);
+        porG.get(g).push(pts[i]);
+      });
+      const radio = d.n * d.M > 600 ? 2.3 : 3.4;
+      porG.forEach((p, i) => gB.puntos(p, { color: paletaGrupo(i, d.n), r: radio, alfa: .5, grosorBorde: 0 }));
+
+      gB.hlinea(0, { color: Lab.color('borde-firme'), grosor: 1, trazo: Lab.TRAZO.punteado });
+      gB.vlinea(0, { color: Lab.color('borde-firme'), grosor: 1, trazo: Lab.TRAZO.punteado });
+
+      gB.linea(
+        [[XLW[0], r.within * XLW[0]], [XLW[1], r.within * XLW[1]]],
+        { color: Lab.color('azul'), grosor: 4 }
+      );
+      // El verdadero, para comparar
+      gB.linea(
+        [[XLW[0], d.beta * XLW[0]], [XLW[1], d.beta * XLW[1]]],
+        { color: Lab.color('violeta'), grosor: 2.4, trazo: Lab.TRAZO.guion }
+      );
+    });
+
+    gB.leyenda([
+      { texto: 'intragrupos', color: Lab.color('azul'), grosor: 3.4 },
+      { texto: 'β verdadero', color: Lab.color('violeta'), trazo: Lab.TRAZO.guion }
+    ], { esquina: 'si' });
+
+    /* --- Lecturas --- */
+
+    Lab.mostrar('r-beta', Lab.fmt(d.beta, 3), 'violeta');
+    Lab.mostrar('r-pool', Lab.fmt(r.pool, 3), 'naranja');
+    Lab.mostrar('r-within', Lab.fmt(r.within, 3), 'azul');
+    Lab.mostrar('r-fd', Lab.fmt(r.fd, 3), 'azul');
+    Lab.mostrar('r-re', Lab.fmt(r.re, 3), 'gris');
+    Lab.mostrar('r-entre', Lab.fmt(r.entre, 3), 'gris');
+
+    const sesgo = r.pool - d.beta;
+    document.getElementById('r-sesgoPool').innerHTML =
+      `${Lab.fmtSigno(sesgo, 3)} <span class="senal ${Math.abs(sesgo) > .3 ? 'mal' : 'bien'}">${Math.abs(sesgo) > .3 ? 'grave' : 'leve'}</span>`;
+
+    const brecha = r.re - r.within;
+    document.getElementById('r-brecha').innerHTML =
+      `${Lab.fmtSigno(brecha, 3)} <span class="senal ${Math.abs(brecha) > .15 ? 'mal' : 'bien'}">${Math.abs(brecha) > .15 ? 'rechaza' : 'no rechaza'}</span>`;
+
+    document.getElementById('r-theta').innerHTML =
+      `${Lab.fmt(r.theta, 3)} <span class="senal bien">${r.theta < .15 ? '≈ pool' : r.theta > .85 ? '≈ intragrupos' : 'intermedio'}</span>`;
+
+    Lab.mostrar('r-N', String(r.N), 'gris');
+
+    // Aviso de inversión de signo, que es el momento didáctico de la página
+    const invierte = (r.pool > 0) !== (d.beta > 0) && Math.abs(d.beta) > .05;
+    const al = document.getElementById('alerta');
+    al.innerHTML = invierte
+      ? '<span class="senal mal">el pool invierte el signo</span>'
+      : '';
+
+    // Aviso cuando M = 2, donde intragrupos y primeras diferencias coinciden
+    if (d.M === 2) {
+      al.innerHTML += ' <span class="senal bien">M = 2: intragrupos = primeras diferencias</span>';
+    }
+  }
+
+  Lab.iniciar(dibujar).then(() => Lab.enlazar(dibujar));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¿Qué minimiza MCO? · Econometría I · UNAM</title>
+<meta name="description" content="Simulador para clase: la recta de mínimos cuadrados como solución de un problema de minimización, la distancia vertical frente a la perpendicular, y la sensibilidad a observaciones influyentes.">
+<link rel="stylesheet" href="../assets/estilo.css">
+</head>
+<body>
+
+<div class="envoltura">
+
+  <header class="encabezado">
+    <div class="marbete">Unidad 1 · incisos b y c — Notas, caps. 1 y 2</div>
+    <h1>¿Qué minimiza exactamente MCO?</h1>
+    <p class="entrada">
+      Mínimos cuadrados no minimiza «la distancia entre los puntos y la recta»: minimiza la suma
+      de los <strong>cuadrados de las distancias verticales</strong> entre <em>y<sub>i</sub></em>
+      y <em>ŷ<sub>i</sub></em>. La diferencia no es un tecnicismo — cambia la recta que se
+      obtiene. Mueva la pendiente y observe cómo el punto se desliza por la función criterio
+      hasta su mínimo.
+    </p>
+  </header>
+
+  <div class="lab">
+    <div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo">
+          <span>Datos y rectas ajustadas</span>
+          <span id="pista">arrastre cualquier punto para moverlo</span>
+        </div>
+        <canvas id="cv1"></canvas>
+      </div>
+
+      <div class="lienzo-caja">
+        <div class="lienzo-titulo">
+          <span>Función criterio: suma de residuos al cuadrado según la pendiente</span>
+        </div>
+        <canvas id="cv2"></canvas>
+      </div>
+
+      <div class="glosa">
+        <h4>Lo que se ve</h4>
+        <p>
+          La curva de abajo es SRC(<em>b</em><sub>1</sub>) con el intercepto concentrado, es decir,
+          fijando <em>b</em><sub>0</sub> = ȳ − <em>b</em><sub>1</sub>x̄ en cada pendiente. Su
+          mínimo <em>es</em> el estimador de MCO: no hay que creerlo, se ve. Si desactiva «anclar
+          la recta en la media», el intercepto queda libre y el punto se despega hacia arriba de
+          la curva, que pasa a leerse como lo que es — la <strong>envolvente inferior</strong>
+          del criterio.
+        </p>
+        <p>
+          Que la recta de MCO pase siempre por (x̄, ȳ) no es una coincidencia del dibujo: es la
+          condición de primer orden respecto de <em>β</em><sub>0</sub>.
+        </p>
+      </div>
+
+      <div class="glosa guion-caja">
+        <h4>Guion sugerido para la sesión</h4>
+        <ol class="guion">
+          <li>Con «cuadrados de los residuos» encendido, <strong>mueva la pendiente</strong> a un
+            extremo y regrese: los cuadrados crecen y se encogen, y el punto rojo del panel
+            inferior sube y baja por la parábola.</li>
+          <li>Pregunte a la clase <strong>dónde está el mínimo</strong> antes de mostrarlo, y
+            entonces active «recta de MCO».</li>
+          <li>Cambie a <strong>distancia perpendicular</strong>: la recta que minimiza esa otra
+            suma es distinta. Sirve para preguntar por qué la econometría elige la vertical
+            (porque el modelo condiciona en x: se explica y <em>dado</em> x).</li>
+          <li>Encienda la <strong>observación influyente</strong> y arrástrela hacia arriba. MCO
+            la persigue; la recta de desviaciones absolutas apenas se inmuta. De ahí que elevar
+            al cuadrado tenga un costo, y que convenga mirar siempre los residuos.</li>
+          <li>Cierre con R²: súbalo y bájelo con el ruido, para separar
+            <em>bondad de ajuste</em> de <em>insesgadez</em>.</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <aside class="panel">
+
+      <section class="panel-seccion">
+        <h3>La recta que usted controla</h3>
+
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Pendiente &nbsp;<em>b</em><sub>1</sub></span><span class="val"></span></div>
+          <input type="range" id="b1" min="-1" max="3" step="0.01" value="2.3" data-dec="2">
+          <div class="control-nota">La pendiente de la recta naranja. El verdadero valor poblacional es 1.00.</div>
+        </div>
+
+        <label class="casilla">
+          <input type="checkbox" id="anclar" checked>
+          <span>Anclar la recta en (x̄, ȳ) — intercepto concentrado</span>
+        </label>
+
+        <div class="control" id="caja-b0" hidden>
+          <div class="control-etiqueta"><span class="nom">Intercepto &nbsp;<em>b</em><sub>0</sub></span><span class="val"></span></div>
+          <input type="range" id="b0" min="-4" max="4" step="0.05" value="0" data-dec="2">
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Qué se dibuja</h3>
+        <label class="casilla"><input type="checkbox" id="verCuadrados" checked><span>Cuadrados de los residuos</span></label>
+        <label class="casilla"><input type="checkbox" id="verMco" checked><span>Recta de MCO</span></label>
+        <label class="casilla"><input type="checkbox" id="verLad"><span>Recta de desviaciones absolutas</span></label>
+        <label class="casilla"><input type="checkbox" id="verPerp"><span>Medir con distancia perpendicular</span></label>
+        <label class="casilla"><input type="checkbox" id="verMedias"><span>Marcar el punto (x̄, ȳ)</span></label>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Los datos</h3>
+
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Observaciones &nbsp;<em>N</em></span><span class="val"></span></div>
+          <input type="range" id="N" min="8" max="120" step="1" value="30" data-dec="0">
+        </div>
+
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Desviación del error &nbsp;σ</span><span class="val"></span></div>
+          <input type="range" id="sigma" min="0.1" max="3" step="0.05" value="1.1" data-dec="2">
+        </div>
+
+        <div class="control">
+          <div class="control-etiqueta"><span class="nom">Semilla</span><span class="val"></span></div>
+          <input type="range" id="semilla" min="1" max="60" step="1" value="7" data-dec="0">
+          <div class="control-nota">Fijar la semilla es lo que hace reproducible lo que se proyecta en clase.</div>
+        </div>
+
+        <label class="casilla"><input type="checkbox" id="atipico"><span>Incluir una observación influyente</span></label>
+      </section>
+
+      <section class="panel-seccion">
+        <h3>Resultados</h3>
+        <div class="lecturas">
+          <div class="lectura destaca"><span class="k">SRC de <em>su</em> recta</span><span class="v naranja" id="r-srcManual">—</span></div>
+          <div class="lectura destaca"><span class="k">SRC de MCO — el mínimo</span><span class="v azul" id="r-srcMco">—</span></div>
+          <div class="lectura"><span class="k">Exceso sobre el mínimo</span><span class="v" id="r-exceso">—</span></div>
+          <div class="lectura"><span class="k">β̂₀ de MCO</span><span class="v azul" id="r-b0">—</span></div>
+          <div class="lectura"><span class="k">β̂₁ de MCO</span><span class="v azul" id="r-b1">—</span></div>
+          <div class="lectura"><span class="k">R² — bondad de ajuste</span><span class="v gris" id="r-r2">—</span></div>
+          <div class="lectura"><span class="k">σ̂ — desviación del error</span><span class="v gris" id="r-sigma">—</span></div>
+          <div class="lectura" id="fila-lad" hidden><span class="k">Pendiente por desv. absolutas</span><span class="v violeta" id="r-lad">—</span></div>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <div class="botonera">
+          <button class="boton secundario" id="btn-mco">Llevar a MCO</button>
+          <button class="boton secundario" id="btn-reiniciar">Reiniciar</button>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <footer class="pie-sitio">
+    <p>
+      Notas de Clase, capítulos 1 y 2 · Cuaderno de la clase:
+      <a href="../../Clase_01_RegresionLineal/Regresion_Lineal.ipynb">Clase_01_RegresionLineal</a>
+      — función de costos de Nerlove (1963).
+    </p>
+  </footer>
+
+</div>
+
+<script src="../assets/lab.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const cv1 = document.getElementById('cv1');
+  const cv2 = document.getElementById('cv2');
+  const g1 = new Lab.Grafica(cv1, { razon: 0.56, minAlto: 260, maxAlto: 480 });
+  const g2 = new Lab.Grafica(cv2, { razon: 0.26, minAlto: 150, maxAlto: 230 });
+
+  const BETA0 = 0.5, BETA1 = 1.0;      // valores poblacionales
+  const XLIM = [-0.4, 10.4];
+
+  let datos = [];        // [[x, y], ...]
+  let arrastrando = -1;
+  let firmaDatos = '';   // para no regenerar si no cambió nada relevante
+
+  /* ---- Generación de los datos ------------------------------------------ */
+
+  function generarSiHaceFalta() {
+    const N = Lab.val('N'), s = Lab.val('sigma'), sem = Lab.val('semilla'), at = Lab.val('atipico');
+    const firma = [N, s, sem, at].join('|');
+    if (firma === firmaDatos) return;
+    firmaDatos = firma;
+
+    const g = Lab.rng(sem * 1013 + 17);
+    datos = [];
+    for (let i = 0; i < N; i++) {
+      const x = 0.4 + 9.2 * g.u();
+      datos.push([x, BETA0 + BETA1 * x + s * g.n()]);
+    }
+    if (at) datos.push([9.9, BETA0 + BETA1 * 9.9 - 7.5]);   // alto apalancamiento
+  }
+
+  /* ---- Estimadores ------------------------------------------------------- */
+
+  function ajusteMco() {
+    const X = datos.map((p) => [1, p[0]]);
+    const y = datos.map((p) => p[1]);
+    return Lab.mco(X, y);
+  }
+
+  /** Desviaciones absolutas mínimas por mínimos cuadrados reponderados. */
+  function ajusteLad() {
+    let b = [0, 1];
+    for (let it = 0; it < 60; it++) {
+      let s00 = 0, s01 = 0, s11 = 0, t0 = 0, t1 = 0;
+      for (const [x, y] of datos) {
+        const e = Math.abs(y - b[0] - b[1] * x);
+        const w = 1 / Math.max(e, 1e-4);
+        s00 += w; s01 += w * x; s11 += w * x * x;
+        t0 += w * y; t1 += w * x * y;
+      }
+      const det = s00 * s11 - s01 * s01;
+      if (Math.abs(det) < 1e-12) break;
+      const nb = [(s11 * t0 - s01 * t1) / det, (s00 * t1 - s01 * t0) / det];
+      const cambio = Math.abs(nb[0] - b[0]) + Math.abs(nb[1] - b[1]);
+      b = nb;
+      if (cambio < 1e-10) break;
+    }
+    return b;
+  }
+
+  /** Suma de cuadrados de la distancia vertical, o de la perpendicular. */
+  function criterio(b0, b1, perpendicular) {
+    let s = 0;
+    const f = perpendicular ? 1 / (1 + b1 * b1) : 1;
+    for (const [x, y] of datos) {
+      const e = y - b0 - b1 * x;
+      s += e * e * f;
+    }
+    return s;
+  }
+
+  /** Recta que minimiza la distancia perpendicular (regresión ortogonal). */
+  function ajusteOrtogonal() {
+    const mx = Lab.media(datos.map((p) => p[0]));
+    const my = Lab.media(datos.map((p) => p[1]));
+    let sxx = 0, syy = 0, sxy = 0;
+    for (const [x, y] of datos) {
+      sxx += (x - mx) * (x - mx); syy += (y - my) * (y - my); sxy += (x - mx) * (y - my);
+    }
+    const b1 = (syy - sxx + Math.sqrt((syy - sxx) * (syy - sxx) + 4 * sxy * sxy)) / (2 * sxy);
+    return [my - b1 * mx, b1];
+  }
+
+  /* ---- Dibujo ------------------------------------------------------------ */
+
+  function dibujar() {
+    generarSiHaceFalta();
+
+    const perp = Lab.val('verPerp');
+    const anclar = Lab.val('anclar');
+    document.getElementById('caja-b0').hidden = anclar;
+
+    const mx = Lab.media(datos.map((p) => p[0]));
+    const my = Lab.media(datos.map((p) => p[1]));
+
+    const b1m = Lab.val('b1');
+    const b0m = anclar ? my - b1m * mx : Lab.val('b0');
+
+    const r = ajusteMco();
+    const lad = ajusteLad();
+
+    /* --- Panel superior: nube y rectas --- */
+
+    const ys = datos.map((p) => p[1]);
+    const yMin = Math.min(...ys, b0m + b1m * XLIM[0], b0m + b1m * XLIM[1]);
+    const yMax = Math.max(...ys, b0m + b1m * XLIM[0], b0m + b1m * XLIM[1]);
+    const pad = (yMax - yMin) * 0.12 + 0.5;
+    const YLIM = [yMin - pad, yMax + pad];
+
+    g1.marco({
+      xlim: XLIM, ylim: YLIM,
+      xlabel: 'x', ylabel: 'y',
+      xdec: 0, ydec: 1
+    });
+
+    const recta = (b0, b1) => [[XLIM[0], b0 + b1 * XLIM[0]], [XLIM[1], b0 + b1 * XLIM[1]]];
+
+    g1.recortado(() => {
+      // Cuadrados o segmentos de residuo
+      if (Lab.val('verCuadrados')) {
+        const c = g1.ctx;
+        c.save();
+        c.strokeStyle = Lab.alfa(Lab.color('naranja'), .85);
+        c.fillStyle = Lab.alfa(Lab.color('naranja'), .16);
+        c.lineWidth = 1.2;
+        datos.forEach(([x, y]) => {
+          const yh = b0m + b1m * x;
+          if (perp) {
+            // Proyección perpendicular sobre la recta
+            const t = (x + b1m * (y - b0m)) / (1 + b1m * b1m);
+            const px = t, py = b0m + b1m * t;
+            c.beginPath();
+            c.moveTo(g1.x(x), g1.y(y));
+            c.lineTo(g1.x(px), g1.y(py));
+            c.stroke();
+          } else {
+            const X = g1.x(x), Y0 = g1.y(y), Y1 = g1.y(yh);
+            const lado = Y1 - Y0;             // en píxeles: el cuadrado se ve cuadrado
+            c.beginPath();
+            c.rect(X, Y0, lado, lado);
+            c.fill(); c.stroke();
+            c.beginPath();
+            c.moveTo(X, Y0); c.lineTo(X, Y1);
+            c.stroke();
+          }
+        });
+        c.restore();
+      }
+
+      // Recta de MCO
+      if (Lab.val('verMco')) {
+        g1.linea(recta(r.b[0], r.b[1]), { color: Lab.color('azul'), grosor: 2.8 });
+      }
+      // Recta de desviaciones absolutas
+      if (Lab.val('verLad')) {
+        g1.linea(recta(lad[0], lad[1]), { color: Lab.color('violeta'), grosor: 2.4, trazo: Lab.TRAZO.puntoRaya });
+      }
+      // Recta ortogonal, sólo cuando se mide con la perpendicular
+      if (perp) {
+        const o = ajusteOrtogonal();
+        g1.linea(recta(o[0], o[1]), { color: Lab.color('gris'), grosor: 2, trazo: Lab.TRAZO.punteado });
+      }
+      // La recta del usuario, encima de todo
+      g1.linea(recta(b0m, b1m), { color: Lab.color('naranja'), grosor: 3.2 });
+
+      // Puntos
+      g1.puntos(datos, { color: Lab.color('tinta'), r: 4.6, alfa: .8 });
+      if (Lab.val('atipico')) {
+        g1.marcas([datos[datos.length - 1]], { color: Lab.color('violeta'), r: 9, forma: 'aspa', grosor: 2.8 });
+      }
+      if (Lab.val('verMedias')) {
+        g1.marcas([[mx, my]], { color: Lab.color('azul'), r: 10, grosor: 2.4 });
+      }
+    });
+
+    const entradas = [{ texto: 'su recta', color: Lab.color('naranja') }];
+    if (Lab.val('verMco')) entradas.push({ texto: 'MCO', color: Lab.color('azul') });
+    if (Lab.val('verLad')) entradas.push({ texto: 'desv. absolutas', color: Lab.color('violeta'), trazo: Lab.TRAZO.puntoRaya });
+    if (perp) entradas.push({ texto: 'ortogonal', color: Lab.color('gris'), trazo: Lab.TRAZO.punteado });
+    g1.leyenda(entradas, { esquina: 'si' });
+
+    /* --- Panel inferior: la función criterio --- */
+
+    const b1lo = -1, b1hi = 3;
+    const curva = [];
+    for (let i = 0; i <= 220; i++) {
+      const b = b1lo + (b1hi - b1lo) * i / 220;
+      curva.push([b, criterio(my - b * mx, b, perp)]);
+    }
+    const cMin = Math.min(...curva.map((p) => p[1]));
+    const cMax = Math.max(...curva.map((p) => p[1]));
+    const actual = criterio(b0m, b1m, perp);
+    const techo = Math.max(cMax, actual) * 1.06;
+
+    g2.marco({
+      xlim: [b1lo, b1hi], ylim: [0, techo],
+      xlabel: 'pendiente  b₁',
+      ylabel: perp ? 'suma perpendicular' : 'SRC',
+      nyticks: 3, xdec: 1, ydec: 0
+    });
+
+    g2.recortado(() => {
+      g2.area(curva, { color: Lab.alfa(Lab.color('azul'), .10) });
+      g2.linea(curva, { color: Lab.color('azul'), grosor: 2.6 });
+
+      // Mínimo de la curva
+      const iMin = curva.reduce((k, p, i) => (p[1] < curva[k][1] ? i : k), 0);
+      g2.vlinea(curva[iMin][0], { color: Lab.color('azul'), trazo: Lab.TRAZO.guion, grosor: 1.4 });
+      g2.puntos([curva[iMin]], { color: Lab.color('azul'), r: 5.5 });
+
+      // Posición actual
+      g2.puntos([[b1m, actual]], { color: Lab.color('naranja'), r: 7 });
+      if (!anclar && actual > curva[iMin][1] * 1.02) {
+        const sobre = criterio(my - b1m * mx, b1m, perp);
+        g2.linea([[b1m, sobre], [b1m, actual]], { color: Lab.color('naranja'), grosor: 1.6, trazo: Lab.TRAZO.punteado });
+      }
+      g2.rotulo(curva[iMin][0], techo * .86, 'mínimo = MCO', {
+        color: Lab.color('azul'), align: 'center', tam: .92
+      });
+    });
+
+    /* --- Lecturas --- */
+
+    const srcMco = r.src;
+    Lab.mostrar('r-srcManual', Lab.fmt(criterio(b0m, b1m, false), 2), 'naranja');
+    Lab.mostrar('r-srcMco', Lab.fmt(srcMco, 2), 'azul');
+    const exceso = criterio(b0m, b1m, false) - srcMco;
+    Lab.mostrar('r-exceso', (exceso < 1e-6 ? '0.00 — es MCO' : '+' + Lab.fmt(exceso, 2)),
+      exceso < 1e-6 ? 'azul' : 'gris');
+    Lab.mostrar('r-b0', Lab.fmt(r.b[0], 3), 'azul');
+    Lab.mostrar('r-b1', Lab.fmt(r.b[1], 3), 'azul');
+    Lab.mostrar('r-r2', Lab.fmt(r.r2, 3), 'gris');
+    Lab.mostrar('r-sigma', Lab.fmt(r.sigma, 3), 'gris');
+
+    document.getElementById('fila-lad').hidden = !Lab.val('verLad');
+    Lab.mostrar('r-lad', Lab.fmt(lad[1], 3), 'violeta');
+
+    document.getElementById('pista').textContent =
+      arrastrando >= 0 ? 'soltando…' : 'arrastre cualquier punto para moverlo';
+  }
+
+  /* ---- Interacción: arrastrar puntos ------------------------------------- */
+
+  function indiceCercano(ev) {
+    const [dx, dy] = g1.aDatos(ev.clientX, ev.clientY);
+    let mejor = -1, dist = Infinity;
+    datos.forEach(([x, y], i) => {
+      const px = g1.x(x) - g1.x(dx), py = g1.y(y) - g1.y(dy);
+      const d = px * px + py * py;
+      if (d < dist) { dist = d; mejor = i; }
+    });
+    return dist < 400 ? mejor : -1;   // 20 px de radio
+  }
+
+  cv1.addEventListener('pointerdown', (ev) => {
+    const i = indiceCercano(ev);
+    if (i < 0) return;
+    arrastrando = i;
+    cv1.setPointerCapture(ev.pointerId);
+    cv1.style.cursor = 'grabbing';
+    ev.preventDefault();
+  });
+
+  cv1.addEventListener('pointermove', (ev) => {
+    if (arrastrando < 0) {
+      cv1.style.cursor = indiceCercano(ev) >= 0 ? 'grab' : 'default';
+      return;
+    }
+    const [x, y] = g1.aDatos(ev.clientX, ev.clientY);
+    datos[arrastrando] = [Math.max(XLIM[0], Math.min(XLIM[1], x)), y];
+    dibujar();
+  });
+
+  const soltar = () => { arrastrando = -1; cv1.style.cursor = 'default'; dibujar(); };
+  cv1.addEventListener('pointerup', soltar);
+  cv1.addEventListener('pointercancel', soltar);
+
+  /* ---- Botones ----------------------------------------------------------- */
+
+  document.getElementById('btn-mco').addEventListener('click', () => {
+    const r = ajusteMco();
+    const b1 = document.getElementById('b1');
+    b1.value = Math.max(-1, Math.min(3, r.b[1]));
+    document.getElementById('anclar').checked = true;
+    b1.dispatchEvent(new Event('input'));
+  });
+
+  document.getElementById('btn-reiniciar').addEventListener('click', () => {
+    window.dispatchEvent(new Event('lab:reiniciar'));
+  });
+
+  /* ---- Arranque ---------------------------------------------------------- */
+
+  Lab.iniciar(dibujar).then(() => {
+    Lab.enlazar(dibujar);
+    window.addEventListener('lab:reiniciar', () => { firmaDatos = ''; });
+  });
+})();
+</script>
+</body>
+</html>
