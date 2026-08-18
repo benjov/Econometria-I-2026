@@ -98,7 +98,7 @@ el orden de exposición de las Notas de Clase.
 | `Clase_03_SistemasDeEcuaciones/` `[I]` | cap. 4 | Oferta y demanda de trabajo de mujeres casadas, Mroz (1987); SUR con los datos de Grunfeld (1958) |
 | `Clase_04_DatosPanel/` `[I]` | cap. 5 | Inversión de Grunfeld y panel de salarios |
 
-### Unidad 3 — Modelos No Lineales y temas selectos *(5 semanas)*
+### Unidad 3 — Modelos No Lineales y otros temas selectos *(5 semanas)*
 
 | Carpeta | Notas | Aplicación |
 |---|---|---|
@@ -218,25 +218,32 @@ dejan impreso en la salida. Es la práctica que la unidad 4 busca instalar:
 
 | Componente | Peso | Fecha tentativa |
 |---|---|---|
-| Examen parcial | 30 % | 2 de octubre de 2026 |
-| Proyecto final en equipo (2 a 3 personas) | 40 % | 4 de diciembre de 2026 |
+| Examen parcial (presencial) | 30 % | 9 de octubre de 2026 |
+| Proyecto final en equipo (2 a 3 personas) | 40 % | 11 de diciembre de 2026 |
 | Ejercicios a lo largo del semestre | 30 % | — |
 
-Las fechas definitivas se acuerdan en clase. Las Notas de Clase incluyen ejercicios al final de
-cada capítulo.
+Las fechas definitivas se acuerdan en clase. Los lineamientos del proyecto final se dan a conocer
+después del examen parcial. Las Notas de Clase incluyen ejercicios al final de cada capítulo.
 
-## Bibliografía principal
+## Bibliografía
+
+La del temario oficial:
 
 - **Wooldridge, J. M. (2010)** *Econometric Analysis of Cross Section and Panel Data*, 2a ed.
-  MIT Press. **[texto del curso]**
-- Greene, W. H. (2012) *Econometric Analysis*, 7a ed. Prentice Hall.
+  MIT Press. **[texto del curso]** — capítulos 1 a 4, 7, 9, 10, 13, 15, 16, 18, 19, 21 y 22.
+- Adams, C. (2020) *Learning Microeconometrics with R*. CRC Press.
 - Cameron, A. C. y Trivedi, P. K. (2005) *Microeconometrics: Methods and Applications*.
   Cambridge University Press.
 - Cunningham, S. (2021) *Causal Inference: The Mixtape*. Yale University Press.
-- Huntington-Klein, N. (2022) *The Effect: An Introduction to Research Design and Causality*.
-  CRC Press.
-- James, G., Witten, D., Hastie, T. y Tibshirani, R. (2013) *An Introduction to Statistical
-  Learning*. Springer.
+- Géron, A. (2019) *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow*. O'Reilly.
+- Greene, W. H. (2012) *Econometric Analysis*, 7a ed. Prentice Hall.
+- Hastie, T., Tibshirani, R. y Friedman, J. (2017) *The Elements of Statistical Learning*, 2a ed.
+  Springer.
+- James, G., Witten, D., Hastie, T. y Tibshirani, R. (2017) *An Introduction to Statistical
+  Learning with Applications in R*, 8a ed. Springer.
+
+Y los artículos que el temario anuncia, con más que se agregan durante el semestre: Abadie (2021),
+Athey e Imbens (2019), Baker y Bresnahan (1985), Christensen y Greene (1976) y Nerlove (1961).
 
 La lista completa, con los artículos discutidos en cada capítulo, está en la bibliografía de las
 Notas de Clase.

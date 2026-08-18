@@ -1,7 +1,7 @@
 # Proyecto final
 
 **Unidad 4.e** · Equipos de 2 a 3 personas · **40 % de la calificación** ·
-Entrega tentativa: **4 de diciembre de 2026**
+Presentación tentativa: **11 de diciembre de 2026**
 
 El proyecto es donde se juntan las dos mitades del curso: una pregunta econométrica
 que exige elegir un estimador y defender una identificación, y un producto de código
