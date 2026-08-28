@@ -140,6 +140,21 @@ y sobre los datos de ese tema. El calendario sugerido está en el
 | `06_Proyecto_final` | últimas semanas | 4.e |
 | `07_Datos_y_visualizacion` | `Clase_04` | 4.b |
 
+
+## Clases Prácticas con Python
+### Profesora Jésica Tapia
+---
+
+**Instrucciones:** Aquí puedes consultar los Talleres que se imparten cada semana. Genera tu propia copia del cuaderno para trabajar.
+
+| Recurso | Enlace |
+|---|---|
+| Taller_01_Condicionales | [Abrir en Colab](https://colab.research.google.com/drive/1ocj2v2oSZLUGrOfLGjKjwo5dxsO6SVo9) |
+| Taller_01_Condicionales_SOLUCIONES.ipynb | [Abrir en Colab](https://colab.research.google.com/drive/1UJcQbB6vk4aCL4zOIFz-OVnNL6UfkpwT?usp=sharing) |
+| Quiz Python 01_Condicionales | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/quiz-python-operadores-y-condicionales) |
+| Taller_02_Estructuras_de_Datos.ipynb | [Abrir en Colab](https://colab.research.google.com/drive/1QxQDSFsyZG8MTBXjZSLlF99NsjoF-UsE?usp=sharing) |
+| Taller_02_Estructuras_de_Datos_SOLUCIONES | [Abrir en Colab](https://colab.research.google.com/drive/1Tb6tCrjjb2KpXxByAxWL6Wfc3m6NgSU2?usp=sharing) |
+
 ### Material adicional, fuera del temario de Econometría I
 
 | Carpeta | Notas | Contenido |
