@@ -155,6 +155,8 @@ y sobre los datos de ese tema. El calendario sugerido está en el
 | Taller_02_Estructuras_de_Datos.ipynb | [Abrir en Colab](https://colab.research.google.com/drive/1QxQDSFsyZG8MTBXjZSLlF99NsjoF-UsE?usp=sharing) |
 | Taller_02_Estructuras_de_Datos_SOLUCIONES | [Abrir en Colab](https://colab.research.google.com/drive/1Tb6tCrjjb2KpXxByAxWL6Wfc3m6NgSU2?usp=sharing) |
 | Taller_03_NumPy | [[Abrir en Colab]](https://colab.research.google.com/drive/1B3elBXDLuP-UbDw6A8EA26PUIrNE26CG?usp=sharing)|
+| Taller_03_NumPy_SOLUCIONES | [[Abrir en Colab]](https://colab.research.google.com/drive/1cLhao1Do3vekk1X2Bc8AdkfMWCaLKASY?usp=sharing)|
+| Quiz Python 03_Condicionales | [Resolver Quiz]([ https://laboratoriodeiaparanosotras.my.canva.site/repaso-taller-3-numpy)|
 
 ### Material adicional, fuera del temario de Econometría I
 
