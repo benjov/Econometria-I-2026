@@ -157,7 +157,7 @@ y sobre los datos de ese tema. El calendario sugerido está en el
 | Taller_03_NumPy | [[Abrir en Colab]](https://colab.research.google.com/drive/1B3elBXDLuP-UbDw6A8EA26PUIrNE26CG?usp=sharing)|
 | Taller_03_NumPy_SOLUCIONES | [[Abrir en Colab]](https://colab.research.google.com/drive/1cLhao1Do3vekk1X2Bc8AdkfMWCaLKASY?usp=sharing)|
 | Quiz Python 03_Condicionales | [Resolver Quiz]([ https://laboratoriodeiaparanosotras.my.canva.site/repaso-taller-3-numpy)|
-
+| Taller_04_Funciones_y_Texto | [Abrir en Colab] https://colab.research.google.com/drive/14xqeNJxBViJRCvarq8PNue79fRE866QD?usp=sharing)|
 ### Material adicional, fuera del temario de Econometría I
 
 | Carpeta | Notas | Contenido |
