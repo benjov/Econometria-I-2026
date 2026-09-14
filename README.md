@@ -154,12 +154,12 @@ y sobre los datos de ese tema. El calendario sugerido está en el
 | Quiz Python 01_Condicionales | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/quiz-python-operadores-y-condicionales) |
 | Taller_02_Estructuras_de_Datos.ipynb | [Abrir en Colab](https://colab.research.google.com/drive/1QxQDSFsyZG8MTBXjZSLlF99NsjoF-UsE?usp=sharing) |
 | Taller_02_Estructuras_de_Datos_SOLUCIONES | [Abrir en Colab](https://colab.research.google.com/drive/1Tb6tCrjjb2KpXxByAxWL6Wfc3m6NgSU2?usp=sharing) |
-| Taller_03_NumPy | [[Abrir en Colab]](https://colab.research.google.com/drive/1B3elBXDLuP-UbDw6A8EA26PUIrNE26CG?usp=sharing)|
-| Taller_03_NumPy_SOLUCIONES | [[Abrir en Colab]](https://colab.research.google.com/drive/1cLhao1Do3vekk1X2Bc8AdkfMWCaLKASY?usp=sharing)|
-| Quiz Python 03_Condicionales | [Resolver Quiz]([ https://laboratoriodeiaparanosotras.my.canva.site/repaso-taller-3-numpy)|
-| Taller_04_Funciones_y_Texto | [Abrir en Colab] https://colab.research.google.com/drive/14xqeNJxBViJRCvarq8PNue79fRE866QD?usp=sharing)|
-| Quiz Python 04_Funciones_y_Texto |https://laboratoriodeiaparanosotras.my.canva.site/repaso-de-python-funciones-y-texto|
-| Taller_04_Funciones_y_Texto_SOLUCIONES | https://colab.research.google.com/drive/1NbrVL6TCSzDvd5bMiQhlyUSn-DqHj-iA?usp=sharing|
+| Taller_03_NumPy | [Abrir en Colab](https://colab.research.google.com/drive/1B3elBXDLuP-UbDw6A8EA26PUIrNE26CG?usp=sharing) |
+| Taller_03_NumPy_SOLUCIONES | [Abrir en Colab](https://colab.research.google.com/drive/1cLhao1Do3vekk1X2Bc8AdkfMWCaLKASY?usp=sharing) |
+| Quiz Python 03_NumPy | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/repaso-taller-3-numpy) |
+| Taller_04_Funciones_y_Texto | [Abrir en Colab](https://colab.research.google.com/drive/14xqeNJxBViJRCvarq8PNue79fRE866QD?usp=sharing) |
+| Taller_04_Funciones_y_Texto_SOLUCIONES | [Abrir en Colab](https://colab.research.google.com/drive/1NbrVL6TCSzDvd5bMiQhlyUSn-DqHj-iA?usp=sharing) |
+| Quiz Python 04_Funciones_y_Texto | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/repaso-de-python-funciones-y-texto) |
 
 ### Material adicional, fuera del temario de Econometría I
 
