@@ -239,12 +239,14 @@ dejan impreso en la salida. Es la práctica que la unidad 4 busca instalar:
 
 | Componente | Peso | Fecha tentativa |
 |---|---|---|
-| Examen parcial (presencial) | 30 % | 9 de octubre de 2026 |
+| Primer examen parcial (presencial) | 15 % | 26 de septiembre de 2026 |
+| Segundo examen parcial (presencial) | 15 % | Octubre de 2026 |
 | Proyecto final en equipo (2 a 3 personas) | 40 % | 11 de diciembre de 2026 |
 | Ejercicios a lo largo del semestre | 30 % | — |
 
-Las fechas definitivas se acuerdan en clase. Los lineamientos del proyecto final se dan a conocer
-después del examen parcial. Las Notas de Clase incluyen ejercicios al final de cada capítulo.
+La fecha del primer parcial está confirmada; las demás se acuerdan en clase. Los lineamientos del
+proyecto final se dan a conocer después de los exámenes parciales. Las Notas de Clase incluyen
+ejercicios al final de cada capítulo.
 
 ## Bibliografía
 
