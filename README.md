@@ -89,7 +89,7 @@ el orden de exposición de las Notas de Clase.
 | Carpeta | Notas | Aplicación |
 |---|---|---|
 | `Clase_01_RegresionLineal/` `[I]` | caps. 1, 2 y 4 | Función de costos de la industria eléctrica, Nerlove (1963); MCG con heterocedasticidad |
-| `Clase_02_VariablesInstrumentales/` `[I]` | cap. 3 | Orígenes coloniales del desarrollo, Acemoglu, Johnson y Robinson (2001) |
+| `Clase_02_VariablesInstrumentales/` `[I]` | cap. 3 | Orígenes coloniales del desarrollo, Acemoglu, Johnson y Robinson (2001), con el bloque completo de pruebas: F de la primera etapa, Durbin-Wu-Hausman, Sargan-Hansen y Anderson-Rubin |
 
 ### Unidad 2 — Estimación de Sistemas de Ecuaciones *(3 semanas)*
 

@@ -11,6 +11,22 @@ plantea la discusión sobre sesgo por variables omitidas frente a atenuación po
 medición), el estadístico F de la primera etapa, y el examen crítico de la restricción de
 exclusión.
 
+El cuaderno cierra con el bloque de **pruebas de especificación y diagnóstico** del cap. 3 de
+las notas, todas calculadas primero paso a paso y luego contrastadas contra la implementación de
+`linearmodels`:
+
+| Sección | Contenido |
+|---|---|
+| 7 | F de los **instrumentos excluidos** frente al F global; regla de Staiger-Stock |
+| 8 | Por qué el **error estándar** de la segunda etapa hecha a mano está mal, y la fórmula de emparedado |
+| 9 | Prueba de endogeneidad de **Durbin-Wu-Hausman** y el enfoque de función de control |
+| 10 | Prueba de sobreidentificación de **Sargan** y J de **Hansen**, con dos casos de conclusión opuesta |
+| 11 | El **estimador de Wald** como cociente forma reducida / primera etapa, y su lectura de LATE |
+| 12 | Conjunto de confianza de **Anderson-Rubin**, robusto a instrumentos débiles |
+| 13 | Siete ejercicios |
+
+Requiere `linearmodels` (`pip install linearmodels`).
+
 ## Cuaderno
 
 `Regresion Lineal y Variables Instrumentales.ipynb`
