@@ -162,6 +162,19 @@ y sobre los datos de ese tema. El calendario sugerido está en el
 | Quiz Python 04_Funciones_y_Texto | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/repaso-de-python-funciones-y-texto) |
 | Quiz Python 05 Repaso | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/quiz-python-temas1al4taller) |
 
+
+## Clases: Ejercicios y aplicaciones con Python
+### Profesor Omar Alfaro
+---
+
+**Instrucciones:** Aquí puedes consultar los ejercicis que se dejan Qnera tu propia copia del cuaderno para trabajar.
+
+| Recurso | Enlace |
+|---|---|
+| Clase 01: Regresión Lineal (ver sección Ejercicio para resolver en clase
+) | [Abrir en GitHub](https://github.com/benjov/Econometria-I-2026/blob/main/Clase_01_RegresionLineal/Regresion_Lineal.ipynb) |
+
+
 ### Material adicional, fuera del temario de Econometría I
 
 | Carpeta | Notas | Contenido |
