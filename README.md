@@ -161,7 +161,8 @@ y sobre los datos de ese tema. El calendario sugerido está en el
 | Taller_04_Funciones_y_Texto_SOLUCIONES | [Abrir en Colab](https://colab.research.google.com/drive/1NbrVL6TCSzDvd5bMiQhlyUSn-DqHj-iA?usp=sharing) |
 | Quiz Python 04_Funciones_y_Texto | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/repaso-de-python-funciones-y-texto) |
 | Quiz Python 05 Repaso | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/quiz-python-temas1al4taller)  |
-| Taller_05_Pandas |https://colab.research.google.com/drive/1Ua6dY10HUeh0u-DAdd50qAesgANm7mtt?usp=sharing |
+| Taller_05_Pandas | [Abrir en Colab](https://colab.research.google.com/drive/1Ua6dY10HUeh0u-DAdd50qAesgANm7mtt?usp=sharing) |
+| Quiz Python 06 Repaso | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/repaso-interactivo-de-python-y-pandas) |
 
 
 ## Clases: Ejercicios y aplicaciones con Python
