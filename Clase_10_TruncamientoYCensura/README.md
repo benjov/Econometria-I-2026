@@ -1,14 +1,20 @@
-# Datos truncados y censurados: el modelo Tobit
+# Datos truncados y censurados: Tobit y regresión truncada
 
 **Unidad 3 del temario** · **Notas de Clase: cap. 8**
 
-Estimación de una ecuación de consumo de gas LP con una proporción considerable de ceros.
+Dos aplicaciones:
 
-Puntos de interés: la distinción entre **censura verdadera y solución de esquina**, las tres
-esperanzas del modelo (latente, truncada y observada) con su efecto marginal correspondiente, por
-qué fallan las dos estrategias ingenuas de MCO —usar toda la muestra o descartar los ceros—, y el
-modelo de dos partes como alternativa cuando la restricción de coeficientes comunes del Tobit no
-es defendible.
+1. **Censura: gasto de los hogares en gas LP** (ENIGH 2016), con 39 % de ceros. Tobit con
+   `tobit.py` frente a MCO sobre toda la muestra, que atenúa todos los efectos.
+2. **Truncamiento: horas trabajadas de mujeres casadas** (Mroz, 1987). El mismo problema tratado
+   como censura (Tobit, 753 mujeres; reproduce el ejemplo 17.2 de Wooldridge) y como
+   truncamiento (regresión truncada por máxima verosimilitud, sólo las 428 que trabajan). MCO
+   sobre la muestra truncada atenúa los efectos, y la discrepancia entre la regresión truncada y
+   el Tobit muestra por qué la restricción de coeficientes comunes del Tobit puede no ser
+   defendible: la motivación del modelo de dos partes.
+
+Las tres esperanzas del Tobit con sus efectos marginales, y la distinción entre censura
+verdadera y solución de esquina, se piden en el ejercicio de aplicación del cap. 8.
 
 ## Cuaderno
 
@@ -18,10 +24,11 @@ es defendible.
 
 `Gas_LP.dta` — consumo de gas LP en hogares.
 `tobit.py` — implementación del estimador por máxima verosimilitud.
+Los datos de Mroz se cargan desde `linearmodels`.
 
 ## Referencias
 
-Tobin (1958); Wooldridge (2010), cap. 17.
+Tobin (1958); Mroz (1987); Wooldridge (2010), cap. 17.
 
 ---
 Parte del curso de Econometría I, Facultad de Ciencias, UNAM.

@@ -4,9 +4,13 @@
 # Instalar con:  pip install -r requirements.txt
 # Verificar con: python3 00_Flujo_de_trabajo/verificar_ambiente.py
 #
-# Las versiones están fijadas con >= porque las actividades no dependen de
-# comportamientos específicos de una versión. En un TRABAJO PROPIO conviene
-# fijarlas con == : es la diferencia entre "corre" y "da el mismo número".
+# Las versiones se fijan con >=. Todos los cuadernos del repositorio se
+# verificaron (28 sep 2026) con pandas 2.2 / statsmodels 0.14 / linearmodels 6.1
+# y con pandas 3.0 / statsmodels 0.15 / linearmodels 7.0.
+# Ojo: entre versiones SÍ cambian comportamientos. En pandas 3,
+# df['col'].fillna(0, inplace=True) deja de modificar df sin avisar
+# (ver Clase_10_TruncamientoYCensura). En un TRABAJO PROPIO conviene fijarlas
+# con == : es la diferencia entre "corre" y "da el mismo número".
 # Ver 05_Reproducibilidad/lista_de_verificacion.md, punto 2.
 
 numpy>=1.24

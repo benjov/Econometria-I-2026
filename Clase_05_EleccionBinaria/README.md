@@ -1,13 +1,17 @@
-# Modelos de elección binaria: probit y logit
+# Modelos de elección binaria: probit
 
 **Unidad 3 del temario** · **Notas de Clase: cap. 7**
 
 Estimación de la participación laboral de mujeres casadas con los datos de Mroz.
 
-Puntos de interés: por qué el modelo de probabilidad lineal es insatisfactorio (probabilidades
-fuera de [0,1], heterocedasticidad inherente y efectos marginales constantes), la diferencia entre
-los coeficientes y los **efectos marginales**, y la equivalencia práctica entre logit y probit una
-vez ajustada la escala.
+El cuaderno estima un **probit** y se concentra en la diferencia entre los coeficientes y los
+**efectos marginales**: el cambio discreto en la probabilidad para las variables dicotómicas
+(`wc`, `hc`), evaluado en la media; las probabilidades predichas según el número de hijos
+pequeños; y el efecto marginal promedio que reporta `get_margeff`.
+
+El modelo de probabilidad lineal y el logit —y la comparación entre los tres, incluida la
+equivalencia práctica entre logit y probit una vez ajustada la escala— se piden en el ejercicio
+de aplicación del cap. 7 de las notas.
 
 ## Cuaderno
 

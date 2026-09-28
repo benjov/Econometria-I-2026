@@ -617,7 +617,7 @@ class HeckmanResults(base.LikelihoodModelResults):
         # add the estimate to the inverse Mills estimate (z-score)
         smry.add_table_params(
             base.LikelihoodModelResults(None, np.atleast_1d(self.params_inverse_mills), 
-            normalized_cov_params=np.atleast_1d(self.stderr_inverse_mills**2), scale=1.), 
+            normalized_cov_params=np.atleast_2d(self.stderr_inverse_mills**2), scale=1.),
             yname=None, xname=['IMR (Lambda)'], alpha=alpha, 
             use_t=False)
         

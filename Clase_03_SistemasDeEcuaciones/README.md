@@ -3,10 +3,11 @@
 **Unidad 2 del temario** · **Notas de Clase: cap. 4**
 
 Estimación de un sistema de oferta y demanda de trabajo de mujeres casadas con los datos de
-Mroz (1987). Se comparan MCO, 2SLS ecuación por ecuación y 3SLS del sistema completo.
+Mroz (1987). Se comparan 2SLS ecuación por ecuación y 3SLS del sistema completo; la
+estimación por MCO, para ver el sesgo de simultaneidad, queda como ejercicio (cap. 4 de las notas).
 
-Puntos de interés: identificación de cada ecuación (condiciones de orden y de rango), el sesgo de
-simultaneidad que se aprecia al comparar MCO con las estimaciones por variables instrumentales, y
+Puntos de interés: identificación de cada ecuación (condiciones de orden y de rango), la
+necesidad de escribir `1 +` en las fórmulas de `linearmodels` para incluir la constante, y
 la disyuntiva del 3SLS —más eficiente, pero un error de especificación en una sola ecuación
 contamina los estimadores de todas—.
 

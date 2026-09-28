@@ -67,6 +67,11 @@ la [carpeta compartida del curso](https://drive.google.com/drive/folders/1dhWf9x
 pip install numpy pandas matplotlib seaborn statsmodels linearmodels scikit-learn
 ```
 
+Los cuadernos se verificaron el 28 de septiembre de 2026 con dos combinaciones de versiones:
+pandas 2.2 / statsmodels 0.14 / linearmodels 6.1, y pandas 3.0 / statsmodels 0.15 /
+linearmodels 7.0. Si algo falla o da un número distinto al que reporta el cuaderno, lo primero
+es revisar las versiones instaladas (`pip show pandas statsmodels linearmodels`).
+
 Algunos cuadernos usan módulos auxiliares incluidos en su propia carpeta (`heckman.py`,
 `tobit.py`, `helper_functions.py`): no hay que instalarlos, basta con ejecutar el cuaderno desde
 esa carpeta.
@@ -107,7 +112,7 @@ el orden de exposición de las Notas de Clase.
 | `Clase_07_LogitOrdinal/` `[I]` | caps. 7 y 11 | Clasificación de videojuegos a partir de etiquetas de Steam |
 | `Clase_08_ModelosDeConteo/` `[I]` | cap. 7 | Fecundidad en Botsuana (FERTIL2) |
 | `Clase_09_SeleccionDeMuestra/` `[I]` | cap. 8 | Modelo de Heckman: salarios de mujeres |
-| `Clase_10_TruncamientoYCensura/` `[I]` | cap. 8 | Modelo Tobit: consumo de gas LP |
+| `Clase_10_TruncamientoYCensura/` `[I]` | cap. 8 | Tobit: consumo de gas LP; regresión truncada y Tobit: horas trabajadas, Mroz (1987) |
 | `Clase_11_DiferenciaEnDiferencias/` `[I]` | cap. 9 | Salario mínimo y empleo, Card y Krueger (1994) |
 | `Clase_12_ControlSintetico/` `[I]` | cap. 9 | Proposición 99 de California, Abadie et al. (2010) |
 | `Clase_13_ModelosDeDuracion/` `[I]` | cap. 10 | Kaplan-Meier, Weibull y Cox: remisión de leucemia (Freireich et al., 1963) y afiliación sindical (NLSY) |
@@ -230,7 +235,12 @@ dejan impreso en la salida. Es la práctica que la unidad 4 busca instalar:
 |---|---|---:|---:|
 | `Clase_01/MCG_Heterocedasticidad` | Nerlove (1963) | 0.721 | 0.7204 |
 | `Clase_02` · `Clase_15/03` | Acemoglu et al. (2001), cuadro 4 | 0.94 | 0.9443 |
+| `Clase_03/Estimating Simultaneous Models` | Wooldridge, *Introductory Econometrics*, ej. 16.5 (`lwage` en horas) | 1639.56 | 1639.5 |
 | `Clase_03/SUR_Grunfeld` | Zellner (1962), ecuación de GM | −149.78 | −149.7825 |
+| `Clase_04` | Baltagi, cuadro 2.1, Grunfeld: intragrupos (`value`) | 0.1101 | 0.1101 |
+| `Clase_06` | Wooldridge (2010), ej. 15.4 (`black`, ecuación de «casa») | 0.813 | 0.8130 |
+| `Clase_09` | Manual de Stata, `heckman ... twostep` (`education`) | 0.9825 | 0.9825 |
+| `Clase_10` | Wooldridge, *Introductory Econometrics*, ej. 17.2 (Tobit, `educ`) | 80.65 | 80.65 |
 | `Clase_11` · `Clase_15/04` | Card y Krueger (1994), cuadro 3 | 2.76 | 2.75 |
 | `Clase_13/Modelos_De_Duracion` | Freireich et al. (1963), log-rank | 16.79 | 16.793 |
 

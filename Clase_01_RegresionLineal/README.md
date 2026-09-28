@@ -22,9 +22,9 @@ una prueba F.
 
 Los mismos datos de Nerlove presentan heterocedasticidad ligada al tamaño de la empresa
 —Breusch-Pagan y White la rechazan de manera contundente, y la varianza del grupo de
-empresas más pequeñas es **34 veces** la del grupo más preciso—. El propio Nerlove la
-corrigió agrupando las 145 empresas en cinco grupos de 29 ordenados por producto, que es
-el MCG factible que el cuaderno reproduce.
+empresas más pequeñas es **34 veces** la del grupo más preciso—. El cuaderno la modela con
+la misma agrupación que usó Nerlove para estimar por separado —cinco grupos de 29 empresas
+ordenadas por producto—, suponiendo varianza constante dentro de cada grupo: un MCG factible.
 
 Lo que muestra, y que suele confundirse:
 
