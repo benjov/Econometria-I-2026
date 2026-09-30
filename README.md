@@ -168,7 +168,7 @@ y sobre los datos de ese tema. El calendario sugerido está en el
 | Quiz Python 05 Repaso | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/quiz-python-temas1al4taller)  |
 | Taller_05_Pandas | [Abrir en Colab](https://colab.research.google.com/drive/1Ua6dY10HUeh0u-DAdd50qAesgANm7mtt?usp=sharing) |
 | Quiz Python 06 Repaso | [Resolver Quiz](https://laboratoriodeiaparanosotras.my.canva.site/repaso-interactivo-de-python-y-pandas) |
-
+| Taller_06_Pandas_Filtrado | [Abrir en Colab](https://colab.research.google.com/drive/1LMsoTe0_c_Y6YF11gZNGtN5jgBSo2eQe?usp=sharing) |
 
 ## Clases: Ejercicios y aplicaciones con Python
 ### Profesor Omar Alfaro
