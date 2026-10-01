@@ -3,7 +3,7 @@
 **Unidad 2 del temario** · **Notas de Clase: cap. 4**
 
 Estimación de un sistema de oferta y demanda de trabajo de mujeres casadas con los datos de
-Mroz (1987). Se comparan 2SLS ecuación por ecuación y 3SLS del sistema completo; la
+Mroz (1987). Se comparan 2SLS ecuación por ecuación, 3SLS y GMM eficiente del sistema completo; la
 estimación por MCO, para ver el sesgo de simultaneidad, queda como ejercicio (cap. 4 de las notas).
 
 Puntos de interés: identificación de cada ecuación (condiciones de orden y de rango), la
@@ -15,8 +15,29 @@ contamina los estimadores de todas—.
 
 | Cuaderno | Unidad | Contenido |
 |---|:--:|---|
-| `Estimating Simultaneous Models.ipynb` | 2.a, 2.b, 2.d | Sistemas por MCO y por variables instrumentales |
+| `Estimating Simultaneous Models.ipynb` | 2.a, 2.b, 2.d | Sistemas por variables instrumentales: 2SLS, 3SLS y GMM eficiente |
 | `SUR_Grunfeld.ipynb` | **2.c** | Sistemas aparentemente no relacionados |
+
+### `Estimating Simultaneous Models.ipynb`
+
+Las ecuaciones de horas y salarios de Mroz (1987), **verificadas contra Wooldridge** (ej. 16.5 y
+16.6). Tras estimarlas por 2SLS y 3SLS, el cuaderno sigue el orden de la sección de variables
+instrumentales del cap. 4:
+
+| Sección | Contenido | Resultado |
+|---|---|---|
+| Identificación | Condición de orden, $F$ de instrumentos excluidos, Sargan por ecuación | $F$ = 9.48 (horas) y **4.53** (salarios: instrumentos débiles) |
+| Correlación entre ecuaciones | $\hat\Sigma$ con residuales de 2SLS, prueba LM, **diagrama de dispersión** | correlación −0.90, que es lo que aprovecha el 3SLS |
+| 2SLS y 3SLS a mano | Matrices apiladas por individuo y el estimador GMM con dos $\hat{\mathbf{W}}$ | coinciden con `linearmodels` a 1e-9 |
+| GMM eficiente | `IVSystemGMM` robusto y prueba $J$ de Hansen del sistema | $J$ = 5.82, gl 3, p = 0.12; GMM con $W$ «unadjusted» = 3SLS |
+| Comparación | Elasticidad de la oferta de trabajo con IC y cociente de errores estándar (**figura**) | 1.26 / 1.37 / 1.61; el 3SLS reduce los once ee |
+| Simulación | 2SLS frente a 3SLS cuando una ecuación está mal especificada (**figura**) | el 3SLS de la ecuación *correcta* se desplaza de 1.00 a 0.90 |
+
+Seis ejercicios, entre ellos la estimación por MCO para ver el sesgo de simultaneidad y una
+prueba de Hausman entre 2SLS y 3SLS. **Precisión sobre `IV3SLS`:** implementa el 3SLS clásico
+(MCG sobre los regresores proyectados), que coincide con el GMM de las notas sólo cuando todas
+las ecuaciones comparten instrumentos, como en este ejemplo. El ejercicio 3 muestra un caso en
+que no.
 
 ### `SUR_Grunfeld.ipynb`
 

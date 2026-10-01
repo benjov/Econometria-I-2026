@@ -100,7 +100,7 @@ el orden de exposición de las Notas de Clase.
 
 | Carpeta | Notas | Aplicación |
 |---|---|---|
-| `Clase_03_SistemasDeEcuaciones/` `[I]` | cap. 4 | Oferta y demanda de trabajo de mujeres casadas, Mroz (1987); SUR con los datos de Grunfeld (1958) |
+| `Clase_03_SistemasDeEcuaciones/` `[I]` | cap. 4 | Oferta y demanda de trabajo de mujeres casadas, Mroz (1987): 2SLS, 3SLS y GMM eficiente, programados también a mano, con simulación de la disyuntiva del 3SLS; SUR con los datos de Grunfeld (1958) |
 | `Clase_04_DatosPanel/` `[I]` | cap. 5 | Inversión de Grunfeld y panel de salarios |
 
 ### Unidad 3 — Modelos No Lineales y otros temas selectos *(5 semanas)*
