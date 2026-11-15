@@ -455,6 +455,12 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   border-color: var(--borde-firme);
 }
 .boton.secundario:hover { background: var(--fondo-alt); color: var(--tinta); filter: none; }
+/* En tema oscuro, la regla de .boton (texto oscuro sobre el acento) ganaba por
+   especificidad y dejaba el botón secundario con texto invisible. */
+:root[data-tema="oscuro"] .boton.secundario { color: var(--tinta-media); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) .boton.secundario { color: var(--tinta-media); }
+}
 
 .botonera { display: flex; gap: .5rem; }
 

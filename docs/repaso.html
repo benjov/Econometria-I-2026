@@ -1,0 +1,1785 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clase de repaso · Econometría I · UNAM</title>
+<meta name="description" content="Clase de repaso del 17 de noviembre de 2026: del modelo lineal a los modelos de conteo. Recorrido de una hora con simuladores de máxima verosimilitud, logit multinomial, respuesta ordenada y Poisson, material de estudio para la tarea-examen y un mapa de los temas que vienen.">
+<link rel="stylesheet" href="assets/estilo.css">
+<style>
+  /* --- Elementos propios de la página de repaso -------------------------- */
+  .agenda {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: .6rem; margin: 1.4rem 0 0; padding: 0; list-style: none;
+  }
+  .agenda a {
+    display: block; text-decoration: none; color: var(--tinta);
+    background: var(--fondo-caja); border: 1px solid var(--borde); border-radius: var(--radio);
+    padding: .7rem .9rem; height: 100%;
+  }
+  .agenda a:hover { border-color: var(--borde-firme); background: var(--fondo-alt); }
+  .agenda .min { font-family: var(--mono); font-size: .78em; color: var(--tinta-suave); display: block; }
+  .agenda .tit { font-weight: 600; font-size: .95em; line-height: 1.3; display: block; margin-top: .15rem; }
+
+  .estacion-cabeza { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; margin-bottom: .4rem; }
+  .reloj {
+    font-family: var(--mono); font-size: .8em; color: var(--acento);
+    border: 1px solid currentColor; border-radius: 999px; padding: .05rem .6rem; white-space: nowrap;
+  }
+
+  .ecuacion {
+    font-family: var(--serif); font-size: 1.08em; text-align: center;
+    padding: .7rem .5rem; margin: .8rem 0; overflow-x: auto; color: var(--tinta);
+    background: var(--fondo-alt); border-radius: var(--radio);
+  }
+  .ecuacion b { font-style: normal; }
+  .ecuacion .nota-ec { display: block; font-family: var(--sans); font-size: .78em; color: var(--tinta-suave); margin-top: .35rem; }
+  .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 .15em; }
+  .frac > span { line-height: 1.3; padding: 0 .25em; }
+  .frac > span:first-child { border-bottom: 1px solid currentColor; }
+
+  .tarjetas-repaso { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1rem; }
+  .ficha-tema {
+    background: var(--fondo-caja); border: 1px solid var(--borde); border-radius: var(--radio);
+    padding: 1.1rem 1.2rem; box-shadow: var(--sombra); display: flex; flex-direction: column; gap: .5rem;
+  }
+  .ficha-tema h3 { font-size: 1.18em; }
+  .ficha-tema .etq { font-family: var(--sans); font-size: .72em; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-suave); }
+  .ficha-tema p { font-size: .94em; color: var(--tinta-media); margin: 0; }
+  .ficha-tema .trampa { border-left: 3px solid var(--naranja); padding-left: .7rem; }
+  .ficha-tema .ligas { font-size: .86em; margin-top: auto; padding-top: .4rem; border-top: 1px solid var(--borde); color: var(--tinta-suave); }
+  .ficha-tema .ecuacion { font-size: 1em; margin: .3rem 0; }
+
+  details.chequeo {
+    background: var(--fondo-caja); border: 1px solid var(--borde); border-radius: var(--radio);
+    padding: .75rem 1rem; margin-top: .7rem;
+  }
+  details.chequeo summary { cursor: pointer; font-weight: 600; color: var(--tinta); }
+  details.chequeo summary::marker { color: var(--acento); }
+  details.chequeo[open] summary { margin-bottom: .5rem; }
+  details.chequeo div { color: var(--tinta-media); font-size: .95em; }
+  .chequeos-titulo { font-family: var(--sans); font-size: .78em; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-suave); margin-top: 1.4rem; }
+
+  .botonera-preset { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .botonera-preset .boton { font-size: .85em; padding: .35rem .7rem; }
+
+  .lista-errores { counter-reset: err; list-style: none; padding: 0; margin: 0; display: grid; gap: .7rem; }
+  .lista-errores li {
+    counter-increment: err; position: relative; padding: .8rem 1rem .8rem 3rem;
+    background: var(--fondo-caja); border: 1px solid var(--borde); border-radius: var(--radio);
+    color: var(--tinta-media); font-size: .95em;
+  }
+  .lista-errores li::before {
+    content: counter(err); position: absolute; left: .9rem; top: .8rem;
+    font-family: var(--mono); font-weight: 700; color: var(--naranja);
+  }
+  .lista-errores strong { color: var(--tinta); }
+
+  .quiz { display: grid; gap: 1rem; }
+  .pregunta { background: var(--fondo-caja); border: 1px solid var(--borde); border-radius: var(--radio); padding: 1rem 1.15rem; }
+  .pregunta .enunciado { font-weight: 600; margin-bottom: .6rem; }
+  .pregunta .enunciado .tema { font-family: var(--mono); font-size: .75em; color: var(--tinta-suave); font-weight: 400; margin-right: .4rem; }
+  .pregunta .opcs { display: grid; gap: .35rem; }
+  .pregunta button.opc {
+    text-align: left; font: inherit; font-size: .95em; color: var(--tinta-media);
+    background: var(--fondo); border: 1px solid var(--borde); border-radius: 8px;
+    padding: .45rem .7rem; cursor: pointer;
+  }
+  .pregunta button.opc:hover { border-color: var(--borde-firme); }
+  .pregunta button.opc.si { border-color: var(--azul); color: var(--tinta); background: color-mix(in srgb, var(--azul) 12%, transparent); }
+  .pregunta button.opc.no { border-color: var(--naranja); background: color-mix(in srgb, var(--naranja) 12%, transparent); }
+  .pregunta .explica { display: none; margin-top: .6rem; font-size: .93em; color: var(--tinta-media); border-left: 3px solid var(--acento); padding-left: .7rem; }
+  .pregunta.respondida .explica { display: block; }
+  .marcador { font-family: var(--mono); font-size: 1.05em; }
+
+  .tabla-caja td { vertical-align: top; }
+
+  /* Los títulos y rótulos llevan letras griegas: en mayúsculas, λ y β se
+     volverían Λ y Β, que son otros símbolos. */
+  .lienzo-titulo { text-transform: none; letter-spacing: .01em; font-size: .9em; }
+  .panel .lecturas { grid-template-columns: minmax(0, 1fr); }
+  .gorro { position: relative; display: inline-block; }
+  .gorro::after { content: "^"; position: absolute; left: 50%; top: -.62em; transform: translateX(-50%); font-size: .8em; }
+  .tabla-caja td:first-child { font-weight: 600; color: var(--tinta); white-space: nowrap; }
+
+  /* --- Barra de temas: el temario completo, visto y por venir ------------- */
+  :root { --alto-barras: 3.2rem; }
+  .ruta {
+    position: sticky; top: var(--alto-barra, 3.2rem); z-index: 40;
+    background: color-mix(in srgb, var(--fondo) 94%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--borde);
+    min-width: 0; max-width: 100%;
+  }
+  .ruta-int {
+    max-width: var(--ancho); margin: 0 auto; padding: .45rem clamp(1rem, 3vw, 2.5rem);
+    display: flex; gap: .9rem; overflow-x: auto; min-width: 0; scrollbar-width: thin; align-items: center;
+  }
+  .ruta-grupo { display: flex; gap: .25rem; align-items: center; flex: none; }
+  .ruta-grupo + .ruta-grupo { border-left: 1px solid var(--borde); padding-left: .9rem; }
+  .ruta-u {
+    font-family: var(--mono); font-size: .7em; font-weight: 700; color: var(--tinta-suave);
+    margin-right: .2rem; white-space: nowrap;
+  }
+  .ruta a {
+    font-family: var(--sans); font-size: .8em; white-space: nowrap; text-decoration: none;
+    padding: .22rem .6rem; border-radius: 999px; border: 1px solid var(--borde);
+    color: var(--tinta-media); background: var(--fondo-caja);
+  }
+  .ruta a:hover { border-color: var(--borde-firme); color: var(--tinta); }
+  .ruta a.proximo { border-style: dashed; color: var(--tinta-suave); background: transparent; }
+  .ruta a.activo { border-color: var(--acento); border-style: solid; color: var(--acento); font-weight: 600;
+    background: color-mix(in srgb, var(--acento) 12%, transparent); }
+  .ruta-clave { font-family: var(--sans); font-size: .72em; color: var(--tinta-suave); white-space: nowrap; flex: none; margin-left: auto; }
+  .ruta-clave i { display: inline-block; width: 1.4em; height: .8em; border-radius: 999px; vertical-align: -.05em;
+    border: 1px solid var(--borde-firme); margin: 0 .25em 0 .6em; }
+  .ruta-clave i.p { border-style: dashed; }
+  .seccion, .ficha-tema { scroll-margin-top: calc(var(--alto-barras) + 1rem); }
+  .panel { top: calc(var(--alto-barras) + .6rem); max-height: calc(100vh - var(--alto-barras) - 1.6rem); }
+
+  .ficha-tema.proximo { border-style: dashed; box-shadow: none; }
+  .ficha-tema .viene { font-size: .88em; }
+  .ficha-tema .puente { border-left: 3px solid var(--azul); padding-left: .7rem; }
+  .sello { font-family: var(--sans); font-size: .7em; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--tinta-suave); border: 1px dashed var(--borde-firme); border-radius: 999px; padding: .02rem .45rem; margin-left: .3rem; white-space: nowrap; }
+  tr.futuro td { color: var(--tinta-suave); }
+  .tabla-caja td:first-child .sello { display: block; width: max-content; margin: .25rem 0 0; }
+
+  @media print {
+    .ruta { display: none; }
+    details.chequeo { break-inside: avoid; }
+    details.chequeo div { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="ruta" aria-label="Temas del curso"><div class="ruta-int">
+  <div class="ruta-grupo"><span class="ruta-u">U1</span><a href="#t-dag">DAG</a><a href="#t-mco">MCO</a><a href="#t-vi">VI</a><a href="#t-mcg">MCG</a></div>
+  <div class="ruta-grupo"><span class="ruta-u">U2</span><a href="#t-sistemas">Sistemas</a><a href="#t-sur">SUR</a><a href="#t-panel">Panel</a></div>
+  <div class="ruta-grupo"><span class="ruta-u">U3</span><a href="#mv">Máx. verosimilitud</a><a href="#binaria">Binaria</a><a href="#multinomial">Multinomial</a><a href="#ordenada">Ordenada</a><a href="#conteo">Conteo</a><a href="#censura" class="proximo" title="Próximamente">Censura y truncamiento</a><a href="#seleccion" class="proximo" title="Próximamente">Selección</a><a href="#duracion" class="proximo" title="Próximamente">Duración</a><a href="#did" class="proximo" title="Próximamente">Dif. en dif.</a><a href="#sintetico" class="proximo" title="Próximamente">Control sintético</a></div>
+  <div class="ruta-grupo"><span class="ruta-u">U4</span><a href="#ia" class="proximo" title="Próximamente">Código con IA</a></div>
+  <div class="ruta-grupo"><span class="ruta-u">Repaso</span><a href="#cierre">Errores</a><a href="#autoevaluacion">Autoevaluación</a></div>
+  <span class="ruta-clave"><i></i>visto<i class="p"></i>lo que viene</span>
+</div></nav>
+
+<div class="envoltura">
+
+  <header class="encabezado">
+    <div class="marbete">Clase de repaso · martes 17 de noviembre de 2026</div>
+    <h1>Del modelo lineal a los modelos de conteo</h1>
+    <p class="entrada">
+      Todo lo que hemos visto en el semestre es una sola pregunta con distintas respuestas:
+      <strong>¿cómo se relaciona la distribución de <em>y</em> con <em>x</em>, y qué tenemos que
+      suponer para estimar esa relación?</strong> Con una <em>y</em> continua, el objeto es
+      𝔼[y | x] y lo estimamos por MCO, VI o MCG. Con una <em>y</em> discreta, el objeto pasa a ser
+      una probabilidad o un conteo esperado y lo estimamos por máxima verosimilitud. Esta página
+      recorre el camino en una hora y queda como material de estudio: cada estación tiene sus
+      fórmulas clave, el error más común y preguntas para comprobar lo aprendido. La barra de temas
+      de arriba recorre el temario completo: los temas con borde punteado son los que vienen, y
+      sirven de mapa para el resto del semestre.
+    </p>
+
+    <ol class="agenda">
+      <li><a href="#mapa"><span class="min">00 – 05 min</span><span class="tit">El mapa: qué modelo para qué <em>y</em></span></a></li>
+      <li><a href="#lineal"><span class="min">05 – 13 min</span><span class="tit">Unidad 1: MCO, DAG, VI y MCG</span></a></li>
+      <li><a href="#sistemas"><span class="min">13 – 18 min</span><span class="tit">Unidad 2: sistemas, SUR y panel</span></a></li>
+      <li><a href="#mv"><span class="min">18 – 26 min</span><span class="tit">Máxima verosimilitud y sus tres pruebas</span></a></li>
+      <li><a href="#binaria"><span class="min">26 – 30 min</span><span class="tit">Respuesta binaria</span></a></li>
+      <li><a href="#multinomial"><span class="min">30 – 41 min</span><span class="tit">Logit multinomial</span></a></li>
+      <li><a href="#ordenada"><span class="min">41 – 49 min</span><span class="tit">Respuesta ordenada</span></a></li>
+      <li><a href="#conteo"><span class="min">49 – 57 min</span><span class="tit">Modelos de conteo: Poisson</span></a></li>
+      <li><a href="#cierre"><span class="min">57 – 60 min</span><span class="tit">Errores frecuentes y lo que sigue</span></a></li>
+      <li><a href="#viene"><span class="min">después</span><span class="tit">Hacia dónde vamos: censura, selección, duración, DiD…</span></a></li>
+    </ol>
+  </header>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="mapa">
+    <div class="estacion-cabeza"><h2>El mapa: qué modelo para qué <em>y</em></h2><span class="reloj">00 – 05 min</span></div>
+    <p class="entrada">
+      Antes de escoger un estimador hay que mirar la variable dependiente. Su naturaleza dice qué
+      objeto tiene sentido modelar, y ese objeto dice cómo se interpretan los parámetros. La última
+      columna es la que más se olvida.
+    </p>
+
+    <div class="tabla-caja">
+      <table>
+        <thead>
+          <tr><th>Tipo de <em>y</em></th><th>Ejemplo del curso</th><th>Qué se modela</th><th>Estimador</th><th>Cómo se interpreta</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Continua</td><td>Costo de Nerlove; salario (NLSY)</td><td>𝔼[y | x] = xβ</td><td>MCO, MCG; VI si x es endógena</td><td>β<sub>k</sub> es el efecto marginal, directamente</td></tr>
+          <tr><td>Continua, varias ecuaciones</td><td>Oferta y salario de Mroz; inversión de Grunfeld</td><td>Un vector de medias condicionales</td><td>2SLS, 3SLS, SUR</td><td>Igual que arriba, ecuación por ecuación</td></tr>
+          <tr><td>Continua, panel</td><td>Salario por individuo y año</td><td>𝔼[y<sub>it</sub> | x<sub>it</sub>, α<sub>i</sub>]</td><td>Intragrupos, primeras diferencias, aleatorios</td><td>Efecto dentro del individuo</td></tr>
+          <tr><td>Binaria (0/1)</td><td>Participación laboral (Mroz)</td><td>P(y = 1 | x) = G(xβ)</td><td>Logit, Probit (MV)</td><td>Sólo el signo; la magnitud, por el efecto marginal</td></tr>
+          <tr><td>Nominal, J + 1 opciones</td><td>Escuela, casa o trabajo (Keane y Wolpin)</td><td>P(y = j | x)</td><td>Logit multinomial (MV)</td><td>β<sub>j</sub> mueve los momios de j frente a la base, <strong>no</strong> P(y = j)</td></tr>
+          <tr><td>Ordenada</td><td>Clasificación de videojuegos</td><td>P(y = j | x) con umbrales</td><td>Logit / Probit ordinal (MV)</td><td>El signo sólo es claro en las categorías extremas</td></tr>
+          <tr><td>Conteo (0, 1, 2, …)</td><td>Número de hijos (FERTIL2)</td><td>𝔼[y | x] = exp(xβ)</td><td>Poisson (MV o cuasi-MV)</td><td>Semielasticidad: 100·β % por unidad de x</td></tr>
+          <tr class="futuro"><td>Censurada (masa en 0) <span class="sello">próximo</span></td><td>Gasto en gas LP; horas de Mroz</td><td>y = máx(0, y*)</td><td>Tobit (MV)</td><td>β mueve la latente; el efecto sobre y es otro</td></tr>
+          <tr class="futuro"><td>Observada sólo para algunos <span class="sello">próximo</span></td><td>Salario de quien trabaja</td><td>𝔼[y | x, s = 1]</td><td>Heckman (probit + MCO o MV)</td><td>β, una vez corregida la selección</td></tr>
+          <tr class="futuro"><td>Tiempo hasta un evento <span class="sello">próximo</span></td><td>Afiliación sindical (NLSY)</td><td>Riesgo h(t | x)</td><td>Cox, Weibull (MV)</td><td>Semielasticidad del riesgo</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="glosa">
+      <h4>La idea que une todo</h4>
+      <p>
+        En los tres primeros renglones el parámetro <strong>es</strong> el efecto marginal porque el
+        modelo es lineal. En los siguientes, el modelo es no lineal en el índice
+        x<b>β</b> y el efecto marginal depende del punto en que se evalúa: hay que calcularlo, y
+        hay que decir si es el <strong>promedio</strong> de los efectos individuales (AME) o el
+        efecto <strong>en la media</strong> de los regresores (MEM). Diferencia en diferencias y
+        control sintético no aparecen en la tabla porque no son otro tipo de <em>y</em>, sino otro
+        <strong>diseño</strong>: cómo usar datos panel para medir el efecto de una política
+        (<a href="#did">ver adelante</a>).
+      </p>
+    </div>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="lineal">
+    <div class="estacion-cabeza"><h2>Unidad 1: el modelo lineal y sus remedios</h2><span class="reloj">05 – 13 min</span></div>
+    <p class="entrada">
+      Cinco ideas, cada una con su fórmula, su trampa y el lugar del repositorio donde se trabaja.
+      Los simuladores ligados son los que usamos en su momento; vale la pena volver a ellos.
+    </p>
+
+    <div class="tarjetas-repaso">
+      <article class="ficha-tema" id="t-esperanza">
+        <span class="etq">Notas, cap. 1</span>
+        <h3>Esperanza condicional y proyección lineal</h3>
+        <p>MCO estima la mejor aproximación lineal a 𝔼[y | x] en error cuadrático medio. Esa
+          aproximación tiene lectura causal sólo si el error es independiente en media de los regresores.</p>
+        <div class="ecuacion">𝔼[u | x] = 0 &nbsp;⇒&nbsp; Cov(x, u) = 0, &nbsp; pero no al revés</div>
+        <p class="trampa"><strong>Trampa:</strong> con u = x² − 1 y x simétrica, Cov(x, u) = 0 y sin
+          embargo 𝔼[u | x] ≠ 0. Una correlación nula no garantiza una media condicional bien especificada.</p>
+        <p class="ligas">Cuaderno: <code>Clase_01_RegresionLineal</code></p>
+      </article>
+
+      <article class="ficha-tema" id="t-dag">
+        <span class="etq">Notas, cap. 1 · DAG</span>
+        <h3>Qué controlar: confusor, mediador, colisionador</h3>
+        <p>Un <strong>confusor</strong> (x ← z → y) abre una ruta trasera: hay que controlarlo. Un
+          <strong>mediador</strong> (x → m → y) es parte del efecto total: controlarlo lo recorta. Un
+          <strong>colisionador</strong> (x → c ← y) cierra la ruta por sí solo: controlarlo la abre.</p>
+        <p class="trampa"><strong>Trampa:</strong> «controlar por más variables siempre reduce el sesgo».
+          Controlar por un colisionador lo <em>crea</em>.</p>
+        <p class="ligas">Simulador: <a href="sim/colisionador.html">DAG y sesgos</a></p>
+      </article>
+
+      <article class="ficha-tema" id="t-mco">
+        <span class="etq">Notas, cap. 2</span>
+        <h3>MCO en forma matricial</h3>
+        <div class="ecuacion">β̂ = (<b>X′X</b>)<sup>−1</sup><b>X′y</b>, &nbsp; <b>X′e</b> = <b>0</b>, &nbsp; Var(β̂ | <b>X</b>) = σ²(<b>X′X</b>)<sup>−1</sup></div>
+        <p>Geométricamente, ŷ = <b>P</b>y es la proyección ortogonal de y sobre las columnas de
+          <b>X</b>, y e = <b>M</b>y es lo que queda. De ahí salen Frisch-Waugh-Lovell, los
+          N − K grados de libertad y la descomposición de la suma de cuadrados.</p>
+        <p class="trampa"><strong>Trampa:</strong> sin constante, la suma de residuales no es cero y el
+          R² que reporta <code>statsmodels</code> es el <em>no centrado</em>: no se compara con el usual.</p>
+        <p class="ligas">Simulador: <a href="sim/mco.html">MCO</a> · Cuaderno: <code>Clase_01</code></p>
+      </article>
+
+      <article class="ficha-tema" id="t-vi">
+        <span class="etq">Notas, cap. 3</span>
+        <h3>Variables instrumentales</h3>
+        <div class="ecuacion">plim β̂<sub>VI</sub> = β + <span class="frac"><span>Cov(z, u)</span><span>Cov(z, x)</span></span></div>
+        <p>El instrumento debe ser <strong>relevante</strong> (denominador lejos de cero; F de
+          instrumentos excluidos mayor que 10) y <strong>exógeno</strong> (numerador cero). Un
+          instrumento débil amplifica cualquier pequeña violación de exogeneidad.</p>
+        <p class="trampa"><strong>Trampa:</strong> correr la segunda etapa a mano da los coeficientes
+          correctos y los errores estándar <em>equivocados</em>, porque usa x̂ en lugar de x en los residuales.
+          Y Sargan sólo existe si hay más instrumentos que endógenas.</p>
+        <p class="ligas">Simulador: <a href="sim/instrumentos.html">Instrumentos</a> · Cuaderno: <code>Clase_02</code></p>
+      </article>
+
+      <article class="ficha-tema" id="t-mcg">
+        <span class="etq">Notas, cap. 4 · MCG</span>
+        <h3>Mínimos cuadrados generalizados</h3>
+        <div class="ecuacion">β̂<sub>MCG</sub> = (<b>X′Ω</b><sup>−1</sup><b>X</b>)<sup>−1</sup><b>X′Ω</b><sup>−1</sup><b>y</b></div>
+        <p>Con heterocedasticidad, MCO sigue siendo insesgado pero deja de ser eficiente. Hay dos
+          remedios que resuelven cosas distintas: los errores <strong>robustos</strong> corrigen la
+          inferencia; MCG corrige la <strong>eficiencia</strong> y mueve la estimación puntual.</p>
+        <p class="trampa"><strong>Trampa:</strong> creer que el error estándar robusto «arregla» la
+          heterocedasticidad. Sólo deja de mentir sobre la precisión.</p>
+        <p class="ligas">Cuaderno: <code>Clase_01/MCG_Heterocedasticidad</code> (Nerlove por grupos de tamaño)</p>
+      </article>
+    </div>
+
+    <div class="chequeos-titulo">Compruebe lo aprendido</div>
+    <details class="chequeo">
+      <summary>En un perfil salarial con exper y exper², el coeficiente de exper es negativo y el de exper² positivo. ¿El punto crítico es un máximo?</summary>
+      <div>No: es un <strong>mínimo</strong>. La segunda derivada es 2β<sub>2</sub> &gt; 0, así que
+        la función es convexa. Fue la trampa del primer parcial con el corte de 1987 del NLSY, y
+        se explica por la colinealidad exper ≈ edad − educ − 6.</div>
+    </details>
+    <details class="chequeo">
+      <summary>Un instrumento tiene Cov(z, u) pequeña pero positiva. ¿Por qué puede ser peor que MCO?</summary>
+      <div>Porque el sesgo asintótico de VI es Cov(z, u)/Cov(z, x). Si el instrumento es débil, el
+        denominador es casi cero y un numerador pequeño se convierte en un sesgo grande, que puede
+        superar al de MCO, Cov(x, u)/Var(x).</div>
+    </details>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="sistemas">
+    <div class="estacion-cabeza"><h2>Unidad 2: sistemas de ecuaciones y datos panel</h2><span class="reloj">13 – 18 min</span></div>
+
+    <div class="tarjetas-repaso">
+      <article class="ficha-tema" id="t-sistemas">
+        <span class="etq">Notas, cap. 4</span>
+        <h3>Sistemas: 2SLS contra 3SLS</h3>
+        <p>2SLS estima cada ecuación por separado. 3SLS usa además la matriz de covarianzas entre
+          las ecuaciones, <b>Σ̂</b>, y gana eficiencia cuando los errores están correlacionados.</p>
+        <p class="trampa"><strong>Trampa:</strong> la eficiencia se paga. Si una ecuación está mal
+          especificada, 3SLS contamina a las demás; 2SLS la aísla. En el cuaderno de Mroz, la
+          correlación entre residuales es −0.90 y 3SLS reduce todos los errores estándar, pero la
+          simulación muestra cuándo deja de convenir.</p>
+        <p class="ligas">Cuaderno: <code>Clase_03/Estimating Simultaneous Models</code></p>
+      </article>
+
+      <article class="ficha-tema" id="t-sur">
+        <span class="etq">Notas, cap. 4 · SUR</span>
+        <h3>Regresiones aparentemente no relacionadas</h3>
+        <p>Ecuaciones que sólo están ligadas por sus errores. SUR es MCG sobre el sistema apilado.</p>
+        <div class="ecuacion">SUR = MCO ecuación por ecuación &nbsp;si&nbsp; <b>Σ</b> es diagonal &nbsp;o&nbsp; <b>X</b><sub>1</sub> = <b>X</b><sub>2</sub> = … = <b>X</b><sub>G</sub></div>
+        <p class="trampa"><strong>Trampa:</strong> esperar grandes ganancias de SUR cuando la prueba de
+          diagonalidad no rechaza. En Grunfeld (GM y Westinghouse) LM = 0.50 y la ganancia es de 8 %.</p>
+        <p class="ligas">Cuaderno: <code>Clase_03/SUR_Grunfeld</code></p>
+      </article>
+
+      <article class="ficha-tema" id="t-panel">
+        <span class="etq">Notas, cap. 5</span>
+        <h3>Datos panel: una familia indexada por θ</h3>
+        <div class="ecuacion">y<sub>it</sub> − θ ȳ<sub>i</sub> = (x<sub>it</sub> − θ x̄<sub>i</sub>)β + error
+          <span class="nota-ec">θ = 0: pool · 0 &lt; θ &lt; 1: efectos aleatorios · θ = 1: intragrupos</span></div>
+        <p>Si α<sub>i</sub> está correlacionado con x, sólo intragrupos y primeras diferencias son
+          consistentes. Hausman compara intragrupos con aleatorios: si difieren, aleatorios está sesgado.</p>
+        <p class="trampa"><strong>Trampa:</strong> calcular la media intragrupo con
+          <code>groupby().mean()</code> en vez de <code>transform('mean')</code> colapsa el panel y el
+          coeficiente sale tres veces más grande. Y los errores estándar se agrupan por individuo.</p>
+        <p class="ligas">Simulador: <a href="sim/efectos-fijos.html">Efectos fijos</a> · Cuaderno: <code>Clase_04</code></p>
+      </article>
+    </div>
+
+    <div class="chequeos-titulo">Compruebe lo aprendido</div>
+    <details class="chequeo">
+      <summary>¿Por qué no se puede estimar el efecto del sexo o de la raza con efectos fijos?</summary>
+      <div>Porque la transformación intragrupos resta a cada variable su media individual, y una
+        variable que no cambia en el tiempo queda idénticamente en cero: <b>Q</b>ι = <b>0</b>. Su
+        efecto se confunde con α<sub>i</sub>. Mundlak, o efectos aleatorios si se defienden, son
+        las alternativas.</div>
+    </details>
+    <details class="chequeo">
+      <summary>Con dos periodos, ¿qué relación hay entre intragrupos y primeras diferencias?</summary>
+      <div>Son <strong>numéricamente idénticos</strong>. Con M = 2, x<sub>i1</sub> − x̄<sub>i</sub> =
+        −(x<sub>i2</sub> − x<sub>i1</sub>)/2, de modo que las dos transformaciones son proporcionales. Con
+        más periodos difieren, y la comparación sirve como diagnóstico de exogeneidad estricta.</div>
+    </details>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="mv">
+    <div class="estacion-cabeza"><h2>Máxima verosimilitud: un objeto, tres pruebas</h2><span class="reloj">18 – 26 min</span></div>
+    <p class="entrada">
+      Desde aquí todos los modelos se estiman igual: se escribe la probabilidad de lo observado
+      como función de los parámetros y se maximiza. El ejemplo más limpio es el de un conteo
+      Poisson sin regresores, donde todo tiene fórmula cerrada y se ve la geometría de las tres
+      pruebas de hipótesis.
+    </p>
+
+    <div class="ecuacion">
+      ℓ(λ) = Σ<sub>i</sub> [ −λ + y<sub>i</sub> ln λ − ln y<sub>i</sub>! ], &nbsp;&nbsp;
+      s(λ) = <span class="frac"><span>∂ℓ</span><span>∂λ</span></span> = N<span class="frac"><span>ȳ − λ</span><span>λ</span></span>, &nbsp;&nbsp;
+      <span class="gorro">λ</span> = ȳ, &nbsp;&nbsp; 𝓘(λ) = <span class="frac"><span>N</span><span>λ</span></span>
+    </div>
+
+    <div class="lab">
+      <div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span>Log-verosimilitud relativa al máximo, ℓ(λ) − ℓ(λ̂)</span><span id="t-alerta"></span></div>
+          <canvas id="cvTri"></canvas>
+        </div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span>Los datos y el modelo ajustado</span></div>
+          <canvas id="cvTriDatos"></canvas>
+        </div>
+
+        <div class="glosa">
+          <h4>Lo que se ve</h4>
+          <p>Las tres pruebas miden lo mismo —qué tan lejos está H<sub>0</sub>: λ = λ<sub>0</sub>
+            de lo que dicen los datos— desde tres lugares distintos. <strong>Wald</strong> mide la
+            distancia horizontal entre λ̂ y λ<sub>0</sub> (sólo necesita el modelo sin restringir).
+            <strong>LR</strong> mide la caída vertical de la log-verosimilitud (necesita los dos).
+            <strong>LM</strong> mide la pendiente en λ<sub>0</sub> (sólo necesita el restringido): si
+            λ<sub>0</sub> fuera el máximo, la pendiente sería cero.</p>
+          <p>Las fórmulas son W = N(λ̂ − λ<sub>0</sub>)²/λ̂, LR = 2[ℓ(λ̂) − ℓ(λ<sub>0</sub>)] y
+            LM = N(ȳ − λ<sub>0</sub>)²/λ<sub>0</sub>. Difieren en muestra finita y coinciden
+            asintóticamente: suba N y compárelas.</p>
+        </div>
+
+        <div class="glosa guion-caja">
+          <h4>Guion para esta estación</h4>
+          <ol class="guion">
+            <li>Con λ<sub>0</sub> lejos del verdadero, las tres pruebas rechazan. Ubique en la figura
+              la distancia horizontal, la vertical y la pendiente.</li>
+            <li>Acerque λ<sub>0</sub> a λ̂: la pendiente se aplana, la caída se vuelve casi nula y
+              las tres estadísticas tienden a cero a la vez.</li>
+            <li>Baje N a 20 con λ<sub>0</sub> moderadamente lejos: ahora las tres <strong>no</strong>
+              coinciden. Ésa es la diferencia de muestra finita.</li>
+            <li>Lazo con lo que sigue: el puntaje de este modelo, Σ(y<sub>i</sub> − λ), es el mismo
+              que veremos en la regresión Poisson con regresores.</li>
+          </ol>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <section class="panel-seccion">
+          <h3>Proceso generador</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">λ verdadero</span><span class="val"></span></div>
+            <input type="range" id="t-lam" min="0.5" max="6" step="0.1" value="2.5" data-dec="1">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Observaciones &nbsp;<em>N</em></span><span class="val"></span></div>
+            <input type="range" id="t-N" min="20" max="600" step="10" value="80" data-dec="0">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Semilla</span><span class="val"></span></div>
+            <input type="range" id="t-sem" min="1" max="50" step="1" value="4" data-dec="0">
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Hipótesis nula</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">H<sub>0</sub>: λ = λ<sub>0</sub></span><span class="val"></span></div>
+            <input type="range" id="t-lam0" min="0.5" max="6" step="0.05" value="3.3" data-dec="2">
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Resultados</h3>
+          <div class="lecturas">
+            <div class="lectura"><span class="k">λ̂ = ȳ</span><span class="v" id="t-hat">—</span></div>
+            <div class="lectura destaca"><span class="k">Wald</span><span class="v azul" id="t-w">—</span></div>
+            <div class="lectura destaca"><span class="k">LR</span><span class="v naranja" id="t-lr">—</span></div>
+            <div class="lectura destaca"><span class="k">LM (puntaje)</span><span class="v violeta" id="t-lm">—</span></div>
+            <div class="lectura"><span class="k">Valor crítico χ²(1) al 5 %</span><span class="v gris">3.841</span></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="chequeos-titulo">Compruebe lo aprendido</div>
+    <details class="chequeo">
+      <summary>¿Qué dice la igualdad de la matriz de información y por qué importa?</summary>
+      <div>Que, si el modelo está bien especificado, 𝔼[s s′] = −𝔼[H]: la varianza del puntaje es
+        igual a menos el hessiano esperado. Por eso la varianza de β̂ se puede estimar con
+        cualquiera de los dos (o con el producto externo del puntaje). Si el modelo está mal
+        especificado la igualdad falla y hay que usar el emparedado H<sup>−1</sup>(Σ s s′)H<sup>−1</sup>:
+        es exactamente lo que pasará con Poisson y la sobredispersión.</div>
+    </details>
+    <details class="chequeo">
+      <summary>¿Cuál de las tres pruebas conviene si el modelo sin restringir es muy difícil de estimar?</summary>
+      <div>LM, porque sólo se evalúa en el modelo restringido. Wald es la conveniente cuando el
+        difícil es el restringido, y LR exige los dos.</div>
+    </details>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="binaria">
+    <div class="estacion-cabeza"><h2>Respuesta binaria: Logit y Probit</h2><span class="reloj">26 – 30 min</span></div>
+
+    <div class="fila-dos">
+      <div>
+        <div class="ecuacion">P(y = 1 | x) = G(x<b>β</b>), &nbsp; G = Λ (logit) o Φ (probit)</div>
+        <div class="ecuacion">ℓ(<b>β</b>) = Σ<sub>i</sub> [ y<sub>i</sub> ln G(x<sub>i</sub><b>β</b>) + (1 − y<sub>i</sub>) ln(1 − G(x<sub>i</sub><b>β</b>)) ]</div>
+        <div class="ecuacion">
+          <span class="frac"><span>∂P(y = 1 | x)</span><span>∂x<sub>k</sub></span></span> = g(x<b>β</b>) · β<sub>k</sub>
+          <span class="nota-ec">El signo de β<sub>k</sub> da el signo del efecto; la magnitud depende de g(xβ), que es máxima en P = 0.5</span>
+        </div>
+      </div>
+      <div class="glosa" style="margin-top:0">
+        <h4>Tres cosas que hay que llevarse</h4>
+        <p><strong>1.</strong> El modelo de probabilidad lineal predice probabilidades fuera de [0, 1]
+          y tiene heterocedasticidad por construcción.</p>
+        <p><strong>2.</strong> Los coeficientes de logit y probit difieren en escala (≈ 1.6 a 1.8
+          veces) pero los efectos marginales casi coinciden. Por eso se reportan efectos marginales.</p>
+        <p><strong>3.</strong> En el logit, β<sub>k</sub> es el cambio en el logaritmo de los momios,
+          ln[P/(1 − P)]. Ésa es la puerta al modelo multinomial.</p>
+        <p style="margin-top:.6rem">Simulador: <a href="sim/logit-probit.html">MPL, Logit y Probit</a> ·
+          Cuaderno: <code>Clase_05_EleccionBinaria</code></p>
+      </div>
+    </div>
+
+    <div class="chequeos-titulo">Compruebe lo aprendido</div>
+    <details class="chequeo">
+      <summary>¿Por qué el AME y el MEM difieren, y cuál se reporta?</summary>
+      <div>El AME promedia g(x<sub>i</sub>β)β<sub>k</sub> sobre la muestra; el MEM evalúa
+        g(x̄β)β<sub>k</sub> una sola vez. Como g no es lineal, el promedio de g no es g del
+        promedio. El AME responde a «¿cuánto cambia, en promedio, la probabilidad en esta
+        población?», que suele ser la pregunta; el MEM describe a un individuo promedio que puede
+        no existir (por ejemplo, con 0.4 hijos). Lo importante es decir cuál se reporta.</div>
+    </details>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="multinomial">
+    <div class="estacion-cabeza"><h2>Logit multinomial: el coeficiente no es el efecto</h2><span class="reloj">30 – 41 min</span></div>
+    <p class="entrada">
+      Con J + 1 alternativas sin orden, cada alternativa j tiene su propio vector
+      <b>β</b><sub>j</sub>, medido frente a una alternativa base (aquí, la escuela). El ejemplo
+      precargado son las estimaciones reales del cuaderno <code>Clase_06</code> con los datos de
+      Keane y Wolpin (1997), hombres jóvenes en 1987, con experiencia y raza fijas en su media.
+    </p>
+
+    <div class="ecuacion">
+      P(y = j | x) = <span class="frac"><span>exp(x<b>β</b><sub>j</sub>)</span><span>1 + Σ<sub>h=1</sub><sup>J</sup> exp(x<b>β</b><sub>h</sub>)</span></span>,
+      &nbsp;&nbsp;
+      ln <span class="frac"><span>P(y = j | x)</span><span>P(y = 0 | x)</span></span> = x<b>β</b><sub>j</sub>,
+      &nbsp;&nbsp;
+      <span class="frac"><span>∂P<sub>j</sub></span><span>∂x<sub>k</sub></span></span> = P<sub>j</sub> [ β<sub>jk</sub> − Σ<sub>h</sub> P<sub>h</sub> β<sub>hk</sub> ]
+    </div>
+
+    <div class="lab">
+      <div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span>Probabilidad de cada alternativa según los años de educación</span><span id="m-alerta"></span></div>
+          <canvas id="cvMnl"></canvas>
+        </div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span>Efecto marginal de un año más de educación, ∂P<sub>j</sub>/∂x</span></div>
+          <canvas id="cvMnlMe"></canvas>
+        </div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span>Independencia de alternativas irrelevantes: qué pasa al agregar un clon de «trabajo»</span></div>
+          <canvas id="cvIia"></canvas>
+        </div>
+
+        <div class="glosa">
+          <h4>Lo que se ve con los datos reales</h4>
+          <p>El coeficiente de educación en la ecuación de <strong>trabajo</strong> es −0.315: frente
+            a la escuela, un año más de educación <em>reduce</em> los momios de trabajar. Y sin
+            embargo, el efecto marginal sobre P(trabajo) es <strong>positivo</strong> en casi todo el
+            rango observado —hasta unos 15 años de educación— y el efecto marginal promedio en la
+            muestra es +0.026. No hay contradicción: la educación reduce mucho más los momios de
+            quedarse en casa (−0.674), así que la probabilidad que pierde «casa» se reparte y
+            «trabajo» gana en términos absolutos.</p>
+          <p>La regla: el signo de β<sub>jk</sub> es el signo del efecto sobre
+            P<sub>j</sub>/P<sub>0</sub>, <strong>no</strong> sobre P<sub>j</sub>. El efecto sobre
+            P<sub>j</sub> depende de los coeficientes de todas las alternativas, y los efectos
+            marginales suman cero porque las probabilidades suman uno.</p>
+        </div>
+
+        <div class="glosa aviso">
+          <h4>El autobús rojo y el autobús azul</h4>
+          <p>En el logit multinomial el cociente P<sub>j</sub>/P<sub>h</sub> depende sólo de j y h:
+            agregar o quitar otra alternativa no lo cambia. Es la <strong>independencia de
+            alternativas irrelevantes</strong> (IIA). Con un clon idéntico de «trabajo», el modelo le
+            quita probabilidad a todas las alternativas en la misma proporción, cuando lo razonable
+            es que el clon sólo le quite a su gemela. Cuando IIA no es defendible se usan el logit
+            anidado o el probit multinomial, y se contrasta con la prueba de Hausman-McFadden.</p>
+        </div>
+
+        <div class="glosa guion-caja">
+          <h4>Guion para esta estación</h4>
+          <ol class="guion">
+            <li>Con el ejemplo de Keane y Wolpin, mueva la educación de 8 a 18 años. Lea en el panel
+              el coeficiente de «trabajo» (negativo) y su efecto marginal: positivo hasta los 15 años,
+              negativo después. El signo cambia <em>dentro</em> del rango de los datos.</li>
+            <li>Pregunte al grupo: ¿cuánto suman los tres efectos marginales? Compruebe que es cero.</li>
+            <li>Ponga en cero la pendiente de «casa»: ahora los signos de coeficiente y efecto coinciden
+              en todo el rango. La inversión necesita que otra alternativa reaccione más fuerte.</li>
+            <li>Active el clon de «trabajo» y lea el cociente P(casa)/P(escuela): no cambia. Eso es IIA.</li>
+          </ol>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <section class="panel-seccion">
+          <h3>Ejemplos</h3>
+          <div class="botonera-preset">
+            <button class="boton" type="button" id="m-pre-kw">Keane y Wolpin (1997)</button>
+            <button class="boton secundario" type="button" id="m-pre-sim">Sin inversión</button>
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Casa frente a escuela</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Log-momios con 12 años &nbsp;a<sub>1</sub></span><span class="val"></span></div>
+            <input type="range" id="m-a1" min="-3" max="6" step="0.01" value="1.92" data-dec="2">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Pendiente &nbsp;β<sub>1</sub></span><span class="val"></span></div>
+            <input type="range" id="m-b1" min="-1.5" max="1.5" step="0.001" value="-0.674" data-dec="3">
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Trabajo frente a escuela</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Log-momios con 12 años &nbsp;a<sub>2</sub></span><span class="val"></span></div>
+            <input type="range" id="m-a2" min="-3" max="6" step="0.01" value="3.48" data-dec="2">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Pendiente &nbsp;β<sub>2</sub></span><span class="val"></span></div>
+            <input type="range" id="m-b2" min="-1.5" max="1.5" step="0.001" value="-0.315" data-dec="3">
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Dónde se evalúa</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Años de educación &nbsp;x<sub>0</sub></span><span class="val"></span></div>
+            <input type="range" id="m-x0" min="7" max="19" step="0.1" value="12" data-dec="1">
+          </div>
+          <label class="casilla"><input type="checkbox" id="m-clon"><span>Agregar un clon idéntico de «trabajo»</span></label>
+        </section>
+        <section class="panel-seccion">
+          <h3>Lecturas en el punto elegido</h3>
+          <div class="lecturas">
+            <div class="lectura"><span class="k">P(escuela)</span><span class="v violeta" id="m-p0">—</span></div>
+            <div class="lectura"><span class="k">P(casa)</span><span class="v naranja" id="m-p1">—</span></div>
+            <div class="lectura"><span class="k">P(trabajo)</span><span class="v azul" id="m-p2">—</span></div>
+            <div class="lectura destaca"><span class="k">Efecto en P(casa) <span id="m-b1k"></span></span><span class="v naranja" id="m-e1">—</span></div>
+            <div class="lectura destaca"><span class="k">Efecto en P(trabajo) <span id="m-b2k"></span></span><span class="v azul" id="m-e2">—</span></div>
+            <div class="lectura"><span class="k">Efecto en P(escuela)</span><span class="v violeta" id="m-e0">—</span></div>
+            <div class="lectura"><span class="k">Suma de los tres efectos</span><span class="v gris" id="m-suma">—</span></div>
+            <div class="lectura"><span class="k">P(casa)/P(escuela), sin y con clon</span><span class="v gris" id="m-razon">—</span></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="chequeos-titulo">Compruebe lo aprendido</div>
+    <details class="chequeo">
+      <summary>¿Por qué hay que fijar una alternativa base, y qué cambia si se escoge otra?</summary>
+      <div>Porque sumar la misma constante a todos los <b>β</b><sub>j</sub> no cambia ninguna
+        probabilidad: sin normalizar, el modelo no está identificado. Al cambiar de base cambian
+        los coeficientes (ahora se miden frente a otra alternativa), pero <strong>no</strong>
+        cambian las probabilidades, los efectos marginales ni la verosimilitud.</div>
+    </details>
+    <details class="chequeo">
+      <summary>En el cuaderno, 21 observaciones sin <code>status</code> se codificaban como «escuela». ¿Por qué el código no protestó?</summary>
+      <div>Porque al crear la variable recodificada con un valor inicial de 0 y asignar 1 y 2
+        sólo a quienes cumplían las condiciones, los faltantes quedaron en 0, que es una categoría
+        válida. El modelo corre y converge; sólo contrastar N = 1,717 y los coeficientes contra
+        Wooldridge (ejemplo 15.4) revela el error. La versión corregida del cuaderno hace
+        <code>dropna(subset=["status"])</code> antes de recodificar.</div>
+    </details>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="ordenada">
+    <div class="estacion-cabeza"><h2>Respuesta ordenada: umbrales sobre una variable latente</h2><span class="reloj">41 – 49 min</span></div>
+    <p class="entrada">
+      Cuando las categorías tienen orden (una calificación, un nivel de satisfacción), un solo
+      índice x<b>β</b> desplaza una variable latente y* y los umbrales α<sub>1</sub> &lt;
+      α<sub>2</sub> &lt; α<sub>3</sub> la cortan en categorías. El modelo es más parsimonioso que el
+      multinomial —un solo <b>β</b>—, y ese ahorro tiene una consecuencia para la interpretación.
+    </p>
+
+    <div class="ecuacion">
+      y* = x<b>β</b> + ε, &nbsp; y = j &nbsp;si&nbsp; α<sub>j</sub> &lt; y* ≤ α<sub>j+1</sub>,
+      &nbsp;&nbsp; P(y = j | x) = G(α<sub>j+1</sub> − x<b>β</b>) − G(α<sub>j</sub> − x<b>β</b>)
+      <span class="nota-ec">con α<sub>0</sub> = −∞ y α<sub>J+1</sub> = +∞; no hay constante en xβ porque la absorben los umbrales</span>
+    </div>
+    <div class="ecuacion">
+      <span class="frac"><span>∂P(y = j | x)</span><span>∂x<sub>k</sub></span></span> = β<sub>k</sub> [ g(α<sub>j</sub> − x<b>β</b>) − g(α<sub>j+1</sub> − x<b>β</b>) ]
+      <span class="nota-ec">categoría más baja: −β<sub>k</sub> g(α<sub>1</sub> − xβ) · más alta: β<sub>k</sub> g(α<sub>J</sub> − xβ) · intermedias: signo ambiguo</span>
+    </div>
+
+    <div class="lab">
+      <div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span>Densidad de y* = xβ + ε y las cuatro categorías</span><span id="o-alerta"></span></div>
+          <canvas id="cvOrd"></canvas>
+        </div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span>Probabilidad de cada categoría según el índice xβ</span></div>
+          <canvas id="cvOrdCurvas"></canvas>
+        </div>
+
+        <div class="glosa">
+          <h4>Lo que se ve</h4>
+          <p>Al aumentar x<b>β</b> la densidad se desliza a la derecha: siempre pierde masa la
+            categoría más baja y siempre gana la más alta. Las intermedias primero ganan (les entra
+            masa por la izquierda) y después pierden (se les sale por la derecha). En el panel
+            inferior son jorobas, y el efecto marginal es la pendiente de la joroba: <strong>cambia de
+            signo en la cima</strong>. Por eso «β<sub>k</sub> &gt; 0 aumenta la probabilidad de la
+            categoría 2» es una afirmación que no se puede hacer sin evaluar.</p>
+        </div>
+
+        <div class="glosa aviso">
+          <h4>Una precisión sobre las Notas</h4>
+          <p>La fórmula del efecto marginal para una categoría intermedia tiene <strong>dos</strong>
+            densidades, una por cada umbral que la delimita. Si su PDF de las Notas trae la expresión con
+            una sola densidad, −β<sub>k</sub> g(α<sub>j</sub> − xβ), es una versión anterior: esa es la
+            derivada de la probabilidad <em>acumulada</em> P(y ≤ j − 1), no la de P(y = j). La fórmula de
+            arriba es la correcta, y es la que hay que usar en la tarea.</p>
+        </div>
+
+        <div class="glosa guion-caja">
+          <h4>Guion para esta estación</h4>
+          <ol class="guion">
+            <li>Mueva el índice de −3 a 3 y siga las áreas: la de y = 0 se encoge, la de y = 3 crece.</li>
+            <li>Con el índice cerca del centro de la categoría 1, lea su efecto marginal: cambia de
+              signo justo cuando el índice cruza la cima de su joroba.</li>
+            <li>Separe los umbrales α<sub>1</sub> y α<sub>2</sub>: la categoría 1 se ensancha y su joroba
+              se aplana. Los umbrales <strong>son</strong> parámetros que se estiman.</li>
+            <li>Cambie a logit: las curvas apenas se mueven. La elección del enlace importa poco; la
+              lectura correcta de los efectos importa mucho.</li>
+          </ol>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <section class="panel-seccion">
+          <h3>Índice y efecto</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Índice &nbsp;xβ</span><span class="val"></span></div>
+            <input type="range" id="o-xb" min="-3.5" max="3.5" step="0.02" value="-0.4" data-dec="2">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Coeficiente &nbsp;β<sub>k</sub></span><span class="val"></span></div>
+            <input type="range" id="o-b" min="-1.5" max="1.5" step="0.05" value="1" data-dec="2">
+            <div class="control-nota">Escala el efecto marginal; su signo decide qué extremo gana.</div>
+          </div>
+          <div class="opciones" role="radiogroup">
+            <label><input type="radio" name="o-enl" value="probit" checked>Probit ordinal</label>
+            <label><input type="radio" name="o-enl" value="logit">Logit ordinal</label>
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Umbrales</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">α<sub>1</sub></span><span class="val"></span></div>
+            <input type="range" id="o-a1" min="-3" max="3" step="0.05" value="-1.2" data-dec="2">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">α<sub>2</sub></span><span class="val"></span></div>
+            <input type="range" id="o-a2" min="-3" max="3" step="0.05" value="0.3" data-dec="2">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">α<sub>3</sub></span><span class="val"></span></div>
+            <input type="range" id="o-a3" min="-3" max="3" step="0.05" value="1.5" data-dec="2">
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Probabilidad y efecto marginal</h3>
+          <div class="lecturas" id="o-tabla"></div>
+          <div class="lecturas" style="margin-top:.55rem">
+            <div class="lectura"><span class="k">Suma de los efectos</span><span class="v gris" id="o-suma">—</span></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="chequeos-titulo">Compruebe lo aprendido</div>
+    <details class="chequeo">
+      <summary>¿Por qué no se estima una constante junto con los umbrales?</summary>
+      <div>Porque sumar c a la constante y a todos los umbrales deja intactas las diferencias
+        α<sub>j</sub> − xβ y, con ellas, todas las probabilidades. Hay que normalizar: o se fija la
+        constante en cero (lo que hacen las Notas y <code>OrderedModel</code>) o se fija un umbral.</div>
+    </details>
+    <details class="chequeo">
+      <summary>¿Cuándo es preferible un multinomial a un ordinal aunque las categorías tengan orden?</summary>
+      <div>Cuando no es creíble que un solo índice mueva todas las categorías en la misma dirección
+        (el supuesto de <em>regresión paralela</em>). Por ejemplo, si un regresor hace más probables
+        las dos categorías extremas a la vez. El ordinal no puede generar eso; el multinomial sí, a
+        costa de muchos más parámetros.</div>
+    </details>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="conteo">
+    <div class="estacion-cabeza"><h2>Modelos de conteo: la regresión Poisson</h2><span class="reloj">49 – 57 min</span></div>
+    <p class="entrada">
+      Un conteo es entero, no negativo, sin cota superior natural y con ceros posibles. Modelamos su
+      media con una exponencial, que es positiva por construcción, y estimamos por máxima
+      verosimilitud suponiendo una distribución de Poisson. La parte que más importa es la que
+      ocurre cuando ese supuesto falla.
+    </p>
+
+    <div class="ecuacion">
+      𝔼[y | x] = exp(x<b>β</b>), &nbsp;&nbsp;
+      ℓ(<b>β</b>) = Σ<sub>i</sub> [ −exp(x<sub>i</sub><b>β</b>) + y<sub>i</sub> x<sub>i</sub><b>β</b> − ln y<sub>i</sub>! ], &nbsp;&nbsp;
+      Σ<sub>i</sub> x′<sub>i</sub>( y<sub>i</sub> − exp(x<sub>i</sub><b>β</b>) ) = <b>0</b>
+      <span class="nota-ec">El hessiano −Σ exp(x<sub>i</sub>β) x′<sub>i</sub>x<sub>i</sub> es definido negativo: la log-verosimilitud es globalmente cóncava</span>
+    </div>
+
+    <div class="lab">
+      <div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span>Conteos simulados, media verdadera y ajuste Poisson</span><span id="c-alerta"></span></div>
+          <canvas id="cvCnt"></canvas>
+        </div>
+        <div class="lienzo-caja">
+          <div class="lienzo-titulo"><span id="c-tit2">Distribución de y en x = x<sub>0</sub>: la verdadera frente a una Poisson con la misma media</span></div>
+          <canvas id="cvCntPmf"></canvas>
+        </div>
+
+        <div class="glosa">
+          <h4>Lo que se ve, y la propiedad que lo explica</h4>
+          <p>La condición de primer orden sólo involucra la <strong>media</strong>
+            condicional. Nunca usa que la varianza sea igual a la media. Por eso, aunque los datos
+            tengan sobredispersión, Poisson estima <b>β</b> de forma consistente: es el resultado de
+            <strong>cuasi máxima verosimilitud</strong>. Lo que se rompe es la igualdad de la matriz de
+            información, y con ella los errores estándar clásicos, que salen demasiado chicos.</p>
+          <p>Suba la sobredispersión y corra el Monte Carlo: el promedio de β̂<sub>1</sub> sigue en
+            su lugar, pero el intervalo clásico cubre al verdadero mucho menos que el 95 % prometido.
+            El robusto (emparedado) mantiene la cobertura. <strong>Con Poisson se reportan siempre
+            errores estándar robustos.</strong></p>
+        </div>
+
+        <div class="glosa">
+          <h4>Cómo se interpreta el coeficiente</h4>
+          <p>Como ∂𝔼[y | x]/∂x<sub>k</sub> = exp(xβ)·β<sub>k</sub>, se tiene
+            β<sub>k</sub> = ∂ ln 𝔼[y | x]/∂x<sub>k</sub>: una <strong>semielasticidad</strong>. Un
+            aumento unitario en x<sub>k</sub> cambia el conteo esperado en ≈ 100·β<sub>k</sub> %, o
+            exactamente en 100·(e<sup>β<sub>k</sub></sup> − 1) %. Y como la condición de primer orden
+            con constante implica que el promedio de los ajustados es ȳ, el efecto marginal promedio es
+            simplemente β̂<sub>k</sub>·ȳ.</p>
+        </div>
+
+        <div class="glosa guion-caja">
+          <h4>Guion para esta estación</h4>
+          <ol class="guion">
+            <li>Sin sobredispersión: el cociente de errores estándar robusto/clásico ronda 1 y la
+              dispersión de Pearson ronda 1. Corra el Monte Carlo: ambas coberturas cerca de 95 %.</li>
+            <li>Suba α a 1: el panel inferior muestra la distribución verdadera con más ceros y cola más
+              larga que la Poisson. Corra de nuevo: el estimador sigue centrado, la cobertura clásica cae.</li>
+            <li>Lea la semielasticidad y compárela con el cambio exacto: con β<sub>1</sub> = 0.3 la
+              aproximación ya se separa (30 % contra 35 %).</li>
+            <li>Lazo con la tarea: en FERTIL2 hay <em>sub</em>dispersión (Pearson ≈ 0.75). La lógica es
+              la misma con el signo opuesto: los errores clásicos son demasiado grandes.</li>
+          </ol>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <section class="panel-seccion">
+          <h3>Media condicional</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Constante &nbsp;β<sub>0</sub></span><span class="val"></span></div>
+            <input type="range" id="c-b0" min="-1" max="1.5" step="0.05" value="0.2" data-dec="2">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Pendiente &nbsp;β<sub>1</sub></span><span class="val"></span></div>
+            <input type="range" id="c-b1" min="-0.5" max="0.6" step="0.01" value="0.3" data-dec="2">
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Distribución de los datos</h3>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Sobredispersión &nbsp;α</span><span class="val"></span></div>
+            <input type="range" id="c-alfa" min="0" max="2" step="0.05" value="0" data-dec="2">
+            <div class="control-nota">Var(y | x) = μ + α μ². Con α = 0 los datos son Poisson; con α &gt; 0, binomial negativa.</div>
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Observaciones &nbsp;<em>N</em></span><span class="val"></span></div>
+            <input type="range" id="c-N" min="100" max="2000" step="50" value="400" data-dec="0">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Semilla</span><span class="val"></span></div>
+            <input type="range" id="c-sem" min="1" max="50" step="1" value="7" data-dec="0">
+          </div>
+          <div class="control">
+            <div class="control-etiqueta"><span class="nom">Punto del panel inferior &nbsp;x<sub>0</sub></span><span class="val"></span></div>
+            <input type="range" id="c-x0" min="0" max="4" step="0.1" value="3" data-dec="1">
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Estimación en esta muestra</h3>
+          <div class="lecturas">
+            <div class="lectura destaca"><span class="k">β̂<sub>1</sub></span><span class="v azul" id="c-b1h">—</span></div>
+            <div class="lectura"><span class="k">ee clásico</span><span class="v" id="c-eec">—</span></div>
+            <div class="lectura"><span class="k">ee robusto</span><span class="v" id="c-eer">—</span></div>
+            <div class="lectura"><span class="k">Dispersión de Pearson</span><span class="v naranja" id="c-pear">—</span></div>
+            <div class="lectura"><span class="k">Semielasticidad 100·β̂<sub>1</sub></span><span class="v" id="c-semi">—</span></div>
+            <div class="lectura"><span class="k">Cambio exacto 100·(e<sup>β̂</sup> − 1)</span><span class="v" id="c-exac">—</span></div>
+            <div class="lectura"><span class="k">AME = β̂<sub>1</sub>·ȳ</span><span class="v" id="c-ame">—</span></div>
+          </div>
+        </section>
+        <section class="panel-seccion">
+          <h3>Monte Carlo, 500 réplicas</h3>
+          <button class="boton" type="button" id="c-mc">Correr el Monte Carlo</button>
+          <div class="lecturas" style="margin-top:.8rem">
+            <div class="lectura"><span class="k">Promedio de β̂<sub>1</sub></span><span class="v" id="c-mc-media">—</span></div>
+            <div class="lectura"><span class="k">Desviación real de β̂<sub>1</sub></span><span class="v" id="c-mc-de">—</span></div>
+            <div class="lectura"><span class="k">ee clásico promedio</span><span class="v" id="c-mc-eec">—</span></div>
+            <div class="lectura"><span class="k">ee robusto promedio</span><span class="v" id="c-mc-eer">—</span></div>
+            <div class="lectura destaca"><span class="k">Cobertura IC 95 % clásico</span><span class="v naranja" id="c-mc-cc">—</span></div>
+            <div class="lectura destaca"><span class="k">Cobertura IC 95 % robusto</span><span class="v azul" id="c-mc-cr">—</span></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="chequeos-titulo">Compruebe lo aprendido</div>
+    <details class="chequeo">
+      <summary>¿Qué dos condiciones definen una variable de conteo, y por qué el número de hijos graduados de la universidad no las cumple?</summary>
+      <div>No tiene una cota superior natural y el cero es posible. El número de hijos graduados está
+        topado por el número de hijos, así que viola la primera: un modelo binomial sería más natural.</div>
+    </details>
+    <details class="chequeo">
+      <summary>Si el estimador Poisson es consistente con sobredispersión, ¿para qué existe la binomial negativa?</summary>
+      <div>Para ganar eficiencia y para modelar la distribución completa —por ejemplo, la probabilidad
+        de cero—, no sólo la media. El precio es que la binomial negativa depende de que su forma de
+        varianza sea correcta; Poisson con errores robustos sólo depende de la media.</div>
+    </details>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="cierre">
+    <div class="estacion-cabeza"><h2>Errores que corren sin protestar</h2><span class="reloj">57 – 60 min</span></div>
+    <p class="entrada">
+      Todos aparecieron este semestre en código real del curso. Ninguno produce un mensaje de
+      error: el programa corre, imprime una tabla normal y da un número equivocado. Son exactamente
+      el tipo de cosa que un asistente de IA reproduce con toda seguridad.
+    </p>
+    <ol class="lista-errores">
+      <li><strong>Olvidar la constante.</strong> En las fórmulas de <code>linearmodels</code> hay que
+        escribir <code>1 +</code>. Sin ella, el sistema de Mroz daba educ = −99 en vez de −184.</li>
+      <li><strong>Faltantes convertidos en una categoría.</strong> Los 21 casos sin <code>status</code>
+        que el logit multinomial trataba como «escuela».</li>
+      <li><strong>Argumentos en otro orden.</strong> <code>Heckman(Y, W, X)</code> en lugar de
+        <code>Heckman(Y, X, W)</code>: la restricción de exclusión quedaba al revés y ρ = 1.23.</li>
+      <li><strong>Interpretar el coeficiente como el efecto.</strong> En logit, probit, multinomial y
+        ordinal hay que calcular el efecto marginal, y decir si es AME o MEM.</li>
+      <li><strong>Efecto marginal de una variable que entra con su cuadrado.</strong> El «efecto de la
+        edad» en Poisson era 0.765 ignorando agesq; el efecto total es 0.137.</li>
+      <li><strong>Errores estándar clásicos donde no aplican.</strong> Poisson con sobre o subdispersión,
+        MCO con heterocedasticidad, panel sin agrupar por individuo, segunda etapa de 2SLS hecha a mano.</li>
+      <li><strong>Muestrear por la variable dependiente.</strong> Submuestrear la categoría dominante de
+        <em>y</em> (cuaderno de videojuegos) cambia probabilidades y pendientes.</li>
+      <li><strong>Conclusiones que no dicen lo que imprimen las salidas.</strong> Leer siempre el número
+        antes de escribir la frase.</li>
+    </ol>
+
+    <div class="fila-dos" style="margin-top:1.6rem">
+      <div class="glosa" style="margin-top:0">
+        <h4>Lo que sigue</h4>
+        <p><strong>Tarea-examen:</strong> se publica en el repositorio al terminar esta clase y se
+          entrega el <strong>domingo 22 de noviembre</strong>. Cubre todo el curso, mitad teoría y mitad
+          práctica, con datos personalizados por número de cuenta.</p>
+        <p><strong>Ejercicios pendientes:</strong> quizzes de Python y el ejercicio de la Clase 01, a más
+          tardar el domingo 29 de noviembre.</p>
+        <p><strong>Proyecto final:</strong> lineamientos el lunes 23 de noviembre; entrega el domingo 20
+          de diciembre.</p>
+      </div>
+      <div class="glosa" style="margin-top:0">
+        <h4>Cómo estudiar con esta página</h4>
+        <p>Para cada estación: (1) escriba la fórmula clave sin mirarla; (2) responda las preguntas
+          antes de abrirlas; (3) mueva el simulador hasta poder <em>predecir</em> qué va a pasar antes
+          de soltar el deslizador; (4) busque la misma idea en el cuaderno correspondiente y ubique la
+          línea de código que la implementa.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="viene">
+    <div class="estacion-cabeza"><h2>Hacia dónde vamos</h2><span class="reloj">para después de la clase</span></div>
+    <p class="entrada">
+      Lo que falta del semestre no es un tema nuevo cada vez: casi todo se arma con piezas que ya
+      tenemos. Los tres primeros modelos son máxima verosimilitud con una <em>y</em> que se observa
+      sólo en parte; los dos diseños causales son datos panel con una pregunta de política; y la
+      unidad de código con IA corre de fondo desde el principio. Cada ficha dice qué pregunta resuelve,
+      su fórmula central, <strong>con qué de lo visto se conecta</strong> y dónde está el material.
+    </p>
+
+    <div class="tarjetas-repaso">
+      <article class="ficha-tema proximo" id="censura">
+        <span class="etq">Unidad 3 · Notas, cap. 8 <span class="sello">próximo</span></span>
+        <h3>Censura y truncamiento: Tobit</h3>
+        <p><strong>La pregunta:</strong> ¿cómo modelar una <em>y</em> con una masa de ceros, como el gasto
+          en gas de los hogares que no lo compran, o las horas de quien no trabaja?</p>
+        <div class="ecuacion">y* = x<b>β</b> + u, &nbsp; u ~ N(0, σ²), &nbsp; y = máx(0, y*)
+          <span class="nota-ec">ℓ<sub>i</sub> = 1[y<sub>i</sub> = 0]·ln Φ(−x<sub>i</sub><b>β</b>/σ) + 1[y<sub>i</sub> &gt; 0]·ln[φ((y<sub>i</sub> − x<sub>i</sub><b>β</b>)/σ)/σ]</span></div>
+        <p class="puente"><strong>Con lo visto:</strong> la verosimilitud es mitad probit (¿cero o
+          positivo?) y mitad regresión normal (¿cuánto?). Es el mismo aparato de MV de la estación 4.
+          Censurar conserva las <em>x</em> de los ceros; truncar las pierde.</p>
+        <p class="trampa"><strong>Trampa:</strong> MCO con los ceros, o sólo con los positivos, atenúa la
+          pendiente. Y β mueve la <em>latente</em> y*; el efecto sobre la <em>y</em> observada es otro
+          (hay tres esperanzas distintas).</p>
+        <p class="ligas">Cuaderno: <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_10_TruncamientoYCensura"><code>Clase_10_TruncamientoYCensura</code></a> (gas LP; Mroz)</p>
+      </article>
+
+      <article class="ficha-tema proximo" id="seleccion">
+        <span class="etq">Unidad 3 · Notas, cap. 8 <span class="sello">próximo</span></span>
+        <h3>Selección de muestra: Heckman</h3>
+        <p><strong>La pregunta:</strong> el salario sólo se observa para quien trabaja. ¿Qué estima MCO en
+          esa muestra, y cómo se corrige?</p>
+        <div class="ecuacion">𝔼[y | x, trabaja] = x<b>β</b> + ρσ·λ(z<b>γ</b>), &nbsp; λ = φ/Φ
+          <span class="nota-ec">λ es la razón inversa de Mills; z<b>γ</b> sale de un probit de participación</span></div>
+        <p class="puente"><strong>Con lo visto:</strong> la primera etapa es un probit (estación 5), y el
+          sesgo de selección es un sesgo por <strong>variable omitida</strong>: λ es el regresor que falta
+          (unidad 1).</p>
+        <p class="trampa"><strong>Trampa:</strong> hace falta una variable en z que no esté en x
+          (restricción de exclusión, como un instrumento). Sin ella, la identificación depende sólo de la
+          curvatura de λ, que es casi lineal.</p>
+        <p class="ligas">Cuaderno: <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_09_SeleccionDeMuestra"><code>Clase_09_SeleccionDeMuestra</code></a> (salarios de mujeres)</p>
+      </article>
+
+      <article class="ficha-tema proximo" id="duracion">
+        <span class="etq">Unidad 3 · Notas, cap. 10 <span class="sello">próximo</span></span>
+        <h3>Modelos de duración</h3>
+        <p><strong>La pregunta:</strong> ¿cuánto tarda algo en ocurrir (encontrar empleo, afiliarse a un
+          sindicato), cuando muchas historias terminan antes de que ocurra?</p>
+        <div class="ecuacion">h(t | x) = <span class="frac"><span>f(t | x)</span><span>S(t | x)</span></span>
+          = h<sub>0</sub>(t)·exp(x<b>β</b>)
+          <span class="nota-ec">riesgos proporcionales; Cox estima β sin especificar h<sub>0</sub></span></div>
+        <p class="puente"><strong>Con lo visto:</strong> el mismo exp(x<b>β</b>) del Poisson, así que β se
+          lee otra vez como semielasticidad, ahora del riesgo. La censura por la derecha entra en la
+          verosimilitud igual que en el Tobit.</p>
+        <p class="trampa"><strong>Trampa:</strong> la heterogeneidad no observada produce un riesgo
+          agregado decreciente aunque el de cada persona sea constante. Y tirar las observaciones
+          censuradas sesga todo hacia duraciones cortas.</p>
+        <p class="ligas">Cuaderno: <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_13_ModelosDeDuracion"><code>Clase_13_ModelosDeDuracion</code></a> (Kaplan-Meier, Weibull, Cox)</p>
+      </article>
+
+      <article class="ficha-tema proximo" id="did">
+        <span class="etq">Unidad 3 · Notas, cap. 9 <span class="sello">próximo</span></span>
+        <h3>Diferencia en diferencias</h3>
+        <p><strong>La pregunta:</strong> ¿qué efecto tuvo una política que llegó a unos y no a otros, por
+          ejemplo, el alza del salario mínimo en Nueva Jersey sobre el empleo?</p>
+        <div class="ecuacion">δ̂ = (ȳ<sub>T,después</sub> − ȳ<sub>T,antes</sub>) − (ȳ<sub>C,después</sub> − ȳ<sub>C,antes</sub>)
+          <span class="nota-ec">en regresión: y<sub>it</sub> = α<sub>i</sub> + λ<sub>t</sub> + δ·D<sub>it</sub> + u<sub>it</sub></span></div>
+        <p class="puente"><strong>Con lo visto:</strong> es el estimador de efectos fijos de la unidad 2 con
+          efectos de individuo <em>y</em> de tiempo. Lo nuevo es el lenguaje de resultados potenciales:
+          δ es el efecto sobre los tratados si se cumplen tendencias paralelas.</p>
+        <p class="trampa"><strong>Trampa:</strong> las tendencias paralelas no se pueden contrastar, sólo
+          hacer creíbles con los periodos previos. Los errores estándar van agrupados al nivel en que se
+          asignó la política.</p>
+        <p class="ligas">Cuaderno: <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_11_DiferenciaEnDiferencias"><code>Clase_11_DiferenciaEnDiferencias</code></a> (Card y Krueger, 1994) ·
+          Simulador: <a href="sim/did.html">Dif. en dif.</a></p>
+      </article>
+
+      <article class="ficha-tema proximo" id="sintetico">
+        <span class="etq">Unidad 3 · Notas, cap. 9 <span class="sello">próximo</span></span>
+        <h3>Control sintético</h3>
+        <p><strong>La pregunta:</strong> si sólo una unidad recibió la política (California y su impuesto
+          al tabaco), ¿contra qué se compara?</p>
+        <div class="ecuacion">τ̂<sub>t</sub> = y<sub>1t</sub> − Σ<sub>j</sub> w<sub>j</sub> y<sub>jt</sub>, &nbsp; w<sub>j</sub> ≥ 0, &nbsp; Σ w<sub>j</sub> = 1
+          <span class="nota-ec">los pesos se eligen para reproducir la trayectoria previa del tratado</span></div>
+        <p class="puente"><strong>Con lo visto:</strong> es una diferencia en diferencias en la que el grupo
+          de control no pesa igual, sino con pesos elegidos con los datos.</p>
+        <p class="trampa"><strong>Trampa:</strong> con un solo tratado no hay errores estándar usuales: la
+          inferencia se hace con placebos (aplicar el método a cada unidad no tratada). Si el ajuste previo
+          es malo, la comparación posterior no dice nada.</p>
+        <p class="ligas">Cuaderno: <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_12_ControlSintetico"><code>Clase_12_ControlSintetico</code></a> (Proposición 99)</p>
+      </article>
+
+      <article class="ficha-tema proximo" id="ia">
+        <span class="etq">Unidad 4 · transversal <span class="sello">en curso</span></span>
+        <h3>Código asistido por IA</h3>
+        <p><strong>La pregunta:</strong> ¿cómo usar un asistente para escribir, depurar y explicar código
+          econométrico sin aceptar un número equivocado?</p>
+        <div class="ecuacion">corre sin error &nbsp;≠&nbsp; está bien
+          <span class="nota-ec">verificar contra un resultado publicado o una identidad que debe cumplirse</span></div>
+        <p class="puente"><strong>Con lo visto:</strong> la lista de <a href="#cierre">errores que corren sin
+          protestar</a> salió de código real del curso, y la tarea-examen la pone en práctica (predicción,
+          verificación y la auditoría de T5).</p>
+        <p class="trampa"><strong>Trampa:</strong> pedirle al asistente la respuesta en lugar de la
+          explicación. Y no fijar semilla ni versiones: un resultado que no se reproduce no está verificado.</p>
+        <p class="ligas">Actividades: <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_15_CodigoAsistidoPorIA"><code>Clase_15_CodigoAsistidoPorIA</code></a> ·
+          proyecto final: lineamientos el 23 de noviembre</p>
+      </article>
+    </div>
+  </section>
+
+  <hr class="regla">
+
+  <!-- ===================================================================== -->
+  <section class="seccion" id="autoevaluacion">
+    <div class="estacion-cabeza"><h2>Autoevaluación</h2><span class="marcador" id="q-marcador">0 de 12</span></div>
+    <p class="entrada">
+      Doce preguntas, una por idea central del curso. Escoja una opción y lea la explicación,
+      acierte o no: la explicación es la parte que se estudia. Nada se guarda ni se envía.
+    </p>
+    <div class="quiz" id="quiz"></div>
+    <p style="margin-top:1rem"><button class="boton secundario" type="button" id="q-reiniciar">Reiniciar la autoevaluación</button></p>
+  </section>
+
+  <footer class="pie-sitio">
+    <p>
+      Notas de Clase, caps. 1 a 7. Cuadernos: <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_06_LogitMultinomial">Clase_06_LogitMultinomial</a>
+      (Keane y Wolpin, 1997), <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_07_LogitOrdinal">Clase_07_LogitOrdinal</a> y
+      <a href="https://github.com/benjov/Econometria-I-2026/tree/main/Clase_08_ModelosDeConteo">Clase_08_ModelosDeConteo</a> (FERTIL2).
+      Los temas que vienen están en los caps. 8 a 10 y en <code>Clase_09</code> a <code>Clase_15</code>.
+      Todas las cifras de los simuladores se calculan en el navegador.
+    </p>
+  </footer>
+
+</div>
+
+<script src="assets/lab.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ======================================================================
+     Utilidades numéricas propias de esta página
+     ==================================================================== */
+
+  const pchi1 = (s) => Lab.erfc(Math.sqrt(Math.max(s, 0) / 2));   // P(χ²₁ > s)
+
+  // Poisson por el método de Knuth, partido en trozos para medias grandes
+  function rpois(g, lam) {
+    let k = 0;
+    while (lam > 30) { k += rpoisPeq(g, 30); lam -= 30; }
+    return k + rpoisPeq(g, lam);
+  }
+  function rpoisPeq(g, lam) {
+    const L = Math.exp(-lam);
+    let k = 0, p = 1;
+    do { k++; p *= g.u(); } while (p > L);
+    return k - 1;
+  }
+  // Gamma(forma k, escala 1) por Marsaglia y Tsang
+  function rgamma(g, k) {
+    if (k < 1) return rgamma(g, k + 1) * Math.pow(g.u(), 1 / k);
+    const d = k - 1 / 3, c = 1 / Math.sqrt(9 * d);
+    for (;;) {
+      let x, v;
+      do { x = g.n(); v = 1 + c * x; } while (v <= 0);
+      v = v * v * v;
+      const u = g.u();
+      if (u < 1 - 0.0331 * x * x * x * x) return d * v;
+      if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
+    }
+  }
+
+  // Regresión Poisson por Newton-Raphson, con ee clásico y robusto
+  function poissonMV(X, y) {
+    const N = X.length, K = X[0].length;
+    let b = new Array(K).fill(0);
+    b[0] = Math.log(Math.max(Lab.media(y), 1e-3));
+    let H, mu;
+    for (let it = 0; it < 50; it++) {
+      mu = X.map((f) => Math.exp(f.reduce((s, x, j) => s + x * b[j], 0)));
+      const gr = new Array(K).fill(0);
+      H = Array.from({ length: K }, () => new Array(K).fill(0));
+      for (let i = 0; i < N; i++) {
+        const r = y[i] - mu[i];
+        for (let a = 0; a < K; a++) {
+          gr[a] += X[i][a] * r;
+          for (let c = 0; c < K; c++) H[a][c] += mu[i] * X[i][a] * X[i][c];
+        }
+      }
+      const paso = Lab.mv(Lab.inv(H), gr);
+      b = b.map((v, j) => v + paso[j]);
+      if (paso.reduce((s, v) => s + Math.abs(v), 0) < 1e-10) break;
+    }
+    mu = X.map((f) => Math.exp(f.reduce((s, x, j) => s + x * b[j], 0)));
+    H = Array.from({ length: K }, () => new Array(K).fill(0));
+    const B = Array.from({ length: K }, () => new Array(K).fill(0));
+    let pearson = 0;
+    for (let i = 0; i < N; i++) {
+      const r = y[i] - mu[i];
+      pearson += r * r / mu[i];
+      for (let a = 0; a < K; a++) for (let c = 0; c < K; c++) {
+        H[a][c] += mu[i] * X[i][a] * X[i][c];
+        B[a][c] += r * r * X[i][a] * X[i][c];
+      }
+    }
+    const Hi = Lab.inv(H);
+    const Vr = Lab.multiplicar(Lab.multiplicar(Hi, B), Hi);
+    return {
+      b, mu,
+      eeC: Hi.map((f, i) => Math.sqrt(f[i])),
+      eeR: Vr.map((f, i) => Math.sqrt(f[i])),
+      pearson: pearson / (N - K)
+    };
+  }
+
+  function pmfPois(k, lam) {
+    let lp = -lam + k * Math.log(lam);
+    for (let i = 2; i <= k; i++) lp -= Math.log(i);
+    return Math.exp(lp);
+  }
+  // Binomial negativa NB2 con media mu y Var = mu + a mu²
+  function pmfNB(k, mu, a) {
+    if (a <= 1e-9) return pmfPois(k, mu);
+    const r = 1 / a, p = r / (r + mu);
+    const lg = (z) => { // log-gamma de Lanczos
+      const c = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059,
+                 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+      if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lg(1 - z);
+      z -= 1; let x = 0.99999999999980993;
+      for (let i = 0; i < 8; i++) x += c[i] / (z + i + 1);
+      const t = z + 7.5;
+      return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+    };
+    return Math.exp(lg(k + r) - lg(r) - lg(k + 1) + r * Math.log(p) + k * Math.log(1 - p));
+  }
+
+  const C = (n) => Lab.color(n);
+  const fmt = Lab.fmt, fmtS = Lab.fmtSigno;
+
+  /* ======================================================================
+     1. Trinidad de pruebas con un Poisson sin regresores
+     ==================================================================== */
+
+  const gTri = new Lab.Grafica(document.getElementById('cvTri'), { razon: 0.48, minAlto: 250, maxAlto: 400 });
+  const gTriD = new Lab.Grafica(document.getElementById('cvTriDatos'), { razon: 0.28, minAlto: 180, maxAlto: 260 });
+
+  function dibujarTrinidad() {
+    const lam = Lab.val('t-lam'), lam0 = Lab.val('t-lam0'), N = Lab.val('t-N');
+    const g = Lab.rng(Lab.val('t-sem') * 7919 + 13);
+    const y = [];
+    for (let i = 0; i < N; i++) y.push(rpois(g, lam));
+    const ybar = Math.max(Lab.media(y), 1e-6);
+    const lh = ybar;
+    const ll = (l) => N * (-l + ybar * Math.log(l));
+    const rel = (l) => ll(l) - ll(lh);
+    const W = N * (lh - lam0) ** 2 / lh;
+    const LR = 2 * (ll(lh) - ll(lam0));
+    const LM = N * (ybar - lam0) ** 2 / lam0;
+
+    const lo = Math.max(0.05, Math.min(lh, lam0) - 1.3), hi = Math.max(lh, lam0) + 1.3;
+    const piso = Math.min(rel(lam0) * 1.8, -1.5);
+    gTri.marco({ xlim: [lo, hi], ylim: [piso, -piso * 0.16], xlabel: 'λ', ylabel: 'ℓ(λ) − ℓ(λ̂)' });
+
+    const curva = [];
+    for (let i = 0; i <= 300; i++) { const l = lo + (hi - lo) * i / 300; curva.push([l, rel(l)]); }
+    const s0 = N * (ybar - lam0) / lam0;     // pendiente en λ0
+    const tan = [[lam0 - 0.7, rel(lam0) - 0.7 * s0], [lam0 + 0.7, rel(lam0) + 0.7 * s0]];
+
+    gTri.recortado(() => {
+      gTri.hlinea(0, { color: C('borde-firme'), grosor: 1, trazo: Lab.TRAZO.punteado });
+      gTri.linea(curva, { color: C('tinta-media'), grosor: 2.8 });
+      gTri.linea(tan, { color: C('violeta'), grosor: 2.4, trazo: Lab.TRAZO.puntoRaya });
+      gTri.vlinea(lh, { color: C('tinta-suave'), grosor: 1.2, trazo: Lab.TRAZO.punteado });
+      // LR: caída vertical en λ0
+      gTri.flecha(lam0, rel(lam0), lam0, 0, { color: C('naranja'), grosor: 2.4, doble: true });
+      // Wald: distancia horizontal, dibujada arriba del máximo
+      const yW = -piso * 0.07;
+      gTri.flecha(lam0, yW, lh, yW, { color: C('azul'), grosor: 2.4, doble: true });
+      gTri.puntos([[lh, 0]], { color: C('tinta'), r: 4.5 });
+      gTri.puntos([[lam0, rel(lam0)]], { color: C('violeta'), r: 4.5 });
+      const der = lam0 > lh;
+      gTri.rotulo(lam0 + (der ? 0.06 : -0.06), rel(lam0) / 2, 'LR: caída vertical', { color: C('naranja'), align: der ? 'left' : 'right', tam: .85 });
+      gTri.rotulo((lam0 + lh) / 2, yW, 'Wald: distancia horizontal', { color: C('azul'), align: 'center', base: 'bottom', tam: .85 });
+      gTri.rotulo(lam0 + (der ? -0.1 : 0.1), rel(lam0) + (der ? 0.1 : 0.1) * s0 - piso * 0.06, 'LM: pendiente en λ₀', { color: C('violeta'), align: der ? 'right' : 'left', tam: .85 });
+      gTri.rotulo(lh, piso * 0.93, 'λ̂ = ' + fmt(lh, 2), { color: C('tinta-suave'), align: 'center', tam: .82 });
+    });
+
+    // Datos
+    const kmax = Math.max(...y, Math.ceil(lam0 + 3));
+    const frec = new Array(kmax + 1).fill(0);
+    y.forEach((v) => frec[v]++);
+    const top = Math.max(...frec.map((f) => f / N), pmfPois(Math.floor(lh), lh)) * 1.2;
+    gTriD.marco({ xlim: [-0.6, kmax + 0.6], ylim: [0, top], xlabel: 'y', ylabel: 'frecuencia', ydec: 2, xdec: 0,
+      xticks: Array.from({ length: kmax + 1 }, (_, k) => k).filter((k) => kmax < 14 || k % 2 === 0) });
+    gTriD.recortado(() => {
+      frec.forEach((f, k) => gTriD.rect(k - 0.36, 0, k + 0.36, f / N, { relleno: Lab.alfa(C('gris'), .45) }));
+      const pm = frec.map((_, k) => [k, pmfPois(k, lh)]);
+      gTriD.linea(pm, { color: C('azul'), grosor: 1.6, trazo: Lab.TRAZO.punteado });
+      gTriD.puntos(pm, { color: C('azul'), r: 4 });
+    });
+    gTriD.leyenda([
+      { texto: 'frecuencia observada', color: Lab.alfa(C('gris'), .7), grosor: 8 },
+      { texto: 'Poisson(λ̂)', color: C('azul'), trazo: Lab.TRAZO.punteado }
+    ]);
+
+    const etq = (s) => `${fmt(s, 2)} <span class="senal ${s > 3.841 ? 'mal' : 'bien'}">p = ${fmt(pchi1(s), 3)}</span>`;
+    Lab.mostrar('t-hat', fmt(lh, 3));
+    document.getElementById('t-w').innerHTML = etq(W);
+    document.getElementById('t-lr').innerHTML = etq(LR);
+    document.getElementById('t-lm').innerHTML = etq(LM);
+    const rech = [W, LR, LM].filter((s) => s > 3.841).length;
+    document.getElementById('t-alerta').innerHTML = rech === 3
+      ? '<span class="senal mal">las tres rechazan H₀</span>'
+      : rech === 0 ? '<span class="senal bien">ninguna rechaza H₀</span>'
+      : `<span class="senal mal">las pruebas discrepan: ${rech} de 3 rechazan</span>`;
+  }
+
+  /* ======================================================================
+     2. Logit multinomial e IIA
+     ==================================================================== */
+
+  const gM = new Lab.Grafica(document.getElementById('cvMnl'), { razon: 0.42, minAlto: 240, maxAlto: 380 });
+  const gME = new Lab.Grafica(document.getElementById('cvMnlMe'), { razon: 0.32, minAlto: 200, maxAlto: 300 });
+  const gI = new Lab.Grafica(document.getElementById('cvIia'), { razon: 0.34, minAlto: 220, maxAlto: 320 });
+  const NOMBRES = ['escuela', 'casa', 'trabajo'];
+  const COLS = () => [C('violeta'), C('naranja'), C('azul')];
+
+  function probsMnl(x, p) {
+    const v1 = p.a1 + p.b1 * (x - 12), v2 = p.a2 + p.b2 * (x - 12);
+    const m = Math.max(0, v1, v2);
+    const e0 = Math.exp(-m), e1 = Math.exp(v1 - m), e2 = Math.exp(v2 - m);
+    const d = e0 + e1 + e2;
+    return [e0 / d, e1 / d, e2 / d];
+  }
+  function efectosMnl(P, p) {
+    const bs = [0, p.b1, p.b2];
+    const prom = P[0] * bs[0] + P[1] * bs[1] + P[2] * bs[2];
+    return P.map((pj, j) => pj * (bs[j] - prom));
+  }
+
+  function dibujarMnl() {
+    const p = { a1: Lab.val('m-a1'), b1: Lab.val('m-b1'), a2: Lab.val('m-a2'), b2: Lab.val('m-b2') };
+    const x0 = Lab.val('m-x0'), clon = Lab.val('m-clon');
+    const col = COLS();
+    const XL = [7, 19];
+    const malla = [];
+    for (let i = 0; i <= 240; i++) malla.push(XL[0] + (XL[1] - XL[0]) * i / 240);
+    const Ps = malla.map((x) => probsMnl(x, p));
+
+    gM.marco({ xlim: XL, ylim: [0, 1], xlabel: 'años de educación', ylabel: 'probabilidad', ydec: 1, xdec: 0 });
+    gM.recortado(() => {
+      for (let j = 0; j < 3; j++) {
+        const banda = malla.map((x, i) => {
+          const loV = Ps[i].slice(0, j).reduce((s, v) => s + v, 0);
+          return [x, loV, loV + Ps[i][j]];
+        });
+        gM.banda(banda, { color: Lab.alfa(col[j], .30) });
+        gM.linea(banda.map((b) => [b[0], b[2]]), { color: col[j], grosor: 1.6 });
+        // rótulo donde la banda es más ancha
+        let mejor = 0;
+        banda.forEach((b, i) => { if (b[2] - b[1] > banda[mejor][2] - banda[mejor][1]) mejor = i; });
+        const bb = banda[mejor];
+        if (bb[2] - bb[1] > 0.07) {
+          const xr = Math.min(Math.max(bb[0], 8.2), 17.8);
+          const ir = Math.round((xr - XL[0]) / (XL[1] - XL[0]) * 240);
+          gM.rotulo(xr, (banda[ir][1] + banda[ir][2]) / 2, NOMBRES[j], { color: col[j], align: 'center', tam: .9 });
+        }
+      }
+      gM.vlinea(x0, { color: C('tinta'), grosor: 1.4 });
+    });
+
+    // Efectos marginales
+    const Es = Ps.map((P) => efectosMnl(P, p));
+    const amp = Math.max(0.02, ...Es.flat().map(Math.abs)) * 1.2;
+    gME.marco({ xlim: XL, ylim: [-amp, amp], xlabel: 'años de educación', ylabel: '∂P / ∂educ', nyticks: 5, xdec: 0 });
+    const trazos = [Lab.TRAZO.puntoRaya, Lab.TRAZO.guion, Lab.TRAZO.solido];
+    gME.recortado(() => {
+      gME.hlinea(0, { color: C('borde-firme'), grosor: 1.2, trazo: Lab.TRAZO.solido });
+      for (let j = 0; j < 3; j++) gME.linea(malla.map((x, i) => [x, Es[i][j]]), { color: col[j], grosor: 2.8, trazo: trazos[j] });
+      gME.vlinea(x0, { color: C('tinta'), grosor: 1.4 });
+      // Rótulos directos al inicio de cada curva, separados si se enciman
+      const yIni = Es[0].map((v, j) => ({ j, v }));
+      yIni.sort((a, b) => a.v - b.v);
+      for (let k = 1; k < 3; k++) if (yIni[k].v - yIni[k - 1].v < amp * 0.16) yIni[k].v = yIni[k - 1].v + amp * 0.16;
+      yIni.forEach(({ j, v }) => gME.rotulo(XL[0] + 0.15, v + amp * 0.07, NOMBRES[j], { color: col[j], align: 'left', base: 'bottom', tam: .85 }));
+    });
+
+    // Lecturas en x0
+    const P0 = probsMnl(x0, p), E0 = efectosMnl(P0, p);
+    Lab.mostrar('m-p0', fmt(P0[0], 3), 'violeta');
+    Lab.mostrar('m-p1', fmt(P0[1], 3), 'naranja');
+    Lab.mostrar('m-p2', fmt(P0[2], 3), 'azul');
+    const lect = (id, idk, e, b, clase) => {
+      const mismo = Math.sign(e) === Math.sign(b) || Math.abs(b) < 1e-9;
+      document.getElementById(idk).innerHTML =
+        `<br>con β = ${fmtS(b, 3)} <span class="senal ${mismo ? 'bien' : 'mal'}">${mismo ? 'mismo signo' : 'signo opuesto'}</span>`;
+      Lab.mostrar(id, fmtS(e, 4), clase);
+    };
+    lect('m-e1', 'm-b1k', E0[1], p.b1, 'naranja');
+    lect('m-e2', 'm-b2k', E0[2], p.b2, 'azul');
+    Lab.mostrar('m-e0', fmtS(E0[0], 4), 'violeta');
+    Lab.mostrar('m-suma', fmtS(E0[0] + E0[1] + E0[2], 6), 'gris');
+
+    const inv = [1, 2].filter((j) => Math.sign(E0[j]) !== Math.sign([0, p.b1, p.b2][j]) && Math.abs([0, p.b1, p.b2][j]) > 1e-9);
+    document.getElementById('m-alerta').innerHTML = inv.length
+      ? `<span class="senal mal">en x₀ el efecto sobre «${inv.map((j) => NOMBRES[j]).join('» y «')}» tiene el signo opuesto a su coeficiente</span>`
+      : '<span class="senal bien">en x₀ coeficientes y efectos tienen el mismo signo</span>';
+
+    // IIA
+    const v1 = p.a1 + p.b1 * (x0 - 12), v2 = p.a2 + p.b2 * (x0 - 12);
+    const d2 = 1 + Math.exp(v1) + 2 * Math.exp(v2);
+    const logitClon = [1 / d2, Math.exp(v1) / d2, Math.exp(v2) / d2, Math.exp(v2) / d2];
+    const razonable = [P0[0], P0[1], P0[2] / 2, P0[2] / 2];
+    const escen = clon
+      ? [{ n: 'Sin el clon', v: [P0[0], P0[1], P0[2], 0] }, { n: 'Logit con el clon', v: logitClon }, { n: 'Lo razonable', v: razonable }]
+      : [{ n: 'Sin el clon', v: [P0[0], P0[1], P0[2], 0] }];
+    gI.marco({ xlim: [-0.5, 2.5], ylim: [0, 1], ylabel: 'probabilidad', ydec: 1,
+      xticks: [0, 1, 2], xetq: ['Sin el clon', 'Logit con el clon', 'Lo razonable'] });
+    const colI = [col[0], col[1], col[2], Lab.alfa(col[2], .55)];
+    const nomI = ['escuela', 'casa', 'trabajo', 'trabajo (clon)'];
+    gI.recortado(() => {
+      escen.forEach((e, k) => {
+        let base = 0;
+        e.v.forEach((pj, j) => {
+          if (pj <= 0) return;
+          gI.rect(k - 0.3, base, k + 0.3, base + pj, { relleno: Lab.alfa(colI[j], j === 3 ? .35 : .55), color: colI[j], grosor: 1 });
+          if (pj > 0.06) gI.rotulo(k, base + pj / 2, `${nomI[j]} ${fmt(100 * pj, 0)} %`, { color: C('tinta'), align: 'center', tam: .78 });
+          base += pj;
+        });
+      });
+      if (!clon) gI.rotulo(1.5, 0.5, 'Active «Agregar un clon» en el panel', { color: C('tinta-suave'), align: 'center', tam: .9, peso: 400 });
+    });
+    const r0 = P0[1] / P0[0], r1 = logitClon[1] / logitClon[0];
+    Lab.mostrar('m-razon', clon ? `${fmt(r0, 3)} → ${fmt(r1, 3)}` : fmt(r0, 3), 'gris');
+  }
+
+  function preset(vals) {
+    Object.entries(vals).forEach(([id, v]) => {
+      const e = document.getElementById(id);
+      e.value = v;
+      e.dispatchEvent(new Event('input'));
+    });
+  }
+  document.getElementById('m-pre-kw').addEventListener('click', () =>
+    preset({ 'm-a1': 1.92, 'm-b1': -0.674, 'm-a2': 3.48, 'm-b2': -0.315, 'm-x0': 12 }));
+  document.getElementById('m-pre-sim').addEventListener('click', () =>
+    preset({ 'm-a1': 1.92, 'm-b1': 0, 'm-a2': 3.48, 'm-b2': -0.315, 'm-x0': 12 }));
+
+  /* ======================================================================
+     3. Respuesta ordenada
+     ==================================================================== */
+
+  const gO = new Lab.Grafica(document.getElementById('cvOrd'), { razon: 0.40, minAlto: 230, maxAlto: 360 });
+  const gOC = new Lab.Grafica(document.getElementById('cvOrdCurvas'), { razon: 0.36, minAlto: 220, maxAlto: 330 });
+  const TRZ4 = [Lab.TRAZO.solido, Lab.TRAZO.guion, Lab.TRAZO.puntoRaya, Lab.TRAZO.punteado];
+  const COL4 = () => [C('violeta'), C('naranja'), C('gris'), C('azul')];
+
+  function dibujarOrdinal() {
+    const xb = Lab.val('o-xb'), bk = Lab.val('o-b');
+    const crudos = [Lab.val('o-a1'), Lab.val('o-a2'), Lab.val('o-a3')];
+    const al = crudos.slice().sort((a, b) => a - b);
+    const desordenados = crudos.some((v, i) => v !== al[i]);
+    const probit = Lab.grupo('o-enl') === 'probit';
+    const F = probit ? Lab.Phi : Lab.Lambda;
+    const f = probit ? Lab.phi : Lab.lambdaDens;
+    const cortes = [-Infinity, ...al, Infinity];
+    const Fz = (c, z) => (c === -Infinity ? 0 : c === Infinity ? 1 : F(c - z));
+    const fz = (c, z) => (Math.abs(c) === Infinity ? 0 : f(c - z));
+    const probs = (z) => [0, 1, 2, 3].map((j) => Fz(cortes[j + 1], z) - Fz(cortes[j], z));
+    const efectos = (z) => [0, 1, 2, 3].map((j) => bk * (fz(cortes[j], z) - fz(cortes[j + 1], z)));
+    const col = COL4();
+
+    // Densidad
+    const YL = [-6, 6];
+    const techo = (probit ? Lab.phi(0) : 0.25) * 1.25;
+    gO.marco({ xlim: YL, ylim: [0, techo], xlabel: 'y*', ylabel: 'densidad', ydec: 2, xdec: 0 });
+    gO.recortado(() => {
+      for (let j = 0; j < 4; j++) {
+        const a = Math.max(cortes[j], YL[0]), b = Math.min(cortes[j + 1], YL[1]);
+        if (b <= a) continue;
+        const pts = [];
+        for (let i = 0; i <= 120; i++) { const v = a + (b - a) * i / 120; pts.push([v, f(v - xb)]); }
+        gO.area(pts, { color: Lab.alfa(col[j], .32), base: 0 });
+      }
+      const dens = [];
+      for (let i = 0; i <= 300; i++) { const v = YL[0] + (YL[1] - YL[0]) * i / 300; dens.push([v, f(v - xb)]); }
+      gO.linea(dens, { color: C('tinta-media'), grosor: 2.4 });
+      al.forEach((a, i) => {
+        gO.vlinea(a, { color: C('tinta'), grosor: 1.4, trazo: Lab.TRAZO.guion });
+        gO.rotulo(a, techo * 0.94, `α${'₁₂₃'[i]}`, { color: C('tinta'), align: 'center', tam: .85 });
+      });
+      gO.vlinea(xb, { color: C('tinta-suave'), grosor: 1.2, trazo: Lab.TRAZO.punteado });
+      gO.rotulo(xb, techo * 0.06, 'xβ', { color: C('tinta-suave'), align: 'center', tam: .8 });
+      // rótulos de categoría
+      for (let j = 0; j < 4; j++) {
+        const a = Math.max(cortes[j], YL[0]), b = Math.min(cortes[j + 1], YL[1]);
+        if (b - a < 0.55) continue;
+        const m = (a + b) / 2;
+        gO.rotulo(m, techo * 0.80, `y = ${j}`, { color: col[j], align: 'center', tam: .88 });
+      }
+    });
+
+    // Curvas P_j(z)
+    const ZL = [-4, 4];
+    gOC.marco({ xlim: ZL, ylim: [0, 1], xlabel: 'índice xβ', ylabel: 'P(y = j)', ydec: 1, xdec: 0 });
+    const mallas = [];
+    for (let i = 0; i <= 240; i++) mallas.push(ZL[0] + (ZL[1] - ZL[0]) * i / 240);
+    const curvas = mallas.map((z) => probs(z));
+    gOC.recortado(() => {
+      for (let j = 0; j < 4; j++) gOC.linea(mallas.map((z, i) => [z, curvas[i][j]]), { color: col[j], grosor: 2.8, trazo: TRZ4[j] });
+      gOC.vlinea(xb, { color: C('tinta'), grosor: 1.4 });
+      const pa = probs(xb);
+      gOC.puntos(pa.map((v, j) => [xb, v]), { color: C('tinta'), r: 3.5 });
+    });
+    gOC.leyenda([0, 1, 2, 3].map((j) => ({ texto: `y = ${j}`, color: col[j], trazo: TRZ4[j] })), { esquina: 'si' });
+
+    // Tabla
+    const P = probs(xb), E = efectos(xb);
+    const clases = ['violeta', 'naranja', 'gris', 'azul'];
+    document.getElementById('o-tabla').innerHTML = P.map((pj, j) => {
+      const s = E[j] > 1e-6 ? 'sube' : E[j] < -1e-6 ? 'baja' : '≈ 0';
+      const amb = (j === 1 || j === 2) ? ' · intermedia' : '';
+      return `<div class="lectura"><span class="k">y = ${j}: P = ${fmt(pj, 3)}</span>` +
+        `<span class="v ${clases[j]}">${fmtS(E[j], 4)} <span class="senal ${E[j] >= 0 ? 'bien' : 'mal'}">${s}${amb}</span></span></div>`;
+    }).join('');
+    Lab.mostrar('o-suma', fmtS(E.reduce((s, v) => s + v, 0), 6), 'gris');
+    document.getElementById('o-alerta').innerHTML = desordenados
+      ? '<span class="senal mal">los umbrales deben ir en orden: se reordenaron para dibujar</span>'
+      : (Math.sign(E[1]) !== Math.sign(E[2])
+        ? '<span class="senal mal">las dos categorías intermedias se mueven en sentidos opuestos</span>'
+        : '<span class="senal bien">umbrales en orden</span>');
+  }
+
+  /* ======================================================================
+     4. Regresión Poisson y sobredispersión
+     ==================================================================== */
+
+  const gC = new Lab.Grafica(document.getElementById('cvCnt'), { razon: 0.44, minAlto: 250, maxAlto: 390 });
+  const gCP = new Lab.Grafica(document.getElementById('cvCntPmf'), { razon: 0.30, minAlto: 200, maxAlto: 290 });
+
+  function simularConteo(g, N, b0, b1, alfa) {
+    const X = [], y = [];
+    for (let i = 0; i < N; i++) {
+      const x = 4 * g.u();
+      let mu = Math.exp(b0 + b1 * x);
+      if (alfa > 1e-9) mu *= rgamma(g, 1 / alfa) * alfa;
+      X.push([1, x]);
+      y.push(rpois(g, mu));
+    }
+    return { X, y };
+  }
+
+  let mcVigente = false;
+  function limpiarMC() {
+    if (!mcVigente) return;
+    ['c-mc-media', 'c-mc-de', 'c-mc-eec', 'c-mc-eer', 'c-mc-cc', 'c-mc-cr'].forEach((id) => Lab.mostrar(id, '—'));
+    mcVigente = false;
+  }
+
+  function dibujarConteo() {
+    const b0 = Lab.val('c-b0'), b1 = Lab.val('c-b1'), alfa = Lab.val('c-alfa'), N = Lab.val('c-N'), x0 = Lab.val('c-x0');
+    const g = Lab.rng(Lab.val('c-sem') * 104729 + 7);
+    const d = simularConteo(g, N, b0, b1, alfa);
+    const r = poissonMV(d.X, d.y);
+
+    const ymax = Math.max(...d.y);
+    // El eje cubre todos los conteos salvo que la sobredispersión produzca
+    // valores extremos; en ese caso se recorta y se avisa.
+    const limite = Math.max(Math.exp(b0 + Math.max(b1, 0) * 4) * 3, 6);
+    const techo = Math.min(ymax, limite) + 0.8;
+    gC.marco({ xlim: [0, 4], ylim: [-0.5, techo], xlabel: 'x', ylabel: 'y (conteo)', xticks: [0, 1, 2, 3, 4], xdec: 0 });
+    const gj = Lab.rng(31);
+    gC.recortado(() => {
+      gC.puntos(d.X.map((f, i) => [f[1], d.y[i] + (gj.u() - .5) * .35]), { color: Lab.alfa(C('gris'), .45), r: N > 1000 ? 1.8 : 2.6, grosorBorde: 0 });
+      const malla = [];
+      for (let i = 0; i <= 160; i++) malla.push(4 * i / 160);
+      gC.linea(malla.map((x) => [x, Math.exp(b0 + b1 * x)]), { color: C('naranja'), grosor: 3, trazo: Lab.TRAZO.guion });
+      gC.linea(malla.map((x) => [x, Math.exp(r.b[0] + r.b[1] * x)]), { color: C('azul'), grosor: 3 });
+      gC.vlinea(x0, { color: C('tinta-suave'), grosor: 1.2, trazo: Lab.TRAZO.punteado });
+    });
+    gC.leyenda([
+      { texto: 'media verdadera exp(β₀ + β₁x)', color: C('naranja'), trazo: Lab.TRAZO.guion },
+      { texto: 'ajuste Poisson', color: C('azul') }
+    ], b1 >= 0 ? { esquina: 'si' } : {});
+    document.getElementById('c-alerta').innerHTML = ymax > techo
+      ? `<span class="senal mal">hay conteos de hasta ${ymax} fuera del cuadro</span>` : '';
+
+    // Distribución en x0
+    const mu0 = Math.exp(b0 + b1 * x0);
+    const K = Math.max(8, Math.ceil(mu0 + 4 * Math.sqrt(mu0 + alfa * mu0 * mu0)));
+    const ks = Array.from({ length: K + 1 }, (_, k) => k);
+    const pv = ks.map((k) => pmfNB(k, mu0, alfa));
+    const pp = ks.map((k) => pmfPois(k, mu0));
+    const tope = Math.max(...pv, ...pp) * 1.2;
+    gCP.marco({ xlim: [-0.6, K + 0.6], ylim: [0, tope], xlabel: 'y', ylabel: 'P(y | x₀)', ydec: 2, xdec: 0,
+      xticks: ks.filter((k) => K <= 16 || k % Math.ceil(K / 12) === 0) });
+    gCP.recortado(() => {
+      ks.forEach((k) => gCP.rect(k - 0.36, 0, k + 0.36, pv[k], { relleno: Lab.alfa(C('naranja'), .45) }));
+      gCP.linea(ks.map((k) => [k, pp[k]]), { color: C('azul'), grosor: 1.5, trazo: Lab.TRAZO.punteado });
+      gCP.puntos(ks.map((k) => [k, pp[k]]), { color: C('azul'), r: 3.8 });
+    });
+    gCP.leyenda([
+      { texto: alfa > 0 ? `verdadera: binomial negativa, α = ${fmt(alfa, 2)}` : 'verdadera: Poisson', color: Lab.alfa(C('naranja'), .75), grosor: 8 },
+      { texto: `Poisson con la misma media, μ = ${fmt(mu0, 2)}`, color: C('azul'), trazo: Lab.TRAZO.punteado }
+    ]);
+
+    Lab.mostrar('c-b1h', `${fmt(r.b[1], 4)}`, 'azul');
+    Lab.mostrar('c-eec', fmt(r.eeC[1], 4));
+    document.getElementById('c-eer').innerHTML =
+      `${fmt(r.eeR[1], 4)} <span class="senal ${Math.abs(r.eeR[1] / r.eeC[1] - 1) > .15 ? 'mal' : 'bien'}">× ${fmt(r.eeR[1] / r.eeC[1], 2)}</span>`;
+    document.getElementById('c-pear').innerHTML =
+      `${fmt(r.pearson, 2)} <span class="senal ${Math.abs(r.pearson - 1) > .2 ? 'mal' : 'bien'}">${r.pearson > 1.2 ? 'sobredispersión' : r.pearson < 0.8 ? 'subdispersión' : '≈ Poisson'}</span>`;
+    Lab.mostrar('c-semi', `${fmtS(100 * r.b[1], 1)} %`);
+    Lab.mostrar('c-exac', `${fmtS(100 * (Math.exp(r.b[1]) - 1), 1)} %`);
+    Lab.mostrar('c-ame', fmtS(r.b[1] * Lab.media(d.y), 4));
+  }
+
+  document.getElementById('c-mc').addEventListener('click', () => {
+    const btn = document.getElementById('c-mc');
+    btn.disabled = true; btn.textContent = 'Simulando…';
+    setTimeout(() => {
+      const b0 = Lab.val('c-b0'), b1 = Lab.val('c-b1'), alfa = Lab.val('c-alfa'), N = Lab.val('c-N');
+      const g = Lab.rng(Lab.val('c-sem') * 15485863 + 101);
+      const R = 500, est = [], eec = [], eer = [];
+      let cc = 0, cr = 0;
+      for (let k = 0; k < R; k++) {
+        const d = simularConteo(g, N, b0, b1, alfa);
+        const r = poissonMV(d.X, d.y);
+        est.push(r.b[1]); eec.push(r.eeC[1]); eer.push(r.eeR[1]);
+        if (Math.abs(r.b[1] - b1) <= 1.96 * r.eeC[1]) cc++;
+        if (Math.abs(r.b[1] - b1) <= 1.96 * r.eeR[1]) cr++;
+      }
+      Lab.mostrar('c-mc-media', `${fmt(Lab.media(est), 4)}  (β₁ = ${fmt(b1, 2)})`);
+      Lab.mostrar('c-mc-de', fmt(Lab.desv(est), 4));
+      Lab.mostrar('c-mc-eec', fmt(Lab.media(eec), 4));
+      Lab.mostrar('c-mc-eer', fmt(Lab.media(eer), 4));
+      const pc = 100 * cc / R, pr = 100 * cr / R;
+      document.getElementById('c-mc-cc').innerHTML = `${fmt(pc, 1)} % <span class="senal ${pc < 92 ? 'mal' : 'bien'}">${pc < 92 ? 'por debajo del 95 %' : 'cerca del 95 %'}</span>`;
+      document.getElementById('c-mc-cr').innerHTML = `${fmt(pr, 1)} % <span class="senal ${pr < 92 ? 'mal' : 'bien'}">${pr < 92 ? 'por debajo del 95 %' : 'cerca del 95 %'}</span>`;
+      mcVigente = true;
+      btn.disabled = false; btn.textContent = 'Correr el Monte Carlo';
+    }, 30);
+  });
+  ['c-b0', 'c-b1', 'c-alfa', 'c-N', 'c-sem'].forEach((id) =>
+    document.getElementById(id).addEventListener('input', limpiarMC));
+
+  /* ======================================================================
+     5. Autoevaluación
+     ==================================================================== */
+
+  const PREGUNTAS = [
+    { t: 'cap. 1', q: 'Si Cov(x, u) = 0, entonces…',
+      o: ['𝔼[u | x] = 0 necesariamente', 'MCO estima de forma consistente la proyección lineal de y sobre x', 'el modelo no tiene variables omitidas', 'los errores son homocedásticos'],
+      c: 1, e: 'Cov(x, u) = 0 es justo la condición que define a la proyección lineal: MCO la estima de forma consistente. Pero no implica 𝔼[u | x] = 0 (contraejemplo u = x² − 1), ni dice nada de la varianza.' },
+    { t: 'cap. 1', q: 'Queremos el efecto total de la educación sobre el salario. La ocupación está causada por la educación y a su vez afecta el salario. ¿Controlamos por ocupación?',
+      o: ['Sí, porque es un confusor', 'Sí, porque reduce la varianza', 'No, porque es un mediador y controlar recorta el efecto total', 'No, porque es un instrumento'],
+      c: 2, e: 'Educación → ocupación → salario es una ruta causal: la ocupación es un mediador. Controlarla deja sólo el efecto directo y, si hay factores no observados que afectan ocupación y salario, además abre un sesgo de colisionador.' },
+    { t: 'cap. 2', q: 'En la regresión de y sobre x₁ y x₂, el coeficiente de x₁ es igual a…',
+      o: ['el de la regresión simple de y sobre x₁', 'el de regresar y sobre los residuales de x₁ después de quitarle x₂', 'el cociente de las correlaciones', 'el de regresar x₁ sobre y'],
+      c: 1, e: 'Es el teorema de Frisch-Waugh-Lovell: se «limpia» x₁ de x₂ y se regresa y (o y limpia) sobre ese residual. El coeficiente coincide exactamente; el error estándar sólo si se corrigen los grados de libertad.' },
+    { t: 'cap. 3', q: 'En un modelo con una endógena y un instrumento, la prueba de Sargan…',
+      o: ['rechaza siempre', 'no puede calcularse: el modelo está exactamente identificado', 'prueba la relevancia del instrumento', 'equivale a la F de la primera etapa'],
+      c: 1, e: 'Sargan contrasta las restricciones de sobreidentificación. Con L = K no hay ninguna: el R² de la regresión auxiliar es cero por construcción. La exogeneidad de un instrumento único no es contrastable.' },
+    { t: 'cap. 4', q: 'Dos ecuaciones con exactamente los mismos regresores y errores correlacionados. SUR frente a MCO ecuación por ecuación da…',
+      o: ['estimaciones idénticas', 'SUR más eficiente', 'MCO sesgado', 'SUR inconsistente'],
+      c: 0, e: 'Con X₁ = X₂, el estimador MCG del sistema se reduce algebraicamente a MCO en cada ecuación, sea cual sea Σ. La ganancia de SUR requiere errores correlacionados y regresores distintos.' },
+    { t: 'cap. 5', q: 'Si α_i está correlacionado con los regresores, ¿qué estimador es inconsistente?',
+      o: ['Intragrupos', 'Primeras diferencias', 'Efectos aleatorios', 'Ninguno de los tres'],
+      c: 2, e: 'Efectos aleatorios trata α_i como parte del error y necesita que no esté correlacionado con x. Intragrupos y primeras diferencias eliminan α_i y siguen siendo consistentes. La prueba de Hausman explota justo esa diferencia.' },
+    { t: 'cap. 6', q: 'La prueba LM (del puntaje) se calcula…',
+      o: ['sólo con el modelo sin restringir', 'sólo con el modelo restringido', 'con los dos modelos', 'sin estimar ningún modelo'],
+      c: 1, e: 'LM evalúa el puntaje y la información en el estimador restringido: si la restricción es cierta, la pendiente ahí debe ser casi cero. Wald usa el sin restringir y LR, los dos.' },
+    { t: 'cap. 7', q: 'En un logit, β_k = 0.5. Un aumento de una unidad en x_k…',
+      o: ['eleva P(y = 1) en 0.5', 'eleva P(y = 1) en 50 %', 'multiplica los momios P/(1 − P) por e^0.5 ≈ 1.65', 'no tiene interpretación'],
+      c: 2, e: 'En el logit, ln[P/(1 − P)] = xβ, así que β_k es el cambio en el logaritmo de los momios. El cambio en la probabilidad es Λ(xβ)(1 − Λ(xβ))·0.5, que depende de x y es como mucho 0.125.' },
+    { t: 'cap. 7', q: 'En el logit multinomial de Keane y Wolpin, el coeficiente de educación en «trabajo» (frente a escuela) es −0.315. Entonces…',
+      o: ['un año más de educación reduce P(trabajo)', 'un año más reduce P(trabajo)/P(escuela); el efecto sobre P(trabajo) puede ser positivo', 'la educación no afecta la decisión', 'hay que cambiar de alternativa base'],
+      c: 1, e: 'El coeficiente mueve los momios relativos a la base. El efecto sobre la probabilidad es P_j[β_jk − Σ_h P_h β_hk]; como la educación reduce todavía más los momios de «casa», el término entre corchetes es positivo y P(trabajo) sube.' },
+    { t: 'cap. 7', q: 'En un probit ordinal con cuatro categorías y β_k > 0, un aumento de x_k…',
+      o: ['aumenta la probabilidad de todas las categorías', 'reduce P(y = 0), aumenta P(y = 3) y tiene signo ambiguo en las intermedias', 'aumenta P(y = 1) y P(y = 2) siempre', 'sólo mueve los umbrales'],
+      c: 1, e: 'El índice desplaza la densidad a la derecha. Los extremos tienen signo claro; las intermedias ganan masa por un lado y la pierden por otro: ∂P_j/∂x_k = β_k[g(α_j − xβ) − g(α_{j+1} − xβ)].' },
+    { t: 'cap. 7', q: 'Un Poisson se estima con datos sobredispersos. ¿Qué sigue siendo válido?',
+      o: ['Los coeficientes y los errores estándar clásicos', 'Sólo los errores estándar', 'Los coeficientes, siempre que la media exp(xβ) esté bien especificada; los ee deben ser robustos', 'Nada: hay que usar binomial negativa'],
+      c: 2, e: 'La condición de primer orden Σx′(y − exp(xβ)) = 0 sólo depende de la media: es cuasi máxima verosimilitud. Lo que falla es la igualdad de la matriz de información, y con ella los ee clásicos.' },
+    { t: 'cap. 7', q: 'En un Poisson, β_educ = −0.024. La lectura correcta es…',
+      o: ['cada año de educación reduce el número esperado de hijos en 0.024', 'cada año de educación reduce el número esperado de hijos en alrededor de 2.4 %', 'la probabilidad de tener hijos cae 2.4 puntos', 'la elasticidad es −0.024'],
+      c: 1, e: 'β_k = ∂ ln 𝔼[y | x]/∂x_k es una semielasticidad: 100·β = −2.4 % por año (exacto: 100·(e^−0.024 − 1) = −2.37 %). En unidades de hijos, el efecto es β·𝔼[y | x], que depende de x.' }
+  ];
+
+  const contQuiz = document.getElementById('quiz');
+  let aciertos = 0, respondidas = 0;
+  function pintarQuiz() {
+    aciertos = 0; respondidas = 0;
+    contQuiz.innerHTML = '';
+    PREGUNTAS.forEach((p, i) => {
+      const div = document.createElement('div');
+      div.className = 'pregunta';
+      div.innerHTML = `<div class="enunciado"><span class="tema">${i + 1} · ${p.t}</span>${p.q}</div>
+        <div class="opcs">${p.o.map((o, j) => `<button type="button" class="opc" data-j="${j}">${'ABCD'[j]}) ${o}</button>`).join('')}</div>
+        <div class="explica"></div>`;
+      div.querySelectorAll('button.opc').forEach((b) => b.addEventListener('click', () => {
+        if (div.classList.contains('respondida')) return;
+        const j = +b.dataset.j;
+        div.classList.add('respondida');
+        respondidas++;
+        if (j === p.c) aciertos++;
+        b.classList.add(j === p.c ? 'si' : 'no');
+        div.querySelector(`button.opc[data-j="${p.c}"]`).classList.add('si');
+        div.querySelector('.explica').innerHTML = `<strong>${j === p.c ? 'Correcto.' : 'La respuesta es ' + 'ABCD'[p.c] + '.'}</strong> ${p.e}`;
+        document.getElementById('q-marcador').textContent = `${aciertos} de ${PREGUNTAS.length}` + (respondidas < PREGUNTAS.length ? ` · faltan ${PREGUNTAS.length - respondidas}` : '');
+      }));
+      contQuiz.appendChild(div);
+    });
+    document.getElementById('q-marcador').textContent = `0 de ${PREGUNTAS.length}`;
+  }
+  pintarQuiz();
+  document.getElementById('q-reiniciar').addEventListener('click', pintarQuiz);
+
+  /* ======================================================================
+     Arranque
+     ==================================================================== */
+
+  function dibujar() {
+    dibujarTrinidad();
+    dibujarMnl();
+    dibujarOrdinal();
+    dibujarConteo();
+  }
+  Lab.iniciar(dibujar).then(() => { Lab.enlazar(dibujar); ruta(); });
+
+  // Barra de temas: queda pegada bajo la barra del sitio y marca el tema en pantalla.
+  function ruta() {
+    const raiz = document.documentElement;
+    const barra = document.querySelector('.barra');
+    const nav = document.querySelector('.ruta');
+    const medir = () => {
+      const a = barra ? barra.offsetHeight : 0;
+      raiz.style.setProperty('--alto-barra', a + 'px');
+      raiz.style.setProperty('--alto-barras', (a + nav.offsetHeight) + 'px');
+    };
+    medir();
+    window.addEventListener('resize', medir);
+
+    const ligas = [...nav.querySelectorAll('a')];
+    const blancos = ligas.map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    let actual = null;
+    let fijo = null;   // la ficha a la que se dio clic gana dentro de su renglón
+    const marcar = () => {
+      const y = (barra ? barra.offsetHeight : 0) + nav.offsetHeight + 40;
+      let elegido = null, alto = -Infinity;
+      for (const b of blancos) {
+        const t = b.getBoundingClientRect().top;
+        // Fichas en el mismo renglón de la cuadrícula: se queda la primera
+        if (t <= y && t > alto + 4) { elegido = b; alto = t; }
+      }
+      if (fijo && elegido && Math.abs(fijo.getBoundingClientRect().top - alto) <= 4) elegido = fijo;
+      else fijo = null;
+      // Antes del primer tema no se marca ninguno
+      if (elegido === actual) return;
+      actual = elegido;
+      ligas.forEach((a) => {
+        const si = elegido && a.getAttribute('href') === '#' + elegido.id;
+        a.classList.toggle('activo', !!si);
+        if (si) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+        if (si) {
+          const c = nav.querySelector('.ruta-int');
+          const l = a.offsetLeft - c.offsetLeft;
+          if (l < c.scrollLeft || l + a.offsetWidth > c.scrollLeft + c.clientWidth)
+            c.scrollTo({ left: l - 40, behavior: 'smooth' });
+        }
+      });
+    };
+    // Los blancos deben recorrerse en orden de aparición en la página
+    blancos.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+    ligas.forEach((a) => a.addEventListener('click', () => {
+      fijo = document.querySelector(a.getAttribute('href'));
+      setTimeout(marcar, 50);
+    }));
+    // marcar() sólo mide una veintena de elementos: no hace falta limitar la frecuencia
+    window.addEventListener('scroll', marcar, { passive: true });
+    marcar();
+  }
+})();
+</script>
+</body>
+</html>

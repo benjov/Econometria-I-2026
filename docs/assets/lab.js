@@ -1071,6 +1071,7 @@ const Lab = (() => {
      ====================================================================== */
 
   const PAGINAS = [
+    { href: 'repaso.html',         titulo: 'Clase de repaso',  corto: 'Repaso', raiz: true },
     { href: 'mco.html',            titulo: 'MCO',              corto: 'MCO' },
     { href: 'colisionador.html',   titulo: 'DAG y sesgos',     corto: 'DAG' },
     { href: 'instrumentos.html',   titulo: 'Instrumentos',     corto: 'VI' },
@@ -1087,7 +1088,8 @@ const Lab = (() => {
     const barra = document.createElement('header');
     barra.className = 'barra';
     const nav = PAGINAS.map((p) => {
-      const href = (enSim ? '' : 'sim/') + p.href;
+      // Las páginas de la raíz (como el repaso) no viven en sim/
+      const href = p.raiz ? raiz + p.href : (enSim ? '' : 'sim/') + p.href;
       const act = p.href === actual ? ' aria-current="page"' : '';
       return `<a href="${href}"${act}>${p.corto}</a>`;
     }).join('');

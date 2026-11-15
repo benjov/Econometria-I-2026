@@ -27,6 +27,14 @@ instrumentos débiles, datos panel, diferencia en diferencias y modelos de respu
 Cada uno indica a qué inciso del temario y a qué capítulo de las notas corresponde, y enlaza al
 cuaderno con la aplicación real. El código vive en [`docs/`](docs/).
 
+**Clase de repaso (17 de noviembre de 2026):**
+<https://benjov.github.io/Econometria-I-2026/repaso.html>. Recorrido de una hora por todo lo visto
+—del modelo lineal a la teoría de los modelos de conteo— con cuatro simuladores más (pruebas de
+Wald, LR y LM; logit multinomial con los datos de Keane y Wolpin e IIA; respuesta ordenada; Poisson
+con sobredispersión), fórmulas clave, errores frecuentes y doce preguntas de autoevaluación. Una barra de
+temas recorre el temario completo y adelanta lo que viene (censura, selección, duración, diferencia en
+diferencias, control sintético y código asistido por IA).
+
 | Simulador | Temario | Notas | Qué muestra |
 |---|:--:|:--:|---|
 | [¿Qué minimiza MCO?](https://benjov.github.io/Econometria-I-2026/sim/mco.html) | 1.b, 1.c | caps. 1-2 | La función criterio y su mínimo; distancia vertical contra perpendicular |
@@ -267,13 +275,16 @@ dejan impreso en la salida. Es la práctica que la unidad 4 busca instalar:
 | Componente | Peso | Fecha tentativa |
 |---|---|---|
 | Primer examen parcial (presencial) | 15 % | 26 de septiembre de 2026 |
-| Segundo examen parcial (presencial) | 15 % | Octubre de 2026 |
-| Proyecto final en equipo (2 a 3 personas) | 40 % | 11 de diciembre de 2026 |
-| Ejercicios a lo largo del semestre | 30 % | — |
+| Tarea-examen, en lugar del segundo parcial | 15 % | Se publica el 17 de noviembre; entrega el 22 de noviembre de 2026 |
+| Proyecto final en equipo (2 a 3 personas) | 40 % | 20 de diciembre de 2026 (lineamientos: 23 de noviembre) |
+| Ejercicios a lo largo del semestre | 30 % | Pendientes: 29 de noviembre de 2026 |
 
-La fecha del primer parcial está confirmada; las demás se acuerdan en clase. Los lineamientos del
-proyecto final se dan a conocer después de los exámenes parciales. Las Notas de Clase incluyen
-ejercicios al final de cada capítulo.
+Calendario ajustado en noviembre de 2026, tras la consulta al grupo durante el paro. La tarea-examen
+vive en la carpeta `Tarea_Examen/` y sustituye la calificación del primer parcial a quien no lo
+presentó o a quien obtenga en ella una calificación mayor; quien no pueda entregarla el 22 de
+noviembre puede pedir una versión equivalente con entrega el 6 de diciembre. Los ejercicios
+pendientes son los quizzes de Python de la sección «Clases Prácticas con Python» y el ejercicio de
+la Clase 01. Las Notas de Clase incluyen ejercicios al final de cada capítulo.
 
 ## Bibliografía
 
